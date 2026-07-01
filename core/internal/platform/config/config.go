@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -17,6 +19,8 @@ type Config struct {
 }
 
 func Load() (*Config, error) {
+	_ = godotenv.Load() // Loads .env if it exists
+
 	dbUrl, err := getEnvOrError("DATABASE_URL")
 	if err != nil {
 		return nil, err
