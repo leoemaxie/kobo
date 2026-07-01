@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/ledger"
 )
@@ -29,10 +30,10 @@ func (h *LedgerHandler) GetStatement(w http.ResponseWriter, r *http.Request) {
 	// Integrator access check could go here if needed
 	_ = middleware.GetIntegratorID(r.Context())
 
-	idStr := chi.URLParam(r, "id")
+	idStr := chi.URLParam(r, "accountId")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "invalid identity ID", http.StatusBadRequest)
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid account ID")
 		return
 	}
 
@@ -52,7 +53,7 @@ func (h *LedgerHandler) GetStatement(w http.ResponseWriter, r *http.Request) {
 
 	entries, err := h.svc.GetStatements(r.Context(), id, limit, offset)
 	if err != nil {
-		http.Error(w, "failed to get statements", http.StatusInternalServerError)
+		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", "failed to get statements")
 		return
 	}
 

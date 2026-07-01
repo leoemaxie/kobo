@@ -4,21 +4,21 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
 type Service struct {
-	q *sqlc.Queries
+	repo Repository
 }
 
-func NewService(q *sqlc.Queries) *Service {
-	return &Service{q: q}
+func NewService(repo Repository) *Service {
+	return &Service{repo: repo}
 }
 
-func (s *Service) ListOpen(ctx context.Context, integratorID uuid.UUID, limit, offset int32) ([]sqlc.Exception, error) {
-	return s.q.ListOpenExceptions(ctx, sqlc.ListOpenExceptionsParams{
-		IntegratorID: integratorID,
-		Limit:        limit,
-		Offset:       offset,
-	})
+func (s *Service) ListOpen(ctx context.Context, integratorID uuid.UUID, limit, offset int32) ([]Exception, error) {
+	return s.repo.ListOpenExceptions(ctx, integratorID, limit, offset)
+}
+
+func (s *Service) Resolve(ctx context.Context, id uuid.UUID, integratorID uuid.UUID, action string, notes string, successorIdentityID *uuid.UUID) error {
+	_, err := s.repo.ResolveException(ctx, id, integratorID, action, notes, successorIdentityID)
+	return err
 }

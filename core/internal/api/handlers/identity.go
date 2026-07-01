@@ -7,6 +7,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/leoemaxie/kobo/internal/account"
+	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
+	"github.com/leoemaxie/kobo/internal/api/dto"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/identity"
 )
@@ -20,25 +22,18 @@ func NewIdentityHandler(svc *identity.Service, accountSvc *account.Service) *Ide
 	return &IdentityHandler{svc: svc, accountSvc: accountSvc}
 }
 
-type createIdentityReq struct {
-	ExternalReference string          `json:"externalReference" validate:"required"`
-	DisplayName       string          `json:"displayName" validate:"required"`
-	KYCTier           string          `json:"kycTier" validate:"required"`
-	Metadata          json.RawMessage `json:"metadata"`
-}
-
 func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
 	integratorID := middleware.GetIntegratorID(r.Context())
 
-	var req createIdentityReq
+	var req dto.CreateIdentityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
 		return
 	}
 
 	ident, err := h.svc.Register(r.Context(), integratorID, req.ExternalReference, req.DisplayName, req.KYCTier, req.Metadata)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", err.Error())
 		return
 	}
 
@@ -52,13 +47,13 @@ func (h *IdentityHandler) Get(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "invalid identity ID", http.StatusBadRequest)
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID")
 		return
 	}
 
 	ident, err := h.svc.Get(r.Context(), id, integratorID)
 	if err != nil {
-		http.Error(w, "not found", http.StatusNotFound)
+		apierrors.WriteError(w, http.StatusNotFound, "not_found", "identity not found")
 		return
 	}
 
@@ -66,23 +61,18 @@ func (h *IdentityHandler) Get(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ident)
 }
 
-type updateIdentityReq struct {
-	DisplayName string          `json:"displayName"`
-	Metadata    json.RawMessage `json:"metadata"`
-}
-
 func (h *IdentityHandler) Update(w http.ResponseWriter, r *http.Request) {
 	integratorID := middleware.GetIntegratorID(r.Context())
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "invalid identity ID", http.StatusBadRequest)
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID")
 		return
 	}
 
-	var req updateIdentityReq
+	var req dto.UpdateIdentityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
 		return
 	}
 
@@ -93,7 +83,7 @@ func (h *IdentityHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ident, err := h.svc.UpdateProfile(r.Context(), id, integratorID, displayName, req.Metadata)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", err.Error())
 		return
 	}
 
@@ -101,29 +91,24 @@ func (h *IdentityHandler) Update(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(ident)
 }
 
-type closeIdentityReq struct {
-	Reason           string          `json:"reason"`
-	SweepDestination json.RawMessage `json:"sweep_destination"`
-}
-
 func (h *IdentityHandler) Close(w http.ResponseWriter, r *http.Request) {
 	integratorID := middleware.GetIntegratorID(r.Context())
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "invalid identity ID", http.StatusBadRequest)
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID")
 		return
 	}
 
-	var req closeIdentityReq
+	var req dto.CloseIdentityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
 		return
 	}
 
 	err = h.accountSvc.Close(r.Context(), id, integratorID, req.Reason, req.SweepDestination)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", err.Error())
 		return
 	}
 
