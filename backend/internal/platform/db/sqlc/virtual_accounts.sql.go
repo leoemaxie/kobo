@@ -132,6 +132,42 @@ func (q *Queries) GetVirtualAccountByID(ctx context.Context, id uuid.UUID) (Virt
 	return i, err
 }
 
+const listActiveVirtualAccounts = `-- name: ListActiveVirtualAccounts :many
+SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at FROM virtual_accounts
+WHERE is_active = true
+ORDER BY id ASC
+`
+
+func (q *Queries) ListActiveVirtualAccounts(ctx context.Context) ([]VirtualAccount, error) {
+	rows, err := q.db.Query(ctx, listActiveVirtualAccounts)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []VirtualAccount{}
+	for rows.Next() {
+		var i VirtualAccount
+		if err := rows.Scan(
+			&i.ID,
+			&i.IdentityID,
+			&i.NombaAccountRef,
+			&i.AccountNumber,
+			&i.BankName,
+			&i.AccountName,
+			&i.IsActive,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateVirtualAccountProvisioning = `-- name: UpdateVirtualAccountProvisioning :one
 UPDATE virtual_accounts
 SET account_number = $2,

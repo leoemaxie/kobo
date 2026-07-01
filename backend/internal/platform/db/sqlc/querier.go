@@ -31,6 +31,7 @@ type Querier interface {
 	InsertIdempotencyKey(ctx context.Context, arg InsertIdempotencyKeyParams) (IdempotencyKey, error)
 	InsertIdentityEvent(ctx context.Context, arg InsertIdentityEventParams) (IdentityEvent, error)
 	InsertLedgerEntry(ctx context.Context, arg InsertLedgerEntryParams) (LedgerEntry, error)
+	ListActiveVirtualAccounts(ctx context.Context) ([]VirtualAccount, error)
 	ListExceptionsByStatus(ctx context.Context, arg ListExceptionsByStatusParams) ([]Exception, error)
 	ListIdentitiesByState(ctx context.Context, arg ListIdentitiesByStateParams) ([]Identity, error)
 	ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]IdentityEvent, error)

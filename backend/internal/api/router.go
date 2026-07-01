@@ -1,15 +1,14 @@
 package api
 
 import (
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/leoemaxie/kobo/internal/api/handlers"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
+	"github.com/leoemaxie/kobo/internal/reconciliation"
 )
 
-func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler) *chi.Mux {
+func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
 	r := chi.NewRouter()
 
 	// Protected routes
@@ -18,12 +17,13 @@ func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler) *chi.
 
 		r.Post("/identities", identityHandler.Create)
 		r.Get("/identities/{id}", identityHandler.Get)
+		r.Get("/identities/{id}/statements", ledgerHandler.GetStatements)
+		r.Get("/exceptions", exceptionsHandler.ListOpen)
 	})
 
 	// Public Webhooks
-	r.Post("/webhooks/nomba", func(w http.ResponseWriter, r *http.Request) {
-		// To be implemented in Phase 6
-	})
+	webhookHandler := handlers.NewWebhookHandler(engine, webhookSecret)
+	r.Post("/webhooks/nomba", webhookHandler.HandleNombaWebhook)
 
 	return r
 }

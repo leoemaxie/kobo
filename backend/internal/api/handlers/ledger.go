@@ -1,0 +1,55 @@
+package handlers
+
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+	"github.com/leoemaxie/kobo/internal/api/middleware"
+	"github.com/leoemaxie/kobo/internal/ledger"
+)
+
+type LedgerHandler struct {
+	svc *ledger.Service
+}
+
+func NewLedgerHandler(svc *ledger.Service) *LedgerHandler {
+	return &LedgerHandler{svc: svc}
+}
+
+func (h *LedgerHandler) GetStatements(w http.ResponseWriter, r *http.Request) {
+	// Integrator access check could go here if needed
+	_ = middleware.GetIntegratorID(r.Context())
+
+	idStr := chi.URLParam(r, "id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		http.Error(w, "invalid identity ID", http.StatusBadRequest)
+		return
+	}
+
+	limit := int32(50)
+	if l := r.URL.Query().Get("limit"); l != "" {
+		if parsed, err := strconv.ParseInt(l, 10, 32); err == nil {
+			limit = int32(parsed)
+		}
+	}
+
+	offset := int32(0)
+	if o := r.URL.Query().Get("offset"); o != "" {
+		if parsed, err := strconv.ParseInt(o, 10, 32); err == nil {
+			offset = int32(parsed)
+		}
+	}
+
+	entries, err := h.svc.GetStatements(r.Context(), id, limit, offset)
+	if err != nil {
+		http.Error(w, "failed to get statements", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(entries)
+}

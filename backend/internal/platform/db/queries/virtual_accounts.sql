@@ -31,3 +31,8 @@ UPDATE virtual_accounts
 SET is_active = false,
     updated_at = now()
 WHERE identity_id = $1 AND is_active = true;
+
+-- name: ListActiveVirtualAccounts :many
+SELECT * FROM virtual_accounts
+WHERE is_active = true
+ORDER BY id ASC;
