@@ -19,10 +19,10 @@ type Repository interface {
 }
 
 type sqlcRepository struct {
-	q *sqlc.Queries
+	q sqlc.Querier
 }
 
-func NewRepository(q *sqlc.Queries) Repository {
+func NewRepository(q sqlc.Querier) Repository {
 	return &sqlcRepository{q: q}
 }
 
