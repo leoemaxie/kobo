@@ -373,7 +373,7 @@ components:
     ApiKeyAuth:
       type: http
       scheme: basic
-      description: Basic Auth using the unhashed API Key as the username and the raw API Secret as the password.
+      description: Basic Auth using API Key as the username and API Secret as the password.
     HmacSignature:
       type: apiKey
       in: header

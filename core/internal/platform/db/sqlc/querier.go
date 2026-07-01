@@ -18,7 +18,7 @@ type Querier interface {
 	// Sets is_active to false when a new account is provisioned for the identity
 	DeactivateVirtualAccount(ctx context.Context, identityID uuid.UUID) error
 	GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (VirtualAccount, error)
-	GetApiIntegratorByKeyHash(ctx context.Context, apiKeyHash string) (ApiIntegrator, error)
+	GetApiIntegratorByKey(ctx context.Context, apiKey string) (ApiIntegrator, error)
 	GetExceptionByID(ctx context.Context, arg GetExceptionByIDParams) (Exception, error)
 	GetIdempotencyKey(ctx context.Context, nombaReference string) (IdempotencyKey, error)
 	GetIdentityByExternalReference(ctx context.Context, arg GetIdentityByExternalReferenceParams) (Identity, error)

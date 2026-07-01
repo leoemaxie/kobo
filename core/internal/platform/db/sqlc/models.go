@@ -15,7 +15,7 @@ import (
 type ApiIntegrator struct {
 	ID            uuid.UUID `json:"id"`
 	Name          string    `json:"name"`
-	ApiKeyHash    string    `json:"api_key_hash"`
+	ApiKey        string    `json:"api_key"`
 	ApiSecretHash string    `json:"api_secret_hash"`
 	IsSandbox     bool      `json:"is_sandbox"`
 	CreatedAt     time.Time `json:"created_at"`

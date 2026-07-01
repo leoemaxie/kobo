@@ -12,15 +12,15 @@ import (
 )
 
 const createApiIntegrator = `-- name: CreateApiIntegrator :one
-INSERT INTO api_integrators (id, name, api_key_hash, api_secret_hash, is_sandbox)
+INSERT INTO api_integrators (id, name, api_key, api_secret_hash, is_sandbox)
 VALUES ($1, $2, $3, $4, $5)
-RETURNING id, name, api_key_hash, api_secret_hash, is_sandbox, created_at, updated_at
+RETURNING id, name, api_key, api_secret_hash, is_sandbox, created_at, updated_at
 `
 
 type CreateApiIntegratorParams struct {
 	ID            uuid.UUID `json:"id"`
 	Name          string    `json:"name"`
-	ApiKeyHash    string    `json:"api_key_hash"`
+	ApiKey        string    `json:"api_key"`
 	ApiSecretHash string    `json:"api_secret_hash"`
 	IsSandbox     bool      `json:"is_sandbox"`
 }
@@ -29,7 +29,7 @@ func (q *Queries) CreateApiIntegrator(ctx context.Context, arg CreateApiIntegrat
 	row := q.db.QueryRow(ctx, createApiIntegrator,
 		arg.ID,
 		arg.Name,
-		arg.ApiKeyHash,
+		arg.ApiKey,
 		arg.ApiSecretHash,
 		arg.IsSandbox,
 	)
@@ -37,7 +37,7 @@ func (q *Queries) CreateApiIntegrator(ctx context.Context, arg CreateApiIntegrat
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.ApiKeyHash,
+		&i.ApiKey,
 		&i.ApiSecretHash,
 		&i.IsSandbox,
 		&i.CreatedAt,
@@ -46,18 +46,18 @@ func (q *Queries) CreateApiIntegrator(ctx context.Context, arg CreateApiIntegrat
 	return i, err
 }
 
-const getApiIntegratorByKeyHash = `-- name: GetApiIntegratorByKeyHash :one
-SELECT id, name, api_key_hash, api_secret_hash, is_sandbox, created_at, updated_at FROM api_integrators
-WHERE api_key_hash = $1
+const getApiIntegratorByKey = `-- name: GetApiIntegratorByKey :one
+SELECT id, name, api_key, api_secret_hash, is_sandbox, created_at, updated_at FROM api_integrators
+WHERE api_key = $1
 `
 
-func (q *Queries) GetApiIntegratorByKeyHash(ctx context.Context, apiKeyHash string) (ApiIntegrator, error) {
-	row := q.db.QueryRow(ctx, getApiIntegratorByKeyHash, apiKeyHash)
+func (q *Queries) GetApiIntegratorByKey(ctx context.Context, apiKey string) (ApiIntegrator, error) {
+	row := q.db.QueryRow(ctx, getApiIntegratorByKey, apiKey)
 	var i ApiIntegrator
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.ApiKeyHash,
+		&i.ApiKey,
 		&i.ApiSecretHash,
 		&i.IsSandbox,
 		&i.CreatedAt,

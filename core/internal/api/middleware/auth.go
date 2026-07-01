@@ -2,53 +2,73 @@ package middleware
 
 import (
 	"context"
+	"crypto/subtle"
 	"net/http"
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/leoemaxie/kobo/internal/auth"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
 type contextKey string
-const IntegratorIDKey contextKey = "integratorID"
+const IntegratorContextKey contextKey = "integratorContext"
 
-func AuthMiddleware(q *sqlc.Queries) func(http.Handler) http.Handler {
+type IntegratorContext struct {
+	ID        uuid.UUID
+	Name      string
+	IsSandbox bool
+}
+
+func AuthMiddleware(q sqlc.Querier) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
+			apiKey, apiSecret, ok := r.BasicAuth()
+			if !ok {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
 
-			// In a real application, we would parse Basic Auth or Bearer Token and 
-			// verify against api_integrators.api_key_hash using bcrypt.
-			// For scaffolding purposes, we simulate checking the token.
-			
-			// We can assume for local dev the token is just the integrator ID directly for now
-			token := strings.TrimPrefix(authHeader, "Bearer ")
-			integratorID, err := uuid.Parse(token)
+			// Fast fail on mismatched prefixes
+			if strings.HasPrefix(apiKey, "kobo_live_") && !strings.HasPrefix(apiSecret, "kobo_live_") {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+			if strings.HasPrefix(apiKey, "kobo_test_") && !strings.HasPrefix(apiSecret, "kobo_test_") {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			integrator, err := q.GetApiIntegratorByKey(r.Context(), apiKey)
 			if err != nil {
-				// Fallback to basic auth user if bearer is not UUID
-				username, _, ok := r.BasicAuth()
-				if ok {
-					integratorID, _ = uuid.Parse(username)
-				}
-			}
-
-			if integratorID == uuid.Nil {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
 
-			// Context passing
-			ctx := context.WithValue(r.Context(), IntegratorIDKey, integratorID)
+			hashedProvidedSecret := auth.HashSecret(apiSecret)
+			
+			if subtle.ConstantTimeCompare([]byte(integrator.ApiSecretHash), []byte(hashedProvidedSecret)) != 1 {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+
+			integratorCtx := IntegratorContext{
+				ID:        integrator.ID,
+				Name:      integrator.Name,
+				IsSandbox: integrator.IsSandbox,
+			}
+
+			ctx := context.WithValue(r.Context(), IntegratorContextKey, integratorCtx)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
 
+func GetIntegratorContext(ctx context.Context) IntegratorContext {
+	val, _ := ctx.Value(IntegratorContextKey).(IntegratorContext)
+	return val
+}
+
 func GetIntegratorID(ctx context.Context) uuid.UUID {
-	id, _ := ctx.Value(IntegratorIDKey).(uuid.UUID)
-	return id
+	return GetIntegratorContext(ctx).ID
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/leoemaxie/kobo/internal/api/handlers"
 	"github.com/leoemaxie/kobo/internal/exceptions"
 	"github.com/leoemaxie/kobo/internal/identity"
+	"github.com/leoemaxie/kobo/internal/integrator"
 	"github.com/leoemaxie/kobo/internal/ledger"
 	"github.com/leoemaxie/kobo/internal/platform/config"
 	"github.com/leoemaxie/kobo/internal/platform/db"
@@ -34,15 +35,17 @@ func main() {
 
 	ledgerSvc := ledger.NewService(q)
 	exceptionsSvc := exceptions.NewService(q)
+	integratorSvc := integrator.NewService(q)
 
 	identityHandler := handlers.NewIdentityHandler(identitySvc)
 	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc)
 	exceptionsHandler := handlers.NewExceptionsHandler(exceptionsSvc)
+	adminHandler := handlers.NewAdminHandler(integratorSvc)
 	
 	idemRepo := reconciliation.NewIdempotencyRepository(q)
 	reconEngine := reconciliation.NewEngine(q, idemRepo)
 
-	router := api.NewRouter(q, identityHandler, ledgerHandler, exceptionsHandler, reconEngine, cfg.NombaWebhookSecret)
+	router := api.NewRouter(q, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, reconEngine, cfg.NombaWebhookSecret)
 
 	log.Printf("Starting Kobo server on port %s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {

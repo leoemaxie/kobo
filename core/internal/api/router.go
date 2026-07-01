@@ -8,8 +8,11 @@ import (
 	"github.com/leoemaxie/kobo/internal/reconciliation"
 )
 
-func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
+func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
 	r := chi.NewRouter()
+
+	// Admin routes
+	r.Post("/admin/integrators", adminHandler.ProvisionIntegrator)
 
 	// Protected routes
 	r.Group(func(r chi.Router) {
