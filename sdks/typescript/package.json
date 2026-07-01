@@ -1,0 +1,27 @@
+{
+  "name": "@kobo/sdk",
+  "version": "0.1.0",
+  "description": "Official TypeScript SDK for the Kobo API",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": ["kobo", "fintech", "virtual-account", "nigeria", "payments"],
+  "license": "MIT"
+}
