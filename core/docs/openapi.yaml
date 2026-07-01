@@ -371,10 +371,9 @@ paths:
 components:
   securitySchemes:
     ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: X-Kobo-Api-Key
-      description: Per-integrator API key, identifies the integrator namespace.
+      type: http
+      scheme: basic
+      description: Basic Auth using the unhashed API Key as the username and the raw API Secret as the password.
     HmacSignature:
       type: apiKey
       in: header

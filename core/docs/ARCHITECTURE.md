@@ -20,7 +20,7 @@ conventions for the Kobo Go backend.
 ## Top-level layout
 
 ```
-kobo/
+core/
   cmd/
     api/
       main.go                 # entrypoint: wires config, db, router, starts HTTP server
