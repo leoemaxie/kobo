@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Service healthy.","content":{"application/json":{"schema":{"type":"object","properties":{"status":{"type":"string","const":"ok"},"db":{"type":"string","enum":["ok","degraded"]}}}}}}}}

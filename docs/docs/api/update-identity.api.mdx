@@ -1,0 +1,70 @@
+---
+id: update-identity
+title: "Update display profile fields (rename, contact details)."
+description: "Updates only the display profile layer. Never changes the identity ID and never triggers a new virtual account provisioning. If display_name changes, Kobo re-submits the updated name to Nomba for the linked virtual account and logs an identity event of type 'renamed'."
+sidebar_label: "Update display profile fields (rename, contact details)."
+hide_title: true
+hide_table_of_contents: true
+api: eJztWd1TGzkS/1e69LJQNTYGktzG++QQcvHlY6kAd7cHlGmP2h4tGmkiaQwuyv/7VUszHoNZcpe6l9sKL8yMpFb3r7/b9yLg3IvhhRhLMkEFRV5cZcJW5DAoa8ZSDEVdSQzU7FiKTEjyuVMVbxBDcR6XPVijlxAKAql8pXEJlbMzpQk0Lsn14TMtyEFeoJmTjxtVQxLGbwGNBBN3BKfmc3IeEAzdwkK5UKMGzHNbm8BUF8ora5SZ92E8a6+bGCypJZ/BBzu14Kjn62mpQrovCSIh7gwWPttyijCzLq5qZW5Ibt3HjGk794CmY5gWZALYGYRlRXApHDFNeSn6l0ZkwtHXmnx4Y+VSDO/jq3IkxTC4mjKRWxPIBF7CqtIqj1jv/e4Zz3vh84JK5CemLobCTn+nPGwBPwqgCX0AawhmirSEsvYBpgSVI08m9EUmKsfajJod3otNsDZu8MEpMxeZKJX5SGYeCjHcz0SJd+3bwWCwykRJASWGJ5lDKRVzhvpk40qWeLXKRFBB09paWmP6koASqxXvceQra3zi9GAwiAw/ELk916qSBfxuNDu1XAglRSboLpAzqCeOZuTI5MSYbyKWCR8w8P/cETMwQabUcMMvV48RV/IpnGfWlRjYuWolxerJu5849ggNE2juMFjX8zWLThJ8wKkmWFNpzFv5znh3qD/vs8krB/bWgDLpashrH2xJDsZvd/twbtTXmqAiF3eki/rM6/NGtGpB+ib/H9WM8mWuCeKB6E8bYeEn/9gZ+3BKBNLmfu/j+N3x0W9HH4/7pVy78KzWGoJD46MlQsQiuSSZumRFV2Rk4gXzoBasSq1KFYgNINfWp0V+ip9mqDRJVmtrwa0NnkYhV5m4WeaToMg9JXB7La9P9kWWHg7ah0NxtcpEI+WkkbKjc9EZq6m1Zi4eIviZBb4tOMo+CKisbgOXrbSXAqyDy0aYS5Hw7j/ygeb6ianLKTmRiSmam9bu14v8umXkj44+BcQdllXEb//g8MXLV3/5+fWAwevuePZQCtWf3r3hMw94efbY32xhYCRJbIagvye4R4nKaV2W6Jbiu6PbVlh2UxUcuuWG23T+eUPL3gJ1TcA3ZeAo1M6QBPQ95aN7sZZqRxNH2MSw1hrWEj5tDSe2qnXMcDEX3xZkGs9SfkP7v6RkaCQ5vVRm3uRBcs46yK2kvZK8xzlFbjYC3XNxjANgL6gyesRGPPwPz6y2/atJCi+eygNN3oAkEixQKxnD/v8sITAOnA8TEtsWH9e/GeFOUzQuMS+UoZ4jlPFDh3UGMRpfitZ3J8aGyczWRl6KjL+bKN2kC2vpu6yTaDTZTh2Xop/sOTH/TTbf1yWajruNxQyMDU1SyUDa+Dp1aPICOMAWjc1KCqi0//664JgRWat8f1vln5Tn2MyBrIEERidj9ifYA6/mBkPt6If+/xT6f/GUy3tbu5wiBxGfjG2B37gfYL6DbSqdddz9ycdi31eY/zCNP4dpvH6mK0hlz9HHX0+P37Jx8NP481+bJMidXI4msrluBvvwhWxFBmbK+fDDRv7vbWSViQodlhTI8WjjXqQycY3QmMt6xXxXGIoHekvl3JaG/6hrW13FmrGwMhHLmVokOhR7aj1R2bvvrl5xC0lu0fJWOy2Gogih8sO9PaxU/8ZObT84VZdV4Zc+UOn7gfJib7G/BfyJs7LO48sqe0zMo5FTe9f/b4mepnOwUyoG1fPEpbkFplTgQlmXgTK5rrm3AK/Kpur88NsRcFsDU0eYF+Sjy60tDW5pWlh7A5K0WpBb7gpG0FNeO673GI9RpT7QclQzhhdXmXhfYn7aJnf+tHnilBWV/Gnz3FpvjIRo9MnvU/Qq35L3DX8FPgp1rDC4rPhAS8BmauTZPcoUP3jtlHJHoV2u0Ptb62S040fsrjnByF5rdwWhjA1WY5n/7PG0qtcd3HKwT6Oj3un70cHLV12p07bLzbAJplYuodJ1YquheaZK8gHLCtKlEHuPLFIhCbcqFKlz3EyZLKSPQnJ0jNR92ooQ1gStZnqhQAMvoVSm5iEgOmaIXZck5+PKpVGZI54YcCu+ylIz949kDN+DVjz/DFzrlTQslCRhumy6HGvA1mHKAXJtjzlq7TNYkFMz7tFwjsr4EIHxBTrqtjawxIaFM8KXbtJ33Hadj6dsG9O1rsFkAsrMbBS7CWJxZjk6GYtMcIBIwgz6+/0BW3HTp3bprsdh1LonZpbKzBz64Oo8ojCtleYpYYKgv4VXvHc9V01eW6JBntNWzIjnhJitxwu9p0elvg/dRMqDozkfdNBFQm53c1ILAgRJMkaFbe6r7swyS1nbGl+XbFm5NXls+WI+wxiVfJYSfEkm+HRArydL0fzYJZyt50WqD0cn44espsEzm0FjJVI5yoNmgz2yhklEYHjOpFjJfBU5P4QejLSG0hoK3PFjGYGIbhBdiufYygDHX9iJ9lSi1uyun1E5hNqosJs1DMy0RUYxEV17WiI3Pv0Vfn412Ic9+PLuCA4PD18z5fOzo3UNcDA4eNUbvOodDs72XwwHg+Fg8K9L0dJzbQE9fpsonp+P3y5eQLLOeO0JzpWJ5Q5HPQ957bx1vSl6knBd4Zwu0qer6whz+hTnZ1fX8LUmt4SYfKOm0zC3yRTk4drQXZgkAtewwzMMrgt2+eZjzgdNXbM+GXnYcMKY5CGl5zYeNfPOay6GrtMU/JeNaObBF7bWcqPoSFtTZRJrEILiYQFz3VQ+12l0yAUh5rEgbBw6OsyJxsAFAZwRljEgVNaHEs3GxjTt3vpFJLLpYSf9bJBBcwM0ZdDuloved1Xpj99btn9vafJGoLuwV2lUMcvEaui+qccuRBeFRCaGG8XgVSYK6wPvub9nUz93erXiz9GgUx2yQKfYNmKRIpXnZymGM9T+8QBwU1c7X5rachf+iM025xlOeDE7i6EQmbih5cOidcWj4iYZMhdpw1G6q3fGZDoCW50L14fpxCjPqQrP7t2sa09GZ0fveRjc/JhVxs5FOLzl0hlvE7c2Ch9LsfjtXmg08zq2DyIR5b9/AwneAhg=
+sidebar_class_name: "patch api-method"
+info_path: docs/api/kobo-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Update display profile fields (rename, contact details)."}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"patch"}
+  path={"/identities/{identityId}"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Updates only the display profile layer. Never changes the identity ID and never triggers a new virtual account provisioning. If display_name changes, Kobo re-submits the updated name to Nomba for the linked virtual account and logs an identity event of type "renamed".
+
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails
+  {...require("./update-identity.ParamsDetails.json")}
+>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./update-identity.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./update-identity.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

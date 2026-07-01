@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+  --ifm-font-family-base: 'Inter', sans-serif;
+  --ifm-heading-font-family: 'Outfit', sans-serif;
+
+  --ifm-color-primary: #FACC15; /* Electric Gold */
+  --ifm-color-primary-dark: #EAB308;
+  --ifm-color-primary-darker: #CA8A04;
+  --ifm-color-primary-darkest: #A16207;
+  --ifm-color-primary-light: #FDE047;
+  --ifm-color-primary-lighter: #FEF08A;
+  --ifm-color-primary-lightest: #FEF9C3;
+  
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(250, 204, 21, 0.1);
+  --ifm-background-color: #09090B; /* Dark Onyx */
+  --ifm-navbar-background-color: #0F172A;
+  --ifm-footer-background-color: #0F172A;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #FACC15;
+  --ifm-background-color: #09090B; 
+  --ifm-navbar-background-color: #0F172A;
+  --docusaurus-highlighted-code-line-bg: rgba(250, 204, 21, 0.1);
+}
+
+.navbar__logo {
+  height: 3.5rem; /* Forces the logo to render much larger than the default 2rem */
+  margin-right: 1rem;
+}
