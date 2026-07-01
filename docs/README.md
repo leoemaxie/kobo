@@ -42,3 +42,4 @@ This command generates static content into the `build` directory and can be serv
 - **Theme**: We use a heavily customized dark-mode Docusaurus theme tailored to the Kobo brand (Dark Onyx backgrounds, Electric Gold accents).
 - **Typography**: Uses `Outfit` for headings and `Inter` for body copy via Google Fonts.
 - **OpenAPI**: Powered by `docusaurus-plugin-openapi-docs` to render interactive swagger-like API models natively within MDX.
+`
