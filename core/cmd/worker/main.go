@@ -9,10 +9,13 @@ import (
 	"github.com/leoemaxie/kobo/internal/platform/config"
 	"github.com/leoemaxie/kobo/internal/platform/db"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
+	"github.com/leoemaxie/kobo/internal/platform/telemetry"
 	"github.com/leoemaxie/kobo/internal/reconciliation"
 )
 
 func main() {
+	telemetry.InitLogger()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)

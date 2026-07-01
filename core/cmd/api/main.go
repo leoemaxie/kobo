@@ -16,10 +16,13 @@ import (
 	"github.com/leoemaxie/kobo/internal/platform/config"
 	"github.com/leoemaxie/kobo/internal/platform/db"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
+	"github.com/leoemaxie/kobo/internal/platform/telemetry"
 	"github.com/leoemaxie/kobo/internal/reconciliation"
 )
 
 func main() {
+	telemetry.InitLogger()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
@@ -39,8 +42,11 @@ func main() {
 	nombaClient := nomba.NewClient(cfg.NombaBaseURL, cfg.NombaClientID, cfg.NombaClientSecret, cfg.NombaAccountID, nil)
 	accountSvc := account.NewService(accountRepo, nombaClient)
 
-	ledgerSvc := ledger.NewService(q)
-	exceptionsSvc := exceptions.NewService(q)
+	ledgerRepo := ledger.NewRepository(q)
+	ledgerSvc := ledger.NewService(ledgerRepo)
+	
+	exceptionsRepo := exceptions.NewRepository(q)
+	exceptionsSvc := exceptions.NewService(exceptionsRepo)
 	integratorSvc := integrator.NewService(q)
 
 	identityHandler := handlers.NewIdentityHandler(identitySvc, accountSvc)
