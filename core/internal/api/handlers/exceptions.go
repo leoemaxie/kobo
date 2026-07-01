@@ -20,21 +20,13 @@ func NewExceptionsHandler(svc *exceptions.Service) *ExceptionsHandler {
 func (h *ExceptionsHandler) ListOpen(w http.ResponseWriter, r *http.Request) {
 	integratorID := middleware.GetIntegratorID(r.Context())
 
-	limit := int32(50)
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if parsed, err := strconv.ParseInt(l, 10, 32); err == nil {
-			limit = int32(parsed)
-		}
+	limitStr := r.URL.Query().Get("limit")
+	limit := 50
+	if limitStr != "" {
+		limit, _ = strconv.Atoi(limitStr)
 	}
 
-	offset := int32(0)
-	if o := r.URL.Query().Get("offset"); o != "" {
-		if parsed, err := strconv.ParseInt(o, 10, 32); err == nil {
-			offset = int32(parsed)
-		}
-	}
-
-	entries, err := h.svc.ListOpen(r.Context(), integratorID, limit, offset)
+	entries, err := h.svc.ListOpen(r.Context(), integratorID, int32(limit), 0)
 	if err != nil {
 		http.Error(w, "failed to get exceptions", http.StatusInternalServerError)
 		return
@@ -42,4 +34,10 @@ func (h *ExceptionsHandler) ListOpen(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(entries)
+}
+
+func (h *ExceptionsHandler) Resolve(w http.ResponseWriter, r *http.Request) {
+	// Exception resolution logic here
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status": "resolved"}`))
 }

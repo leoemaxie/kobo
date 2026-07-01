@@ -46,3 +46,8 @@ RETURNING *;
 SELECT * FROM identity_events
 WHERE identity_id = $1
 ORDER BY created_at ASC;
+
+-- name: ListAllIdentitiesByState :many
+SELECT * FROM identities
+WHERE state = $1
+ORDER BY created_at ASC;

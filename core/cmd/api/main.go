@@ -7,10 +7,12 @@ import (
 
 	"github.com/leoemaxie/kobo/internal/api"
 	"github.com/leoemaxie/kobo/internal/api/handlers"
+	"github.com/leoemaxie/kobo/internal/account"
 	"github.com/leoemaxie/kobo/internal/exceptions"
 	"github.com/leoemaxie/kobo/internal/identity"
 	"github.com/leoemaxie/kobo/internal/integrator"
 	"github.com/leoemaxie/kobo/internal/ledger"
+	"github.com/leoemaxie/kobo/internal/nomba"
 	"github.com/leoemaxie/kobo/internal/platform/config"
 	"github.com/leoemaxie/kobo/internal/platform/db"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
@@ -33,11 +35,15 @@ func main() {
 	identityRepo := identity.NewRepository(q)
 	identitySvc := identity.NewService(identityRepo)
 
+	accountRepo := account.NewRepository(q)
+	nombaClient := nomba.NewClient(cfg.NombaBaseURL, cfg.NombaClientID, cfg.NombaClientSecret, cfg.NombaAccountID, nil)
+	accountSvc := account.NewService(accountRepo, nombaClient)
+
 	ledgerSvc := ledger.NewService(q)
 	exceptionsSvc := exceptions.NewService(q)
 	integratorSvc := integrator.NewService(q)
 
-	identityHandler := handlers.NewIdentityHandler(identitySvc)
+	identityHandler := handlers.NewIdentityHandler(identitySvc, accountSvc)
 	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc)
 	exceptionsHandler := handlers.NewExceptionsHandler(exceptionsSvc)
 	adminHandler := handlers.NewAdminHandler(integratorSvc)

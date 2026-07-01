@@ -20,13 +20,22 @@ func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler, ledge
 
 		r.Post("/identities", identityHandler.Create)
 		r.Get("/identities/{id}", identityHandler.Get)
-		r.Get("/identities/{id}/statements", ledgerHandler.GetStatements)
+		r.Patch("/identities/{id}", identityHandler.Update)
+		r.Post("/identities/{id}/close", identityHandler.Close)
+		r.Post("/identities/{id}/reopen", identityHandler.Reopen)
+
+		r.Get("/accounts/{accountId}/transactions", ledgerHandler.GetTransactions)
+		r.Get("/accounts/{accountId}/statement", ledgerHandler.GetStatement)
+
 		r.Get("/exceptions", exceptionsHandler.ListOpen)
+		r.Post("/exceptions/{exceptionId}/resolve", exceptionsHandler.Resolve)
 	})
 
 	// Public Webhooks
 	webhookHandler := handlers.NewWebhookHandler(engine, webhookSecret)
 	r.Post("/webhooks/nomba", webhookHandler.HandleNombaWebhook)
+
+	r.Get("/healthz", handlers.HealthCheck)
 
 	return r
 }

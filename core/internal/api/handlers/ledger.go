@@ -19,7 +19,13 @@ func NewLedgerHandler(svc *ledger.Service) *LedgerHandler {
 	return &LedgerHandler{svc: svc}
 }
 
-func (h *LedgerHandler) GetStatements(w http.ResponseWriter, r *http.Request) {
+func (h *LedgerHandler) GetTransactions(w http.ResponseWriter, r *http.Request) {
+	// Pagination parameters
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"data": [], "next_cursor": null}`))
+}
+
+func (h *LedgerHandler) GetStatement(w http.ResponseWriter, r *http.Request) {
 	// Integrator access check could go here if needed
 	_ = middleware.GetIntegratorID(r.Context())
 

@@ -45,10 +45,15 @@ func main() {
 
 	log.Println("Starting Kobo background worker...")
 
+	closureSweeper := reconciliation.NewClosureSweeper(q)
+	
 	// Initial run
 	go func() {
 		if err := sweeper.RunSweep(ctx); err != nil {
 			log.Printf("Error running sweep: %v", err)
+		}
+		if err := closureSweeper.Run(ctx); err != nil {
+			log.Printf("Error running closure sweep: %v", err)
 		}
 	}()
 
@@ -57,6 +62,9 @@ func main() {
 		case <-sweepTicker.C:
 			if err := sweeper.RunSweep(ctx); err != nil {
 				log.Printf("Error running sweep: %v", err)
+			}
+			if err := closureSweeper.Run(ctx); err != nil {
+				log.Printf("Error running closure sweep: %v", err)
 			}
 		case <-kycTicker.C:
 			// Run KYC check

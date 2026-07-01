@@ -98,12 +98,14 @@ core/
     ARCHITECTURE.md                      # this file
     RECONCILIATION.md                    # detailed write-up of edge cases from the concept note, kept in sync with reconciliation/engine.go
     LIFECYCLE.md                         # state machine diagram + transition table, kept in sync with account/lifecycle.go
+    AUTHENTICATION.md                  # detailed write-up of authentication flows, kept in sync with api/middleware/auth.go
+    NOMBA_INTEGRATION.md               # detailed write-up of nomba integration flows, kept in sync with nomba/client.go
   scripts/
     seed.go                              # seeds a sandbox integrator + test identities for local dev
   Makefile                               # make run, make test, make migrate-up, make sqlc-generate
   go.mod
   go.sum
-  .env.example
+  .env.sample
   README.md
 ```
 

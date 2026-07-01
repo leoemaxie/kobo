@@ -34,6 +34,7 @@ type Querier interface {
 	ListActiveVirtualAccounts(ctx context.Context) ([]VirtualAccount, error)
 	ListExceptionsByStatus(ctx context.Context, arg ListExceptionsByStatusParams) ([]Exception, error)
 	ListIdentitiesByState(ctx context.Context, arg ListIdentitiesByStateParams) ([]Identity, error)
+	ListAllIdentitiesByState(ctx context.Context, state string) ([]Identity, error)
 	ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]IdentityEvent, error)
 	ListLedgerEntriesByAccount(ctx context.Context, arg ListLedgerEntriesByAccountParams) ([]LedgerEntry, error)
 	ListLedgerEntriesByIdentityAndPeriod(ctx context.Context, arg ListLedgerEntriesByIdentityAndPeriodParams) ([]LedgerEntry, error)

@@ -218,3 +218,46 @@ func (s *Service) Reopen(ctx context.Context, identityID, integratorID uuid.UUID
 
 	return nil
 }
+
+func (s *Service) Close(ctx context.Context, identityID, integratorID uuid.UUID, reason string, sweepDestination []byte) error {
+	ident, err := s.repo.GetIdentityByID(ctx, sqlc.GetIdentityByIDParams{
+		ID:           identityID,
+		IntegratorID: integratorID,
+	})
+	if err != nil {
+		return fmt.Errorf("identity not found: %w", err)
+	}
+
+	newState, err := ValidTransition(State(ident.State), EventCloseInitiated)
+	if err != nil {
+		return fmt.Errorf("invalid state transition: %w", err)
+	}
+
+	// Move to CLOSING
+	_, err = s.repo.UpdateIdentityState(ctx, sqlc.UpdateIdentityStateParams{
+		ID:            identityID,
+		IntegratorID:  integratorID,
+		State:         string(newState),
+		FailureReason: pgtype.Text{Valid: false},
+	})
+	if err != nil {
+		return fmt.Errorf("failed to update identity state: %w", err)
+	}
+	
+	if len(sweepDestination) == 0 {
+		sweepDestination = []byte(`{}`)
+	}
+
+	detail := fmt.Sprintf(`{"reason": "%s", "sweep_destination": %s}`, reason, string(sweepDestination))
+
+	_, _ = s.repo.InsertIdentityEvent(ctx, sqlc.InsertIdentityEventParams{
+		ID:            uuid.New(),
+		IdentityID:    identityID,
+		EventType:     "closing_started",
+		PreviousState: pgtype.Text{String: ident.State, Valid: true},
+		NewState:      pgtype.Text{String: string(newState), Valid: true},
+		Detail:        []byte(detail),
+	})
+
+	return nil
+}
