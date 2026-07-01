@@ -1,0 +1,12 @@
+.git
+.github
+.vscode
+.idea
+.env
+.env.*
+node_modules/
+vendor/
+**/*.md
+**/*_test.go
+coverage.out
+docs/
