@@ -12,10 +12,10 @@ type IdempotencyRepository interface {
 }
 
 type sqlcIdempotencyRepository struct {
-	q *sqlc.Queries
+	q sqlc.Querier
 }
 
-func NewIdempotencyRepository(q *sqlc.Queries) IdempotencyRepository {
+func NewIdempotencyRepository(q sqlc.Querier) IdempotencyRepository {
 	return &sqlcIdempotencyRepository{q: q}
 }
 

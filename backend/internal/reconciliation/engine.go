@@ -17,11 +17,11 @@ type Engine interface {
 }
 
 type engine struct {
-	q      *sqlc.Queries
+	q      sqlc.Querier
 	idemRepo IdempotencyRepository
 }
 
-func NewEngine(q *sqlc.Queries, idemRepo IdempotencyRepository) Engine {
+func NewEngine(q sqlc.Querier, idemRepo IdempotencyRepository) Engine {
 	return &engine{q: q, idemRepo: idemRepo}
 }
 

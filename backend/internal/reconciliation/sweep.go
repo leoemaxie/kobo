@@ -18,12 +18,12 @@ type Sweeper interface {
 }
 
 type sweeper struct {
-	q        *sqlc.Queries
+	q        sqlc.Querier
 	idemRepo IdempotencyRepository
 	client   *nomba.Client
 }
 
-func NewSweeper(q *sqlc.Queries, idemRepo IdempotencyRepository, client *nomba.Client) Sweeper {
+func NewSweeper(q sqlc.Querier, idemRepo IdempotencyRepository, client *nomba.Client) Sweeper {
 	return &sweeper{q: q, idemRepo: idemRepo, client: client}
 }
 
