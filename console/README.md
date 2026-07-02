@@ -1,42 +1,61 @@
-# sv
+# Kobo Console
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+The **Kobo Console** is a fullstack SvelteKit application that allows integrators to manage their Kobo accounts, API credentials, billing, and sandbox environments. It serves as the developer portal for interacting with the Kobo infrastructure.
 
-## Creating a project
+## 🏗 Architecture & Stack
 
-If you're seeing this, you've probably already done this step. Congrats!
+This application is structurally independent of the Kobo Core Go API and has its own isolated domain, authentication flow, and database schema, enforcing a strict zero-trust boundary.
 
-```sh
-# create a new project
-npx sv create my-app
-```
+- **Framework**: SvelteKit (Fullstack mode)
+- **Styling**: Tailwind CSS v4 (using the dark "ClickHouse" aesthetic with `Void Black` backgrounds and `Electric Lime` accents)
+- **Database**: PostgreSQL
+- **ORM**: Drizzle ORM
+- **Authentication**: Custom session-based auth (httpOnly cookies) using Argon2 for password hashing
+- **Deployment**: Vercel / Fly.io
 
-To recreate this project with the same configuration:
+*For a detailed architectural breakdown, see [CONSOLE_ARCHITECTURE](docs/CONSOLE_ARCHITECTURE.md).*
 
-```sh
-# recreate this project
-npx sv@0.16.1 create --template minimal --types ts --no-install tmp_sv
-```
+## 🚀 Getting Started
 
-## Developing
+### Prerequisites
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- [Node.js](https://nodejs.org/en) (v18+)
+- [pnpm](https://pnpm.io/)
+- PostgreSQL instance running locally or remotely
 
-```sh
-npm run dev
+### Installation
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+1. Install dependencies:
+   ```bash
+   pnpm install
+   ```
 
-## Building
+2. Set up your environment variables by copying `.env.example` to `.env` (if applicable) and configuring your PostgreSQL connection string:
+   ```bash
+   DATABASE_URL="postgres://user:password@localhost:5432/kobo"
+   ```
 
-To create a production version of your app:
+3. Generate the SvelteKit types:
+   ```bash
+   pnpm svelte-kit sync
+   ```
 
-```sh
-npm run build
-```
+4. Start the development server:
+   ```bash
+   pnpm run dev
+   ```
 
-You can preview the production build with `npm run preview`.
+Navigate to `http://localhost:5173` to view the application. The application will automatically redirect unauthenticated users to the `/login` route.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## 🛡️ Superadmin Oversight
+
+The console comes with built-in capabilities to monitor and manage integrators, grant production access, suspend fraudulent accounts, and issue manual billing adjustments. All privileged actions are permanently recorded in the immutable `admin_audit_log` table.
+
+Superadmins can access these features at the `/admin` route.
+
+## 📁 Key Directories
+
+- `src/routes/`: SvelteKit file-based routing. Includes `/(app)`, `/login`, `/admin`, etc.
+- `src/lib/components/`: Reusable Tailwind v4 UI components (Cards, Buttons, Inputs, Navbars).
+- `src/lib/server/`: Server-only code, including Drizzle ORM database schemas (`db/schema.ts`) and session utilities (`auth/session.ts`).
+- `static/`: Static assets like the Kobo logo, favicon, and the web app manifest.
