@@ -1,0 +1,75 @@
+.features {
+  padding: 80px 0;
+  background-color: var(--color-void-black, #151515);
+}
+
+.sectionEyebrow {
+  color: var(--ifm-color-primary, #FACC15);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.featureCard {
+  padding: 24px 32px;
+  background-color: var(--color-carbon, #1f1f1c);
+  border-radius: 8px;
+  border: 1px solid var(--color-iron, #3a3a3a);
+  height: 100%;
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 4px 4px 0px, rgba(0, 0, 0, 0.14) 0px 4px 25px 0px inset;
+  display: flex;
+  flex-direction: column;
+}
+
+.featureIconWrapper {
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--color-iron, #3a3a3a);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.featureIconWrapper svg {
+  width: 24px;
+  height: 24px;
+  color: var(--ifm-color-primary, #FACC15);
+  stroke: var(--ifm-color-primary, #FACC15);
+  stroke-width: 2;
+  fill: none;
+}
+
+.featureTitle {
+  color: var(--color-pure-white, #ffffff);
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.featureDescription {
+  color: var(--color-bone, #dfdfdf);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+.featureLink {
+  color: var(--ifm-color-primary, #FACC15);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.featureLink:hover {
+  opacity: 0.8;
+}

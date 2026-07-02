@@ -1,0 +1,68 @@
+---
+id: create-identity
+title: "Register a new identity and provision its virtual account."
+description: "Creates an Identity record in PENDING state and asynchronously provisions a Nomba virtual account against it. The response returns immediately with the identity in PENDING state; integrators should either poll GET /identities/{id} or listen for the `identity.activated` webhook to know when the account is ready."
+sidebar_label: "Register a new identity and provision its virtual account."
+hide_title: true
+hide_table_of_contents: true
+api: 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
+sidebar_class_name: "post api-method"
+info_path: docs/api/kobo-api
+custom_edit_url: null
+---
+
+import MethodEndpoint from "@theme/ApiExplorer/MethodEndpoint";
+import ParamsDetails from "@theme/ParamsDetails";
+import RequestSchema from "@theme/RequestSchema";
+import StatusCodes from "@theme/StatusCodes";
+import OperationTabs from "@theme/OperationTabs";
+import TabItem from "@theme/TabItem";
+import Heading from "@theme/Heading";
+import Translate from "@docusaurus/Translate";
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Register a new identity and provision its virtual account."}
+>
+</Heading>
+
+<MethodEndpoint
+  method={"post"}
+  path={"/identities"}
+  context={"endpoint"}
+>
+  
+</MethodEndpoint>
+
+
+
+Creates an Identity record in PENDING state and asynchronously provisions a Nomba virtual account against it. The response returns immediately with the identity in PENDING state; integrators should either poll GET /identities/\{id\} or listen for the `identity.activated` webhook to know when the account is ready.
+
+
+<Heading
+  id={"request"}
+  as={"h2"}
+  className={"openapi-tabs__heading"}
+>
+  <Translate id="theme.openapi.request.title">Request</Translate>
+</Heading>
+
+<ParamsDetails>
+  
+</ParamsDetails>
+
+<RequestSchema
+  {...require("./create-identity.RequestSchema.json")}
+>
+  
+</RequestSchema>
+
+<StatusCodes
+  {...require("./create-identity.StatusCodes.json")}
+>
+  
+</StatusCodes>
+
+
+      

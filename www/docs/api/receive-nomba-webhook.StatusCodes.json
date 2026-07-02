@@ -1,0 +1,1 @@
+{"responses":{"200":{"description":"Event accepted (processed or deduplicated)."},"400":{"description":"Malformed payload."},"401":{"description":"Invalid or missing Nomba signature."}}}

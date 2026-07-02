@@ -1,0 +1,143 @@
+---
+id: kobo-api
+title: "Kobo API"
+description: "Kobo provisions and manages persistent, identity-linked virtual accounts. Integrators register identities, receive a dedicated virtual account per identity, and consume reconciled transactions, statements, and lifecycle events through this API. Integrators never call Nomba directly."
+sidebar_label: Introduction
+sidebar_position: 0
+hide_title: true
+custom_edit_url: null
+---
+
+import ApiLogo from "@theme/ApiLogo";
+import Heading from "@theme/Heading";
+import SchemaTabs from "@theme/SchemaTabs";
+import TabItem from "@theme/TabItem";
+import Export from "@theme/ApiExplorer/Export";
+
+<span
+  className={"theme-doc-version-badge badge badge--secondary"}
+  children={"Version: 0.1.0"}
+>
+</span>
+
+<Heading
+  as={"h1"}
+  className={"openapi__heading"}
+  children={"Kobo API"}
+>
+</Heading>
+
+
+
+Kobo provisions and manages persistent, identity-linked virtual accounts. Integrators register identities, receive a dedicated virtual account per identity, and consume reconciled transactions, statements, and lifecycle events through this API. Integrators never call Nomba directly.
+Conventions for implementers: - All monetary amounts are integers in kobo (the smallest Naira unit), never floats. - All timestamps are ISO 8601 / RFC 3339 in UTC, e.g. "2026-06-30T14:00:00Z". - All resource IDs are UUIDv4 strings. - Pagination uses cursor-based `page[cursor]` and `page[limit]` query params, response includes `next_cursor` (nullable). - Every error response uses the shared Error schema with a stable `code` field; integrators should branch on `code`, not on the human-readable `message`.
+
+
+<div
+  style={{"marginBottom":"2rem"}}
+>
+  <Heading
+    id={"authentication"}
+    as={"h2"}
+    className={"openapi-tabs__heading"}
+    children={"Authentication"}
+  >
+  </Heading><SchemaTabs
+    className={"openapi-tabs__security-schemes"}
+  >
+    <TabItem
+      label={"HTTP: Basic Auth"}
+      value={"ApiKeyAuth"}
+    >
+      
+      
+      Basic Auth using API Key as the username and API Secret as the password.
+      
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                Security Scheme Type:
+              </th><td>
+                http
+              </td>
+            </tr><tr>
+              <th>
+                HTTP Authorization Scheme:
+              </th><td>
+                basic
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </TabItem><TabItem
+      label={"API Key: HmacSignature"}
+      value={"HmacSignature"}
+    >
+      
+      
+      HMAC-SHA256 signature of the request body plus the X-Kobo-Timestamp header value, signed with the integrator's API secret. Requests with a timestamp older than 5 minutes are rejected to prevent replay.
+      
+      
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                Security Scheme Type:
+              </th><td>
+                apiKey
+              </td>
+            </tr><tr>
+              <th>
+                Header parameter name:
+              </th><td>
+                X-Kobo-Signature
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </TabItem><TabItem
+      label={"API Key: NombaWebhookSignature"}
+      value={"NombaWebhookSignature"}
+    >
+      
+      
+      Signature provided by Nomba on outbound webhook calls, verified against the shared webhook secret.
+      
+      <div>
+        <table>
+          <tbody>
+            <tr>
+              <th>
+                Security Scheme Type:
+              </th><td>
+                apiKey
+              </td>
+            </tr><tr>
+              <th>
+                Header parameter name:
+              </th><td>
+                X-Nomba-Signature
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </TabItem>
+  </SchemaTabs>
+</div><div
+  style={{"display":"flex","flexDirection":"column","marginBottom":"var(--ifm-paragraph-margin-bottom)"}}
+>
+  <h3
+    style={{"marginBottom":"0.25rem"}}
+  >
+    Contact
+  </h3><span>
+    Kobo Platform Team: 
+  </span>
+</div>
+      
