@@ -1,7 +1,7 @@
-import type { Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { validateSession } from '$lib/server/auth/session';
 
-const PUBLIC_ROUTES = ['/login', '/signup', '/verify-email'];
+const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/verify-email', '/auth/forgot-password', '/auth/reset-password'];
 const SUPERADMIN_PREFIX = '/admin';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -16,17 +16,17 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   // If not public route and not logged in, redirect to login
   if (!isPublic && !event.locals.user) {
-    return Response.redirect(new URL('/login', event.url), 302);
+    redirect(302, '/auth/login');
   }
 
   // If logged in but email not verified, restrict access to verify-email only
   if (
     event.locals.user &&
     !event.locals.user.emailVerifiedAt &&
-    path !== '/verify-email' &&
+    path !== '/auth/verify-email' &&
     !isPublic
   ) {
-    return Response.redirect(new URL('/verify-email', event.url), 302);
+    redirect(302, '/auth/verify-email');
   }
 
   // Superadmin guard

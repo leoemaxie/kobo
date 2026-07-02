@@ -1,7 +1,7 @@
 <script lang="ts">
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  import { Mail } from 'lucide-svelte';
+  import { Mail } from '@lucide/svelte';
 </script>
 
 <div class="w-full text-center">

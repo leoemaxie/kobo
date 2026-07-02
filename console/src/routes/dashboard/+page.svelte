@@ -1,7 +1,7 @@
 <script lang="ts">
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  import { Activity, Users, CreditCard, ArrowRight } from 'lucide-svelte';
+  import { Activity, Users, CreditCard, ArrowRight } from '@lucide/svelte';
 </script>
 
 <div class="space-y-8">

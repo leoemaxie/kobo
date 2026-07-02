@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { Shield, CreditCard, LayoutDashboard, Database, Key } from '@lucide/svelte';
+  import { CreditCard, LayoutDashboard, Key } from '@lucide/svelte';
 
   let currentEnv = $state('sandbox');
 
@@ -24,18 +24,17 @@
             <LayoutDashboard size={16} /> Dashboard
           </a>
           <a href="/api-keys" 
-             class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page.url.pathname === '/api-keys' ? 'bg-carbon text-pure-white border border-iron' : 'text-smoke hover:bg-carbon hover:text-bone'}">
+             class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page.url.pathname === '/dashboard/api-keys' ? 'bg-carbon text-pure-white border border-iron' : 'text-smoke hover:bg-carbon hover:text-bone'}">
             <Key size={16} /> API Keys
           </a>
           <a href="/billing" 
-             class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page.url.pathname === '/billing' ? 'bg-carbon text-pure-white border border-iron' : 'text-smoke hover:bg-carbon hover:text-bone'}">
+             class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page.url.pathname === '/dashboard/billing' ? 'bg-carbon text-pure-white border border-iron' : 'text-smoke hover:bg-carbon hover:text-bone'}">
             <CreditCard size={16} /> Billing
           </a>
         </div>
       </div>
 
       <div class="flex items-center gap-4">
-        <!-- Clerk-like environment switcher -->
         <button 
           onclick={toggleEnv}
           class="flex items-center gap-2 rounded-radius-full border border-iron bg-carbon px-3 py-1 text-xs font-semibold uppercase tracking-widest transition-all hover:bg-graphite"

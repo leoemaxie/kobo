@@ -5,7 +5,7 @@
   
   let { children } = $props();
 
-  let isAuthRoute = $derived(['/login', '/signup', '/verify-email'].includes(page.url.pathname));
+  let isAuthRoute = $derived(['/auth/login', '/auth/signup', '/auth/verify-email', '/auth/forgot-password', '/auth/reset-password'].includes(page.url.pathname));
 </script>
 
 <div class="min-h-screen flex flex-col bg-void-black">
