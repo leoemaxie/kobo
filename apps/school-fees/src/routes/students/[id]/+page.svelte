@@ -1,26 +1,6 @@
 <script lang="ts">
-  import { page } from '$app/state';
-
-  // Mock data for a single student fetched from Kobo API (via server route)
-  const student = {
-    id: page.url.pathname.split('/').pop(),
-    name: 'Alex Johnson',
-    class: 'Grade 10',
-    virtualAccount: {
-      accountName: 'Triumph Academy - Alex Johnson',
-      accountNumber: '9938472615',
-      bankName: 'Kobo Demo Bank',
-    },
-    statement: {
-      balance: '150000',
-      currency: 'NGN',
-    },
-    transactions: [
-      { id: 'tx_1', date: '2026-06-15T10:30:00Z', amount: '+50000', description: 'Term 2 Part Payment', status: 'successful' },
-      { id: 'tx_2', date: '2026-04-01T08:15:00Z', amount: '+100000', description: 'Term 1 Full Payment', status: 'successful' },
-      { id: 'tx_3', date: '2026-03-25T14:20:00Z', amount: '+20000', description: 'Uniform Fee', status: 'successful' }
-    ]
-  };
+  let { data } = $props();
+  let student = $derived(data.student);
 
   function formatCurrency(amount: string) {
     const num = parseInt(amount.replace(/[^0-9]/g, ''));

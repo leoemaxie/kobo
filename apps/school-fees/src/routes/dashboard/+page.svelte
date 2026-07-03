@@ -1,9 +1,6 @@
 <script lang="ts">
-  // Mock data representing parent's students
-  const students = [
-    { id: '1', name: 'Alex Johnson', class: 'Grade 10', balance: '₦ 150,000' },
-    { id: '2', name: 'Sam Johnson', class: 'Grade 8', balance: '₦ 125,000' }
-  ];
+  let { data } = $props();
+  let students = $derived(data.students);
 </script>
 
 <div class="space-y-8 w-full">

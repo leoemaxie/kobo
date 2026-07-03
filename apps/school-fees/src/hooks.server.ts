@@ -1,25 +1,42 @@
-import type { Handle } from '@sveltejs/kit';
-import { validateSession } from '$lib/server/auth/session';
-
-const PUBLIC_ROUTES = ['/login', '/signup'];
+import { validateSessionToken } from '$lib/server/auth';
+import { redirect, type Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const sessionId = event.cookies.get('session');
-  const result = sessionId ? await validateSession(sessionId) : null;
+    const sessionToken = event.cookies.get('session');
+    
+    if (!sessionToken) {
+        event.locals.user = null;
+        event.locals.session = null;
+    } else {
+        const { session, user } = await validateSessionToken(sessionToken);
+        if (session) {
+            event.locals.user = user;
+            event.locals.session = session;
+        } else {
+            event.locals.user = null;
+            event.locals.session = null;
+            event.cookies.delete('session', { path: '/' });
+        }
+    }
 
-  event.locals.user = result?.parents ?? null;
-  event.locals.session = result?.sessions ?? null;
+    const isPublic = ['/login', '/signup'].includes(event.url.pathname);
 
-  const path = event.url.pathname;
-  const isPublic = PUBLIC_ROUTES.some((p) => path.startsWith(p));
+    // If root, redirect to dashboard or login
+    if (event.url.pathname === '/') {
+        if (event.locals.user) {
+            throw redirect(302, '/dashboard');
+        } else {
+            throw redirect(302, '/login');
+        }
+    }
 
-  if (!isPublic && !event.locals.user) {
-    return Response.redirect(new URL('/login', event.url), 302);
-  }
+    if (!isPublic && !event.locals.user) {
+        throw redirect(302, '/login');
+    }
 
-  if (path.startsWith('/admin') && !event.locals.user?.isAdmin) {
-    return new Response('Not found', { status: 404 });
-  }
+    if (isPublic && event.locals.user) {
+        throw redirect(302, '/dashboard');
+    }
 
-  return resolve(event);
+    return resolve(event);
 };

@@ -1,29 +1,10 @@
 <script lang="ts">
-  let name = $state('');
-  let className = $state('');
+  import { enhance } from '$app/forms';
+
+  let { data, form } = $props();
+  let students = $derived(data.students);
+
   let isSubmitting = $state(false);
-  let showSuccess = $state(false);
-
-  // Mock list of registered students
-  const students = [
-    { id: '1', name: 'Alex Johnson', class: 'Grade 10', date: 'Oct 1, 2025', status: 'active' },
-    { id: '2', name: 'Sam Johnson', class: 'Grade 8', date: 'Oct 1, 2025', status: 'active' },
-    { id: '3', name: 'Emma Davis', class: 'Grade 12', date: 'Sep 15, 2025', status: 'active' }
-  ];
-
-  function handleSubmit(e: Event) {
-    e.preventDefault();
-    isSubmitting = true;
-    
-    // Simulate API call to Kobo POST /v1/identities
-    setTimeout(() => {
-      isSubmitting = false;
-      showSuccess = true;
-      name = '';
-      className = '';
-      setTimeout(() => showSuccess = false, 3000);
-    }, 800);
-  }
 </script>
 
 <div class="space-y-10 w-full">
@@ -44,19 +25,30 @@
         <h2 class="text-lg font-semibold text-pure-white mb-4">Register Student</h2>
         <p class="text-xs text-smoke mb-6">Creates a Kobo Identity and provisions a virtual account.</p>
         
-        {#if showSuccess}
+        {#if form?.success}
           <div class="bg-dark-olive/20 border border-electric-lime/50 text-electric-lime text-sm p-4 rounded-lg mb-6 shadow-sm">
             Student registered successfully! Kobo Identity created.
           </div>
         {/if}
+        {#if form?.error}
+          <div class="bg-danger/10 border border-danger/50 text-danger text-sm p-4 rounded-lg mb-6 shadow-sm">
+            {form.error}
+          </div>
+        {/if}
 
-        <form class="space-y-4" onsubmit={handleSubmit}>
+        <form method="POST" action="?/register" class="space-y-4" use:enhance={() => {
+          isSubmitting = true;
+          return async ({ update }) => {
+            await update();
+            isSubmitting = false;
+          };
+        }}>
           <div class="space-y-1.5">
             <label for="studentName" class="block text-xs font-semibold text-smoke uppercase tracking-widest">Student Name</label>
             <input
               id="studentName"
+              name="name"
               type="text"
-              bind:value={name}
               required
               placeholder="e.g. John Smith"
               class="block w-full rounded-lg border border-iron bg-void-black px-4 py-2.5 text-sm text-paper placeholder-fog focus:border-electric-lime focus:outline-none focus:ring-1 focus:ring-electric-lime transition-colors"
@@ -67,8 +59,8 @@
             <label for="className" class="block text-xs font-semibold text-smoke uppercase tracking-widest">Class / Grade</label>
             <input
               id="className"
+              name="className"
               type="text"
-              bind:value={className}
               required
               placeholder="e.g. Grade 10"
               class="block w-full rounded-lg border border-iron bg-void-black px-4 py-2.5 text-sm text-paper placeholder-fog focus:border-electric-lime focus:outline-none focus:ring-1 focus:ring-electric-lime transition-colors"
@@ -109,9 +101,12 @@
                   <td class="px-6 py-4 text-sm text-smoke whitespace-nowrap">{student.class}</td>
                   <td class="px-6 py-4 text-sm text-smoke whitespace-nowrap">{student.date}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-right">
-                    <button class="text-xs font-semibold text-danger border border-danger/30 hover:bg-danger/10 px-3 py-1.5 rounded transition-colors">
-                      Close Account
-                    </button>
+                    <form method="POST" action="?/closeAccount" use:enhance>
+                      <input type="hidden" name="studentId" value={student.id} />
+                      <button type="submit" class="text-xs font-semibold text-danger border border-danger/30 hover:bg-danger/10 px-3 py-1.5 rounded transition-colors">
+                        Close Account
+                      </button>
+                    </form>
                   </td>
                 </tr>
               {/each}
