@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-electric-lime: #ccff00;
+  --color-lime-glow: #b3e600;
+  --color-void-black: #080808;
+  --color-carbon: #151515;
+  --color-graphite: #222222;
+  --color-iron: #333333;
+  --color-smoke: #888888;
+  --color-fog: #aaaaaa;
+  --color-bone: #cccccc;
+  --color-paper: #eeeeee;
+  --color-pure-white: #ffffff;
+  --color-danger: #ff3333;
+  --color-success: #00cc66;
+  --font-inter: 'Inter', sans-serif;
+  --font-basier: 'Basier Circle', sans-serif;
+}
+
+body {
+  @apply bg-void-black text-paper font-inter antialiased selection:bg-electric-lime selection:text-void-black;
+}
