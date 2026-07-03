@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { page } from '$app/state';
+  import { page, navigating } from '$app/state';
   import '../app.css';
   import Header from '$lib/components/layout/Header.svelte';
   import Sidebar from '$lib/components/layout/Sidebar.svelte';
+  import PageSkeleton from '$lib/components/layout/PageSkeleton.svelte';
 
   let { data, children } = $props();
 
@@ -23,7 +24,11 @@
     <div style="display:flex; flex-direction:column; flex:1; min-width:0; overflow:hidden;">
       <Header />
       <main style="flex:1; overflow-y:auto; padding: 2rem 3rem 4rem;">
-        {@render children()}
+        {#if navigating}
+          <PageSkeleton />
+        {:else}
+          {@render children()}
+        {/if}
       </main>
     </div>
   </div>
