@@ -1,9 +1,9 @@
 <script lang="ts">
   import { MoreVertical, Circle } from '@lucide/svelte';
-  const endpoints = [
-    { url: 'https://api.myapp.com/webhooks/kobo', status: 'active', events: ['payment.success', 'payment.failed'], secret: 'whsec_****8f9a' },
-    { url: 'https://api.myapp.com/webhooks/kobo/refunds', status: 'disabled', events: ['refund.created'], secret: 'whsec_****2b1c' }
-  ];
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const state = useConsoleState();
+  const endpoints = $derived(state.webhooks);
 </script>
 
 <div style="background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 8px; overflow: hidden;">

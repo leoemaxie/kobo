@@ -1,6 +1,10 @@
 <script lang="ts">
   import Card from '$lib/components/ui/Card.svelte';
   import { Search, Filter } from '@lucide/svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const state = useConsoleState();
+  const logs = $derived(state.adminAuditLogs);
 
   let searchQuery = $state('');
 </script>
@@ -42,11 +46,7 @@
         </tr>
       </thead>
       <tbody class="bg-void-black divide-y divide-iron text-sm text-paper">
-        {#each [
-          { time: '2026-10-01 14:32:01 UTC', actor: 'leo@kobo.dev', action: 'production_access_granted', target: 'EduPay Global', detail: '{"reason": "KYC passed"}' },
-          { time: '2026-10-01 10:15:44 UTC', actor: 'admin@kobo.dev', action: 'integrator_suspended', target: 'Fraudsters Inc', detail: '{"reason": "TOS violation"}' },
-          { time: '2026-09-28 09:00:12 UTC', actor: 'leo@kobo.dev', action: 'billing_adjustment_applied', target: 'Triumph Systems', detail: '{"credit_kobo": 500000, "reason": "SLA breach"}' }
-        ] as log}
+        {#each logs as log}
           <tr class="hover:bg-graphite/50 transition-colors">
             <td class="px-6 py-4 whitespace-nowrap text-smoke font-mono text-xs">{log.time}</td>
             <td class="px-6 py-4 whitespace-nowrap font-medium">{log.actor}</td>

@@ -1,10 +1,9 @@
 <script lang="ts">
   import { MoreVertical } from '@lucide/svelte';
-  const members = [
-    { email: 'admin@kobo.inc', role: 'Owner', status: 'Active', mfa: true },
-    { email: 'developer@kobo.inc', role: 'Admin', status: 'Active', mfa: true },
-    { email: 'finance@kobo.inc', role: 'Viewer', status: 'Pending', mfa: false }
-  ];
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const state = useConsoleState();
+  const members = $derived(state.teamMembers);
 </script>
 
 <div style="background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 8px; overflow: hidden;">

@@ -1,12 +1,9 @@
 <script lang="ts">
   import { ArrowUpRight } from '@lucide/svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
 
-  const rates = [
-    { key: 'virtual_account',  unit: '₦50',   label: 'per account provisioned' },
-    { key: 'transaction',      unit: '₦2',    label: 'per transaction processed' },
-    { key: 'webhook_delivery', unit: '₦0.50', label: 'per webhook delivery' },
-    { key: 'base_fee',         unit: '₦0',    label: 'monthly base fee' },
-  ];
+  const state = useConsoleState();
+  const rates = $derived(state.billingOverview?.planDetails || []);
 </script>
 
 <div style="background: #0a0a0a; padding: 24px; border-left: 1px solid #1e1e1e;">

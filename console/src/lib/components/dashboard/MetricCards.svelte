@@ -1,44 +1,9 @@
 <script lang="ts">
   import { ArrowUpRight, ArrowDownRight, Minus } from '@lucide/svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
 
-  const metrics = [
-    {
-      key: 'api_requests',
-      label: 'API Requests',
-      value: '1,248',
-      delta: '+12.5%',
-      sub: 'Last 30 days',
-      trend: 'up',
-      bar: 65,
-    },
-    {
-      key: 'virtual_accounts',
-      label: 'Virtual Accounts',
-      value: '342',
-      delta: '+4',
-      sub: '500 limit (sandbox)',
-      trend: 'up',
-      bar: 68,
-    },
-    {
-      key: 'error_rate',
-      label: 'Error Rate',
-      value: '0.8%',
-      delta: '−0.2pp',
-      sub: 'vs. prior period',
-      trend: 'down',
-      bar: 8,
-    },
-    {
-      key: 'p99_latency',
-      label: 'p99 Latency',
-      value: '142ms',
-      delta: '~',
-      sub: 'stable this week',
-      trend: 'neutral',
-      bar: 28,
-    },
-  ];
+  const state = useConsoleState();
+  const metrics = $derived(state.metrics);
 </script>
 
 <div style="

@@ -1,17 +1,11 @@
 <script lang="ts">
   import { Eye, EyeOff, Copy, RefreshCw, Plus } from '@lucide/svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const state = useConsoleState();
+  const keys = $derived(state.apiKeys);
 
   let keyRevealed = $state(false);
-
-  const keys = [
-    {
-      name: 'Default Sandbox Key',
-      id: 'kobo_sandbox_a1b2c3d4',
-      secret: 'sk_test_51Nx4mBLKjE8z9Qw',
-      created: '2025-10-12',
-      lastUsed: '2h ago',
-    },
-  ];
 
   const cols = ['NAME', 'KEY ID', 'SECRET KEY', 'LAST USED', 'CREATED', ''];
 </script>

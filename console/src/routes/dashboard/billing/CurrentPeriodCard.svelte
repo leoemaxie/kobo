@@ -1,22 +1,22 @@
 <script lang="ts">
-  const usageItems = [
-    { key: 'accounts_provisioned', label: 'Virtual Accounts',  calc: '152 × ₦50',    amount: '₦7,600',  pct: 45 },
-    { key: 'transaction_fees',     label: 'Transaction Fees',  calc: '3,325 × ₦2',   amount: '₦6,650',  pct: 35 },
-    { key: 'webhook_calls',        label: 'Webhook Deliveries', calc: '8,210 × ₦0.5', amount: '₦4,105',  pct: 20 },
-  ];
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const state = useConsoleState();
+  const usageItems = $derived(state.billingOverview?.usageItems || []);
+
 </script>
 
 <div style="background: #0a0a0a; padding: 24px;">
   <p style="
     font-size: 11px; font-weight: 700; text-transform: uppercase;
     letter-spacing: 0.1em; color: #444; margin: 0 0 16px;
-  ">Current Period · Oct 1 – Oct 31, 2026</p>
+  ">Current Period · {state.billingOverview?.period}</p>
 
   <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 20px;">
     <span style="
       font-family: 'JetBrains Mono', monospace; font-size: 34px;
       font-weight: 700; color: #F8F8F8; letter-spacing: -1px;
-    ">₦16,355</span>
+    ">{state.billingOverview?.accrued}</span>
     <span style="font-family: monospace; font-size: 13px; color: #555;">accrued</span>
   </div>
 

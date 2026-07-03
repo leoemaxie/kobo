@@ -2,6 +2,9 @@
   import CurrentPeriodCard from './CurrentPeriodCard.svelte';
   import PlanDetailsCard from './PlanDetailsCard.svelte';
   import InvoiceHistory from './InvoiceHistory.svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const state = useConsoleState();
 </script>
 
 <div style="display: flex; flex-direction: column; gap: 28px;">
@@ -21,10 +24,10 @@
           font-family: monospace; font-size: 13px; color: #C8C8C8;
           background: #111; border: 1px solid #2a2a2a;
           border-radius: 4px; padding: 2px 8px;
-        ">pay_as_you_go</code>
+        ">{state.billingOverview?.plan || 'pay_as_you_go'}</code>
         <span style="font-size: 11px; color: #444;">·</span>
         <span style="font-family: monospace; font-size: 13px; color: #555;">
-          next_invoice: <span style="color: #C8C8C8;">2026-11-01</span>
+          next_invoice: <span style="color: #C8C8C8;">{state.billingOverview?.nextInvoiceDate || '2026-11-01'}</span>
         </span>
       </div>
     </div>

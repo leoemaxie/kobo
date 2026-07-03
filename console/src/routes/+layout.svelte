@@ -4,8 +4,16 @@
   import Header from '$lib/components/layout/Header.svelte';
   import Sidebar from '$lib/components/layout/Sidebar.svelte';
   import PageSkeleton from '$lib/components/layout/PageSkeleton.svelte';
+  import { initConsoleState } from '$lib/state/console.svelte';
 
   let { data, children } = $props();
+
+  const consoleState = initConsoleState();
+
+  $effect(() => {
+    // This deep-updates all the $state runes inside the class whenever the SvelteKit loader data updates
+    consoleState.hydrate(data);
+  });
 
   let isAuthRoute = $derived(
     [

@@ -1,6 +1,9 @@
 <script lang="ts">
   import { BookOpen, ArrowUpRight, Terminal } from '@lucide/svelte';
   import {PUBLIC_DOCS_URL} from '$env/static/public';
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const state = useConsoleState();
 </script>
 
 <div class="flex items-start justify-between gap-6 pb-8 border-b border-iron">
@@ -25,7 +28,7 @@
       <code style="
         font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #C8C8C8;
         background: #111; border: 1px solid #2a2a2a; border-radius: 4px; padding: 2px 7px;
-      ">proj_sandbox_a4b9c12f</code>
+      ">{state.user?.integratorId?.split('-')[0] || 'proj_sandbox_a4b9c12f'}</code>
     </div>
   </div>
 

@@ -2,6 +2,10 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import { Search, Ban, CheckCircle, MoreHorizontal } from '@lucide/svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const state = useConsoleState();
+  const integrators = $derived(state.adminIntegrators);
 
   let searchQuery = $state('');
 </script>
@@ -34,11 +38,7 @@
         </tr>
       </thead>
       <tbody class="bg-void-black divide-y divide-iron">
-        {#each [
-          { name: 'Triumph Systems', email: 'dev@triumphsystems.tech', status: 'active', prodAccess: true, joined: 'Aug 12, 2026' },
-          { name: 'EduPay Global', email: 'hello@edupay.example.com', status: 'active', prodAccess: false, joined: 'Sep 01, 2026' },
-          { name: 'Fraudsters Inc', email: 'test@fraud.example.com', status: 'suspended', prodAccess: false, joined: 'Sep 05, 2026' }
-        ] as integrator}
+        {#each integrators as integrator}
           <tr class="hover:bg-graphite/50 transition-colors">
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex flex-col">

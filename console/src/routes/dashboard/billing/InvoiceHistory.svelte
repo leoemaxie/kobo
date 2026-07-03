@@ -1,11 +1,9 @@
 <script lang="ts">
   import { Download } from '@lucide/svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
 
-  const invoices = [
-    { id: 'inv_2026_09', date: '2026-09-01', period: 'Sep 2026', amount: '₦32,400', status: 'paid' },
-    { id: 'inv_2026_08', date: '2026-08-01', period: 'Aug 2026', amount: '₦28,150', status: 'paid' },
-    { id: 'inv_2026_07', date: '2026-07-01', period: 'Jul 2026', amount: '₦24,900', status: 'paid' },
-  ];
+  const state = useConsoleState();
+  const invoices = $derived(state.billingInvoices);
 
   const cols = ['INVOICE ID', 'PERIOD', 'AMOUNT', 'STATUS', 'DATE', ''];
 </script>
