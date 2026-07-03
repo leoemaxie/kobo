@@ -12,6 +12,8 @@ import {
 
 export const consoleSchema = pgSchema('console');
 
+export const webhookStatusEnum = consoleSchema.enum('webhook_status', ['active', 'disabled']);
+
 export const environmentEnum = consoleSchema.enum('environment', ['sandbox', 'production']);
 export const integratorStatusEnum = consoleSchema.enum('integrator_status', [
   'active',
@@ -117,6 +119,17 @@ export const billingRecords = consoleSchema.table(
     ),
   })
 );
+
+export const webhooks = consoleSchema.table('webhooks', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
+  environment: environmentEnum('environment').notNull(),
+  url: text('url').notNull(),
+  secret: text('secret').notNull(),
+  status: webhookStatusEnum('status').notNull().default('active'),
+  events: jsonb('events').notNull().default([]),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
 
 export const adminActionEnum = consoleSchema.enum('admin_action', [
   'integrator_suspended',

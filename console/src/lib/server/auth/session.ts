@@ -1,4 +1,3 @@
-import { randomBytes } from 'node:crypto';
 import { db } from '$lib/server/db';
 import { sessions, users } from '$lib/server/db/schema';
 import { eq, and, isNull, gt } from 'drizzle-orm';
@@ -6,7 +5,9 @@ import { eq, and, isNull, gt } from 'drizzle-orm';
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 export function generateSessionId(): string {
-  return randomBytes(32).toString('base64url');
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 export async function createSession(userId: string) {
