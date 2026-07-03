@@ -23,29 +23,25 @@ This application is structurally independent of the Kobo Core Go API and has its
 - [pnpm](https://pnpm.io/)
 - PostgreSQL instance running locally or remotely
 
-### Installation
+### Installation & Running
 
-1. Install dependencies:
+1. **Install dependencies**:
    ```bash
    pnpm install
    ```
 
-2. Set up your environment variables by copying `.env.example` to `.env` (if applicable) and configuring your PostgreSQL connection string:
+2. **Configure environment**:
+   Copy `.env.example` to `.env` and configure your credentials:
    ```bash
-   DATABASE_URL="postgres://user:password@localhost:5432/kobo"
+   cp .env.example .env
    ```
+   *(Ensure `DATABASE_URL` points to your Postgres instance and `UNSEND_API_KEY` is provided for emails).*
 
-3. Generate the SvelteKit types:
-   ```bash
-   pnpm svelte-kit sync
-   ```
-
-4. Start the development server:
+3. **Start the development server**:
    ```bash
    pnpm run dev
    ```
-
-Navigate to `http://localhost:5173` to view the application. The application will automatically redirect unauthenticated users to the `/login` route.
+   Navigate to `http://localhost:3000`. Unauthenticated users will automatically be redirected to `/auth/login`.
 
 ## 🛡️ Superadmin Oversight
 

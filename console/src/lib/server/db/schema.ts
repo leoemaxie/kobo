@@ -23,6 +23,7 @@ export const integratorStatusEnum = consoleSchema.enum('integrator_status', [
 export const apiIntegrators = consoleSchema.table('api_integrators', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
+  plan: text('plan').notNull().default('pay_as_you_go'),
   status: integratorStatusEnum('status').notNull().default('active'),
   productionAccessGranted: boolean('production_access_granted').notNull().default(false),
   productionAccessGrantedAt: timestamp('production_access_granted_at', { withTimezone: true }),
@@ -106,6 +107,7 @@ export const billingRecords = consoleSchema.table(
     period: text('period').notNull(),
     accountsProvisioned: bigint('accounts_provisioned', { mode: 'number' }).notNull().default(0),
     transactionsProcessed: bigint('transactions_processed', { mode: 'number' }).notNull().default(0),
+    webhookDeliveries: bigint('webhook_deliveries', { mode: 'number' }).notNull().default(0),
     amountDueKobo: bigint('amount_due_kobo', { mode: 'number' }).notNull().default(0),
     adjustmentKobo: bigint('adjustment_kobo', { mode: 'number' }).notNull().default(0),
     adjustmentReason: text('adjustment_reason'),
