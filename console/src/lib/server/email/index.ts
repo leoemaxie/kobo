@@ -1,7 +1,15 @@
 import { sendEmail } from './unsend';
-import { verificationEmailTemplate, keyRotationAlertTemplate, billingNoticeTemplate } from './templates';
+import { verificationEmailTemplate, keyRotationAlertTemplate, billingNoticeTemplate, passwordResetTemplate } from './templates';
 
 export const EmailService = {
+	async sendPasswordResetEmail(to: string, token: string, baseUrl?: string) {
+		return sendEmail({
+			to,
+			subject: 'Reset your Kobo Console password',
+			html: passwordResetTemplate(token, baseUrl)
+		});
+	},
+
 	async sendVerificationEmail(to: string, token: string, baseUrl?: string) {
 		return sendEmail({
 			to,

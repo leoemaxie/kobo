@@ -98,6 +98,14 @@ export const emailVerificationTokens = consoleSchema.table('email_verification_t
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const passwordResetTokens = consoleSchema.table('password_reset_tokens', {
+  id: text('id').primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  usedAt: timestamp('used_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const billingRecords = consoleSchema.table(
   'billing_records',
   {

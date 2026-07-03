@@ -56,3 +56,24 @@ export function billingNoticeTemplate(period: string, amount: string, invoiceUrl
 		</div>
 	`;
 }
+
+export function passwordResetTemplate(token: string, baseUrl: string = 'https://console.kobo.dev'): string {
+	const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
+	return `
+		<div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #080808; border: 1px solid #eee; border-radius: 8px;">
+			<h1 style="font-size: 20px; font-weight: 700; margin-top: 0;">Reset Your Password</h1>
+			<p style="font-size: 15px; color: #555; line-height: 1.6;">
+				We received a request to reset the password for your Kobo Console account.
+			</p>
+			<div style="margin: 32px 0 16px 0;">
+				<a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #080808; color: #C0FF00; text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 13px;">
+					Reset Password
+				</a>
+			</div>
+			<p style="font-size: 13px; color: #888; margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee;">
+				If you did not request this password reset, please ignore this email or contact support if you have concerns.
+			</p>
+		</div>
+	`;
+}
+

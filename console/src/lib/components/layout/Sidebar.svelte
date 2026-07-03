@@ -130,5 +130,21 @@
     ">
       <LifeBuoy size={15} color="#555" /> Support
     </a>
+    <div style="height: 1px; background: #1e1e1e; margin: 8px 6px;"></div>
+    <form method="POST" action="/auth/logout">
+      <button type="submit" style="
+        display: flex; align-items: center; gap: 10px; padding: 7px 10px;
+        border-radius: 8px; text-decoration: none; font-size: 13px; width: 100%;
+        font-weight: 500; color: #f87171; border: 1px solid transparent; background: transparent; cursor: pointer; text-align: left;
+      "
+      onmouseenter={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(248,113,113,0.1)'}
+      onmouseleave={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}
+      >
+        <span style="display: flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid #f87171; position: relative;">
+          <span style="position: absolute; width: 6px; height: 1.5px; background: #f87171; right: -2px;"></span>
+        </span>
+        Logout
+      </button>
+    </form>
   </div>
 </aside>
