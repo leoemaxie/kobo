@@ -1,11 +1,11 @@
+import type { PageServerLoad, Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { students } from '$lib/server/db/schema';
-import crypto from 'crypto';
 import { koboFetch } from '$lib/server/kobo-client';
 import { eq } from 'drizzle-orm';
 
-export const load = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals }) => {
     if (!locals.user || !locals.user.isAdmin) {
         throw redirect(302, '/dashboard');
     }
@@ -23,7 +23,7 @@ export const load = async ({ locals }) => {
     };
 };
 
-export const actions = {
+export const actions: Actions = {
     register: async ({ request, locals }) => {
         if (!locals.user || !locals.user.isAdmin) {
             return fail(403, { error: 'Unauthorized' });
@@ -37,7 +37,7 @@ export const actions = {
             return fail(400, { error: 'Missing fields' });
         }
 
-        const id = crypto.randomUUID();
+        const id = globalThis.crypto.randomUUID();
 
         try {
             const koboResponse = await koboFetch('/identities', {

@@ -1,10 +1,11 @@
+import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { students, parentStudents } from '$lib/server/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { koboFetch } from '$lib/server/kobo-client';
 
-export const load = async ({ params, locals }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
     if (!locals.user) {
         throw redirect(302, '/login');
     }

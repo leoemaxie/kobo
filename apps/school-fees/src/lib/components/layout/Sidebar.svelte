@@ -3,10 +3,11 @@
   import { LayoutDashboard, Users, LogOut, GraduationCap, X } from '@lucide/svelte';
   import { ui } from '$lib/state.svelte';
   
-  const navItems = [
-    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Admin Console', href: '/admin/students', icon: Users },
-  ];
+  let navItems = $derived(
+    page.data.user?.isAdmin
+      ? [{ label: 'Admin Console', href: '/admin/students', icon: Users }]
+      : [{ label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }]
+  );
 </script>
 
 <!-- Mobile overlay -->

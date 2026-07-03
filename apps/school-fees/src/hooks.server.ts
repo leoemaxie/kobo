@@ -21,10 +21,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     const isPublic = ['/login', '/signup'].includes(event.url.pathname);
 
-    // If root, redirect to dashboard or login
+    // If root, redirect based on role or to login
     if (event.url.pathname === '/') {
         if (event.locals.user) {
-            throw redirect(302, '/dashboard');
+            throw redirect(302, event.locals.user.isAdmin ? '/admin/students' : '/dashboard');
         } else {
             throw redirect(302, '/login');
         }
@@ -35,7 +35,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     }
 
     if (isPublic && event.locals.user) {
-        throw redirect(302, '/dashboard');
+        throw redirect(302, event.locals.user.isAdmin ? '/admin/students' : '/dashboard');
     }
 
     return resolve(event);

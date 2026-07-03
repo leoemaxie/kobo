@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { env } from '$env/dynamic/private';
 
 export async function koboFetch(endpoint: string, options: RequestInit = {}) {
@@ -11,9 +10,21 @@ export async function koboFetch(endpoint: string, options: RequestInit = {}) {
     
     // Create signature payload: timestamp + "." + body
     const payload = `${timestamp}.${bodyString}`;
-    const hmac = crypto.createHmac('sha256', apiSecret);
-    hmac.update(payload);
-    const signature = hmac.digest('hex');
+    
+    // Generate HMAC SHA-256 signature using Web Crypto API
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+        'raw', 
+        encoder.encode(apiSecret), 
+        { name: 'HMAC', hash: 'SHA-256' }, 
+        false, 
+        ['sign']
+    );
+    
+    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+    const signature = Array.from(new Uint8Array(signatureBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
 
     const headers = {
         'Content-Type': 'application/json',

@@ -1,42 +1,53 @@
-# sv
+# Triumph Academy - Kobo Reference Application
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+This is the "School Fees" reference implementation for Kobo, demonstrating how a third-party integrator can use the Kobo API to build financial infrastructure into their own product. 
 
-## Creating a project
+This application simulates a school management system (Triumph Academy) where:
+1. **Admins** can register students (provisioning a Kobo Identity and Virtual Account) and close accounts.
+2. **Parents** can log in, view their linked students' account statements, and see live transaction history powered by Kobo.
 
-If you're seeing this, you've probably already done this step. Congrats!
+> **Note:** This is an isolated, standalone SvelteKit application. It maintains its own local database (`parents`, `students`) and only communicates with Kobo over the public HTTP API, exactly as an external developer would.
 
-```sh
-# create a new project
-npx sv create my-app
+## 🚀 Setup & Installation
+
+### Prerequisites
+- Node.js & pnpm
+- A running PostgreSQL instance
+- Kobo Core running locally (or API access to a hosted instance)
+
+### 1. Install Dependencies
+```bash
+pnpm install
 ```
 
-To recreate this project with the same configuration:
+### 2. Environment Variables
+Copy the `.env.example` file to `.env`:
+```bash
+cp .env.example .env
+```
+Fill in the credentials:
+- `DATABASE_URL`: Your local Postgres connection string (e.g., `postgres://user:pass@localhost:5432/school_fees`).
+- `KOBO_API_KEY`: A valid Secret Key generated from the Kobo Console.
+- `KOBO_API_SECRET`: The API Secret used to sign HMAC requests.
+- `KOBO_API_URL`: The base URL of the Kobo API (e.g., `http://localhost:8080/v1`).
 
-```sh
-# recreate this project
-npx sv@0.16.1 create --template minimal --types ts --no-install school-fees
+### 3. Database Setup
+We use Drizzle ORM to manage the local schema. Push the schema to your database:
+```bash
+pnpm drizzle-kit push
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+### 4. Run the Development Server
+```bash
+pnpm run dev
 ```
+Navigate to `http://localhost:5173`. 
+You can create a new Parent account by clicking "Sign up" on the login page.
+> **Admin Access:** If you sign up with an email ending in `@triumph.edu`, you will automatically be granted Admin access to the school dashboard to register new students.
 
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## 🏗 Architecture & Design
+- **Framework:** SvelteKit 2 + Svelte 5
+- **Styling:** Tailwind CSS v4 using Kobo's established dark-mode brand guidelines.
+- **Data Layer:** Drizzle ORM + Postgres for local state (user auth, student mappings).
+- **API Integration:** All Kobo API calls are strictly executed server-side (`/src/lib/server/kobo-client.ts`), ensuring credentials are never exposed to the browser. It implements standard Kobo HMAC signature requirements.
+- **Deployment:** Pre-configured with `@sveltejs/adapter-vercel` for seamless Vercel deployment.
