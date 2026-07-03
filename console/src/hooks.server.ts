@@ -14,9 +14,14 @@ export const handle: Handle = async ({ event, resolve }) => {
   const path = event.url.pathname;
   const isPublic = PUBLIC_ROUTES.some((p) => path.startsWith(p));
 
+  // If the route doesn't exist (404), let SvelteKit handle it naturally
+  if (event.route.id === null) {
+    return resolve(event);
+  }
+
   // If not public route and not logged in, redirect to login
   if (!isPublic && !event.locals.user) {
-    redirect(302, '/auth/login');
+    throw redirect(302, '/auth/login');
   }
 
   // If logged in but email not verified, restrict access to verify-email only
@@ -26,7 +31,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     path !== '/auth/verify-email' &&
     !isPublic
   ) {
-    redirect(302, '/auth/verify-email');
+    throw redirect(302, '/auth/verify-email');
   }
 
   // Superadmin guard
