@@ -1,98 +1,43 @@
 <script lang="ts">
-  import Card from '$lib/components/ui/Card.svelte';
-  import Button from '$lib/components/ui/Button.svelte';
-  import { Key, Eye, Copy, RefreshCw, Plus } from 'lucide-svelte';
-
-  let keyRevealed = $state(false);
-  
-  function toggleReveal() {
-    keyRevealed = !keyRevealed;
-  }
+  import { Plus } from '@lucide/svelte';
+  import StandardKeysTable from './StandardKeysTable.svelte';
+  import RestrictedKeysSection from './RestrictedKeysSection.svelte';
 </script>
 
-<div class="space-y-8">
-  <div class="flex items-center justify-between">
+<div style="display: flex; flex-direction: column; gap: 28px;">
+  <!-- Page bar -->
+  <div style="
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 20px; border-bottom: 1px solid #1e1e1e;
+  ">
     <div>
-      <h1 class="text-3xl font-inter font-bold text-pure-white mb-2 tracking-tight">API Keys</h1>
-      <p class="text-bone">Manage your sandbox and production API credentials.</p>
+      <p style="
+        font-size: 12px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.1em; color: #555; margin: 0 0 6px;
+      ">API Keys</p>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="
+          font-family: monospace; font-size: 13px; color: #555;
+        ">environment:</span>
+        <code style="
+          font-family: monospace; font-size: 11px;
+          background: rgba(192,255,0,0.08); border: 1px solid rgba(192,255,0,0.2);
+          border-radius: 4px; padding: 2px 8px; color: #C0FF00; letter-spacing: 0.05em;
+        ">sandbox</code>
+        <span style="font-size: 11px; color: #444;">·</span>
+        <span style="font-size: 13px; color: #555;">Toggle in header to switch to production</span>
+      </div>
     </div>
+    <button style="
+      display: flex; align-items: center; gap: 6px;
+      border: 1px solid #C0FF00; border-radius: 6px;
+      background: #C0FF00; padding: 6px 12px;
+      font-size: 13px; font-weight: 700; color: #080808; cursor: pointer;
+    ">
+      <Plus size={13} /> Create Key
+    </button>
   </div>
 
-  <div class="bg-carbon border-l-4 border-electric-lime p-4 rounded-r-radius-md mb-8">
-    <div class="flex">
-      <div class="flex-shrink-0">
-        <Key class="h-5 w-5 text-electric-lime" />
-      </div>
-      <div class="ml-3">
-        <p class="text-sm text-paper">
-          You are currently viewing <strong class="text-pure-white font-semibold">Sandbox</strong> keys. 
-          Toggle the environment switcher in the navbar to view production keys.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <Card class="p-0 overflow-hidden">
-    <div class="p-6 border-b border-iron flex items-center justify-between">
-      <div>
-        <h2 class="text-lg font-basier font-semibold text-pure-white">Standard Keys</h2>
-        <p class="text-sm text-smoke mt-1">These keys will allow you to authenticate API requests.</p>
-      </div>
-      <Button variant="ghost" class="gap-2 text-sm px-4 py-2">
-        <Plus size={16} /> Create secret key
-      </Button>
-    </div>
-    
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-iron">
-        <thead class="bg-carbon">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-smoke uppercase">Name</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-smoke uppercase">Key ID</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-smoke uppercase">Secret Key</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-smoke uppercase">Created</th>
-            <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
-          </tr>
-        </thead>
-        <tbody class="bg-void-black divide-y divide-iron">
-          <tr class="hover:bg-graphite/50 transition-colors">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-paper">Default Sandbox Key</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-smoke font-mono">kobo_sandbox_a1b2c3d4</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-smoke font-mono flex items-center gap-2">
-              {#if keyRevealed}
-                <span class="text-paper">sk_test_51Nx...8z9Qw</span>
-              {:else}
-                <span class="text-smoke">••••••••••••••••••••••••</span>
-              {/if}
-              <button onclick={toggleReveal} class="text-smoke hover:text-electric-lime transition-colors ml-2" aria-label="Toggle reveal key">
-                <Eye size={14} />
-              </button>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-smoke">Oct 12, 2025</td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-3">
-              <button class="text-smoke hover:text-electric-lime transition-colors flex items-center gap-1" title="Copy key">
-                <Copy size={16} /> <span class="sr-only">Copy</span>
-              </button>
-              <button class="text-smoke hover:text-electric-lime transition-colors flex items-center gap-1" title="Roll key">
-                <RefreshCw size={16} /> <span class="sr-only">Roll</span>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </Card>
-
-  <Card class="bg-graphite/30 border-dashed border-2">
-    <div class="text-center py-6">
-      <Key class="mx-auto h-12 w-12 text-smoke mb-3 opacity-50" />
-      <h3 class="text-lg font-basier font-semibold text-paper">Restricted Keys</h3>
-      <p class="mt-2 text-sm text-smoke max-w-lg mx-auto">
-        Create API keys with limited permissions and restricted IP addresses to enhance security for specific integrations.
-      </p>
-      <div class="mt-6">
-        <Button variant="ghost">Create restricted key</Button>
-      </div>
-    </div>
-  </Card>
+  <StandardKeysTable />
+  <RestrictedKeysSection />
 </div>

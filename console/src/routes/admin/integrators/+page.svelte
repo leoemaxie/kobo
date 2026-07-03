@@ -1,7 +1,7 @@
 <script lang="ts">
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  import { Search, Ban, CheckCircle, MoreHorizontal } from 'lucide-svelte';
+  import { Search, Ban, CheckCircle, MoreHorizontal } from '@lucide/svelte';
 
   let searchQuery = $state('');
 </script>
