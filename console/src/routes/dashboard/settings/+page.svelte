@@ -70,8 +70,10 @@
           <h4 style="font-size: 13px; font-weight: 600; color: #F8F8F8; margin: 0 0 4px;">Delete Workspace</h4>
           <p style="font-size: 12px; color: #888; margin: 0;">Permanently remove this workspace and all associated data.</p>
         </div>
-        <form method="POST" action="?/deleteWorkspace">
-          <button type="submit" class="delete-btn" onclick="return confirm('Are you sure? This action cannot be undone and will delete all API Keys, Webhooks, and Billing records.')">
+        <form method="POST" action="?/deleteWorkspace" use:enhance={({ cancel }) => {
+          if (!confirm('Are you sure? This action cannot be undone and will delete all API Keys, Webhooks, and Billing records.')) cancel();
+        }}>
+          <button type="submit" class="delete-btn">
             <AlertTriangle size={13} /> Delete Workspace
           </button>
         </form>

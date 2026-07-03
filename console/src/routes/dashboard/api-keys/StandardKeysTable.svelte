@@ -2,8 +2,8 @@
   import { Eye, EyeOff, Copy, RefreshCw, Plus } from '@lucide/svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
 
-  const state = useConsoleState();
-  const keys = $derived(state.apiKeys);
+  const consoleState = useConsoleState();
+  const keys = $derived(consoleState.apiKeys);
 
   let keyRevealed = $state(false);
 

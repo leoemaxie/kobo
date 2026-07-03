@@ -4,8 +4,8 @@
   import { Search, Ban, CheckCircle, MoreHorizontal } from '@lucide/svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
 
-  const state = useConsoleState();
-  const integrators = $derived(state.adminIntegrators);
+  const consoleState = useConsoleState();
+  const integrators = $derived(consoleState.adminIntegrators);
 
   let searchQuery = $state('');
 </script>

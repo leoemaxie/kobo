@@ -2,8 +2,8 @@
   import { ChevronRight, ExternalLink } from '@lucide/svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
 
-  const state = useConsoleState();
-  const logs = $derived(state.logs);
+  const consoleState = useConsoleState();
+  const logs = $derived(consoleState.logs);
 
   const methodColor: Record<string, string> = {
     GET:    '#888',
@@ -49,7 +49,7 @@
     </div>
 
     {#each logs as log}
-      <div style="
+      <div role="row" style="
         display: grid; grid-template-columns: 60px 1fr 60px 70px 80px 32px;
         padding: 10px 16px; border-bottom: 1px solid #111;
         align-items: center; cursor: pointer; transition: background 0.1s;

@@ -2,8 +2,8 @@
   import { Download } from '@lucide/svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
 
-  const state = useConsoleState();
-  const invoices = $derived(state.billingInvoices);
+  const consoleState = useConsoleState();
+  const invoices = $derived(consoleState.billingInvoices);
 
   const cols = ['INVOICE ID', 'PERIOD', 'AMOUNT', 'STATUS', 'DATE', ''];
 </script>
@@ -28,7 +28,7 @@
     </div>
 
     {#each invoices as inv}
-      <div style="
+      <div role="row" style="
         display: grid; grid-template-columns: 1.4fr 1fr 1fr 80px 100px 40px;
         padding: 11px 16px; align-items: center; border-bottom: 1px solid #111;
         transition: background 0.1s;

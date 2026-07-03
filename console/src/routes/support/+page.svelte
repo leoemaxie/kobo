@@ -36,12 +36,12 @@
       </div>
       <div style="padding: 20px; display: grid; gap: 16px; max-width: 600px;">
         <div>
-          <label style="display: block; font-size: 12px; font-weight: 600; color: #888; margin-bottom: 6px;">Subject</label>
-          <input type="text" placeholder="How can we help?" class="support-input" />
+          <label for="subject" style="display: block; font-size: 12px; font-weight: 600; color: #888; margin-bottom: 6px;">Subject</label>
+          <input id="subject" type="text" placeholder="How can we help?" class="support-input" />
         </div>
         <div>
-          <label style="display: block; font-size: 12px; font-weight: 600; color: #888; margin-bottom: 6px;">Message</label>
-          <textarea rows="4" placeholder="Provide details about your issue..." class="support-input"></textarea>
+          <label for="message" style="display: block; font-size: 12px; font-weight: 600; color: #888; margin-bottom: 6px;">Message</label>
+          <textarea id="message" rows="4" placeholder="Provide details about your issue..." class="support-input"></textarea>
         </div>
         <div>
           <button style="display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #C0FF00; border-radius: 6px; background: #C0FF00; padding: 8px 16px; font-size: 13px; font-weight: 700; color: #080808; cursor: pointer; width: fit-content;">

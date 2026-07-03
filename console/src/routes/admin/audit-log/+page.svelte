@@ -3,8 +3,8 @@
   import { Search, Filter } from '@lucide/svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
 
-  const state = useConsoleState();
-  const logs = $derived(state.adminAuditLogs);
+  const consoleState = useConsoleState();
+  const logs = $derived(consoleState.adminAuditLogs);
 
   let searchQuery = $state('');
 </script>
