@@ -1,12 +1,12 @@
 <script lang="ts">
   let { children, variant = 'primary', class: className = '', ...rest } = $props();
 
-  const baseStyles = 'inline-flex items-center justify-center rounded-radius-buttons px-6 py-3 font-inter text-base font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-void-black';
+  const baseStyles = 'inline-flex items-center justify-center rounded-radius-buttons px-6 py-3 font-inter text-base font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background';
   
   const variants = {
-    primary: 'bg-electric-lime text-void-black shadow-md hover:bg-lime-glow hover:-translate-y-0.5 active:translate-y-0 focus:ring-electric-lime',
-    ghost: 'bg-transparent border border-iron text-paper hover:bg-carbon hover:text-pure-white focus:ring-iron',
-    pill: 'rounded-radius-pills bg-dark-olive text-electric-lime px-3 py-1.5 text-sm hover:bg-[#5c5f00]',
+    primary: 'bg-primary text-primary-text shadow-md hover:opacity-90 hover:-translate-y-0.5 active:translate-y-0 focus:ring-primary',
+    ghost: 'bg-transparent border border-border text-main hover:bg-element hover:text-main focus:ring-border',
+    pill: 'rounded-radius-pills bg-element text-primary px-3 py-1.5 text-sm hover:opacity-90',
   };
 </script>
 
