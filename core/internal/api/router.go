@@ -1,20 +1,43 @@
 package api
 
 import (
+	"encoding/json"
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/leoemaxie/kobo"
+	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/handlers"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 	"github.com/leoemaxie/kobo/internal/reconciliation"
+	"gopkg.in/yaml.v3"
 )
 
 func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
 	r := chi.NewRouter()
 
+	r.NotFound(func(w http.ResponseWriter, req *http.Request) {
+		apierrors.WriteError(w, http.StatusNotFound, "not_found", "The requested resource was not found")
+	})
+
+	r.MethodNotAllowed(func(w http.ResponseWriter, req *http.Request) {
+		apierrors.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "The requested method is not allowed for this resource")
+	})
+
+	var openapiDoc map[string]interface{}
+	_ = yaml.Unmarshal(kobo.OpenAPI, &openapiDoc)
+	openapiJSON, _ := json.Marshal(openapiDoc)
+
 	r.Get("/healthz", handlers.HealthCheck)
 
 	r.Route("/v1", func(r chi.Router) {
+		r.Get("/", func(w http.ResponseWriter, req *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(openapiJSON)
+		})
+
 		// Admin routes
 		r.Post("/admin/integrators", adminHandler.ProvisionIntegrator)
 
