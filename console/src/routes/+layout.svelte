@@ -27,7 +27,7 @@
 </script>
 
 {#if !isAuthRoute}
-  <div style="display:flex; height:100vh; width:100vw; overflow:hidden; background:#080808;">
+  <div style="display:flex; height:100vh; width:100vw; overflow:hidden; background:var(--bg-app);">
     <Sidebar />
     <div style="display:flex; flex-direction:column; flex:1; min-width:0; overflow:hidden;">
       <Header />
@@ -41,7 +41,7 @@
     </div>
   </div>
 {:else}
-  <div class="min-h-screen flex flex-col bg-void-black">
+  <div class="min-h-screen flex flex-col">
     <main class="flex-grow flex flex-col items-center justify-center p-4">
       <div class="w-full max-w-md">
         {@render children()}

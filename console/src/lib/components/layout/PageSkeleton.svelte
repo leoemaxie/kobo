@@ -4,7 +4,7 @@
 
 <div style="display: flex; flex-direction: column; gap: 28px;">
   <!-- Header Skeleton -->
-  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #1e1e1e; padding-bottom: 32px;">
+  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 32px;">
     <div style="display: flex; flex-direction: column; gap: 12px;">
       <Skeleton style="height: 24px; width: 140px;" />
       <Skeleton style="height: 16px; width: 250px;" />

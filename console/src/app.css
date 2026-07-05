@@ -74,6 +74,45 @@
   --shadow-sm: rgba(0, 0, 0, 0.06) 0px 4px 4px 0px, rgba(0, 0, 0, 0.14) 0px 4px 25px 0px inset;
 }
 
+:root {
+  --bg-app: #fbfbfb;
+  --bg-sidebar: #f4f4f5;
+  --bg-header: rgba(255, 255, 255, 0.85);
+  --border-color: #e4e4e7;
+  --border-subtle: #f4f4f5;
+  --border-focus: #C0FF00;
+  --text-main: #09090b;
+  --text-muted: #52525b;
+  --text-subtle: #a1a1aa;
+  --bg-element: #ffffff;
+  --bg-element-hover: #f4f4f5;
+  --bg-active: #e4e4e7;
+  --accent: #C0FF00;
+  --accent-text: #080808;
+  --shadow-color: rgba(0,0,0,0.05);
+}
+
+:root[data-theme='dark'] {
+  --bg-app: #080808;
+  --bg-sidebar: #0a0a0a;
+  --bg-header: rgba(8, 8, 8, 0.85);
+  --border-color: #2a2a2a;
+  --border-subtle: #1e1e1e;
+  --border-focus: #C0FF00;
+  --text-main: #F8F8F8;
+  --text-muted: #888888;
+  --text-subtle: #666666;
+  --bg-element: #111111;
+  --bg-element-hover: #151515;
+  --bg-active: #1c1c1c;
+  --accent: #C0FF00;
+  --accent-text: #080808;
+  --shadow-color: rgba(0,0,0,0.5);
+}
+
 body {
-  @apply bg-void-black text-paper font-inter antialiased min-h-screen;
+  @apply font-inter antialiased min-h-screen;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }

@@ -1,11 +1,23 @@
 <script lang="ts">
-  import { Search, Bell, Slash } from '@lucide/svelte';
+  import { Search, Bell, Slash, Moon, Sun } from '@lucide/svelte';
   import { page } from '$app/state';
+  import { onMount } from 'svelte';
 
   let currentEnv = $state('sandbox');
+  let currentTheme = $state('dark');
+
+  onMount(() => {
+    currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  });
 
   function toggleEnv() {
     currentEnv = currentEnv === 'sandbox' ? 'production' : 'sandbox';
+  }
+
+  function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    localStorage.setItem('theme', currentTheme);
   }
 
   let breadcrumb = $derived(() => {
@@ -21,23 +33,23 @@
 </script>
 
 <header style="
-  height: 64px; border-bottom: 1px solid #1e1e1e;
-  background: rgba(8,8,8,0.85); backdrop-filter: blur(12px);
+  height: 64px; border-bottom: 1px solid var(--border-color);
+  background: var(--bg-header); backdrop-filter: blur(12px);
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 28px; flex-shrink: 0; position: sticky; top: 0; z-index: 40;
 ">
   <!-- Breadcrumb -->
-  <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #666;">
+  <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted);">
     <div style="
-      height: 22px; width: 22px; border-radius: 5px; background: #1c1c1c;
-      border: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 800; color: #F8F8F8;
+      height: 22px; width: 22px; border-radius: 5px; background: var(--bg-active);
+      border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 800; color: var(--text-main);
     ">K</div>
-    <span style="color: #666; padding: 2px 6px; border-radius: 5px;">Kobo Inc.</span>
-    <span style="color: #333; font-size: 16px; font-weight: 300; margin: 0 2px;">/</span>
+    <span style="color: var(--text-muted); padding: 2px 6px; border-radius: 5px;">Kobo Inc.</span>
+    <span style="color: var(--text-subtle); font-size: 16px; font-weight: 300; margin: 0 2px;">/</span>
     <span style="
-      color: #F8F8F8; font-weight: 600; padding: 2px 8px; 
-      background: #1c1c1c; border-radius: 5px; border: 1px solid #2a2a2a;
+      color: var(--text-main); font-weight: 600; padding: 2px 8px; 
+      background: var(--bg-active); border-radius: 5px; border: 1px solid var(--border-color);
     ">{breadcrumb()}</span>
   </div>
 
@@ -45,60 +57,84 @@
   <div style="display: flex; align-items: center; gap: 12px;">
     <!-- Search -->
     <div style="position: relative; display: flex; align-items: center;">
-      <div style="position: absolute; left: 10px; pointer-events: none; color: #555;">
+      <div style="position: absolute; left: 10px; pointer-events: none; color: var(--text-subtle);">
         <Search size={13} />
       </div>
       <input
         type="text"
         placeholder="Search..."
         style="
-          background: #111; border: 1px solid #2a2a2a; border-radius: 8px;
-          padding: 6px 40px 6px 30px; font-size: 12px; color: #C8C8C8;
-          width: 180px; outline: none;
+          background: var(--bg-element); border: 1px solid var(--border-color); border-radius: 8px;
+          padding: 6px 40px 6px 30px; font-size: 12px; color: var(--text-main);
+          width: 180px; outline: none; transition: border-color 0.2s;
         "
-        onfocus={(e) => (e.target as HTMLInputElement).style.borderColor = '#C0FF00'}
-        onblur={(e) => (e.target as HTMLInputElement).style.borderColor = '#2a2a2a'}
+        onfocus={(e) => (e.target as HTMLInputElement).style.borderColor = 'var(--border-focus)'}
+        onblur={(e) => (e.target as HTMLInputElement).style.borderColor = 'var(--border-color)'}
       />
       <span style="
-        position: absolute; right: 8px; font-size: 10px; color: #555;
-        border: 1px solid #2a2a2a; border-radius: 4px; padding: 1px 5px;
-        font-family: monospace; background: #0a0a0a;
+        position: absolute; right: 8px; font-size: 10px; color: var(--text-subtle);
+        border: 1px solid var(--border-color); border-radius: 4px; padding: 1px 5px;
+        font-family: monospace; background: var(--bg-active);
       ">⌘K</span>
     </div>
 
-    <div style="height: 18px; width: 1px; background: #222;"></div>
+    <div style="height: 18px; width: 1px; background: var(--border-color);"></div>
 
     <!-- Env Toggle -->
     <button
       onclick={toggleEnv}
       style="
         display: flex; align-items: center; gap: 7px; border-radius: 99px;
-        border: 1px solid #2a2a2a; background: #111; padding: 5px 12px;
+        border: 1px solid var(--border-color); background: var(--bg-element); padding: 5px 12px;
         font-size: 10px; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 0.08em; cursor: pointer;
-        color: {currentEnv === 'sandbox' ? '#888' : '#C0FF00'};
+        letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s;
+        color: {currentEnv === 'sandbox' ? 'var(--text-muted)' : 'var(--accent)'};
       "
     >
       <span style="
         height: 7px; width: 7px; border-radius: 50%;
-        background: {currentEnv === 'sandbox' ? '#555' : '#C0FF00'};
+        background: {currentEnv === 'sandbox' ? 'var(--text-subtle)' : 'var(--accent)'};
         box-shadow: {currentEnv === 'production' ? '0 0 8px rgba(192,255,0,0.6)' : 'none'};
-        display: inline-block;
+        display: inline-block; transition: all 0.2s;
       "></span>
       {currentEnv === 'sandbox' ? 'Sandbox' : 'Production'}
     </button>
 
-    <div style="height: 18px; width: 1px; background: #222;"></div>
+    <div style="height: 18px; width: 1px; background: var(--border-color);"></div>
+
+    <!-- Theme Toggle -->
+    <button
+      onclick={toggleTheme}
+      style="
+        height: 32px; width: 32px; border-radius: 8px; border: 1px solid transparent;
+        background: transparent; display: flex; align-items: center; justify-content: center;
+        color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+      "
+      onmouseenter={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-element)';
+        (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-color)';
+      }}
+      onmouseleave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+        (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent';
+      }}
+    >
+      {#if currentTheme === 'dark'}
+        <Sun size={15} />
+      {:else}
+        <Moon size={15} />
+      {/if}
+    </button>
 
     <!-- Bell -->
     <button style="
       height: 32px; width: 32px; border-radius: 8px; border: 1px solid transparent;
       background: transparent; display: flex; align-items: center; justify-content: center;
-      color: #666; cursor: pointer; position: relative;
+      color: var(--text-muted); cursor: pointer; position: relative; transition: all 0.2s;
     "
     onmouseenter={(e) => {
-      (e.currentTarget as HTMLButtonElement).style.background = '#111';
-      (e.currentTarget as HTMLButtonElement).style.borderColor = '#2a2a2a';
+      (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-element)';
+      (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-color)';
     }}
     onmouseleave={(e) => {
       (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
@@ -108,16 +144,16 @@
       <Bell size={15} />
       <span style="
         position: absolute; top: 6px; right: 6px; height: 7px; width: 7px;
-        border-radius: 50%; background: #C0FF00; border: 2px solid #080808;
+        border-radius: 50%; background: var(--accent); border: 2px solid var(--bg-app);
       "></span>
     </button>
 
     <!-- Avatar -->
     <div style="
       height: 32px; width: 32px; border-radius: 50%;
-      background: linear-gradient(135deg, #1c1c1c, #2a2a2a);
-      border: 1px solid #333; display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: #F8F8F8; cursor: pointer;
+      background: var(--bg-active);
+      border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--text-main); cursor: pointer;
     ">A</div>
   </div>
 </header>

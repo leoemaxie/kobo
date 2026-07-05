@@ -6,7 +6,7 @@
 
 <style>
   .skeleton {
-    background-color: #1a1a1a;
+    background-color: var(--border-color);
     border-radius: 6px;
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }

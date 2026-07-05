@@ -27,42 +27,43 @@
 <aside style="
   width: 240px;
   min-width: 240px;
-  background: #0a0a0a;
-  border-right: 1px solid #2a2a2a;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  transition: background 0.2s, border-color 0.2s;
 ">
   <!-- Org Selector -->
   <div style="
     height: 64px; display: flex; align-items: center; 
-    padding: 0 16px; border-bottom: 1px solid #1e1e1e;
+    padding: 0 16px; border-bottom: 1px solid var(--border-color);
   ">
     <button style="
       display: flex; align-items: center; gap: 10px; width: 100%;
       background: transparent; border: 1px solid transparent; border-radius: 8px;
-      padding: 8px 10px; cursor: pointer; text-align: left;
+      padding: 8px 10px; cursor: pointer; text-align: left; transition: background 0.2s;
     "
-    onmouseenter={(e) => (e.currentTarget as HTMLButtonElement).style.background = '#151515'}
+    onmouseenter={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-element)'}
     onmouseleave={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}
     >
       <div style="
-        height: 32px; width: 32px; border-radius: 6px; background: #C0FF00;
+        height: 32px; width: 32px; border-radius: 6px; background: var(--accent);
         display: flex; align-items: center; justify-content: center;
-        font-weight: 900; font-size: 14px; color: #080808; flex-shrink: 0;
+        font-weight: 900; font-size: 14px; color: var(--accent-text); flex-shrink: 0;
       ">K</div>
       <div style="flex: 1; overflow: hidden;">
         <p style="
-          font-size: 13px; font-weight: 600; color: #F8F8F8; 
+          font-size: 13px; font-weight: 600; color: var(--text-main); 
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;
         ">Kobo Inc.</p>
         <p style="
-          font-size: 10px; font-weight: 500; color: #888; 
+          font-size: 10px; font-weight: 500; color: var(--text-muted); 
           text-transform: uppercase; letter-spacing: 0.08em; margin: 2px 0 0;
         ">Free Tier</p>
       </div>
-      <ChevronDown size={13} color="#666" />
+      <ChevronDown size={13} color="var(--text-subtle)" />
     </button>
   </div>
 
@@ -70,7 +71,7 @@
   <nav style="flex: 1; overflow-y: auto; padding: 20px 10px 10px;">
     <p style="
       font-size: 10px; font-weight: 700; text-transform: uppercase; 
-      letter-spacing: 0.1em; color: #555; padding: 0 10px 8px;
+      letter-spacing: 0.1em; color: var(--text-subtle); padding: 0 10px 8px;
     ">Workspace</p>
     {#each navItems as item}
       <a
@@ -80,13 +81,23 @@
           border-radius: 8px; text-decoration: none; margin-bottom: 2px;
           font-size: 13px; font-weight: 500; transition: all 0.15s;
           {isActive(item.path)
-            ? 'background: #1c1c1c; color: #F8F8F8; border: 1px solid #2a2a2a;'
-            : 'background: transparent; color: #888; border: 1px solid transparent;'}
+            ? 'background: var(--bg-active); color: var(--text-main); border: 1px solid var(--border-color);'
+            : 'background: transparent; color: var(--text-muted); border: 1px solid transparent;'}
         "
+        onmouseenter={(e) => {
+          if (!isActive(item.path)) {
+            (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)';
+          }
+        }}
+        onmouseleave={(e) => {
+          if (!isActive(item.path)) {
+            (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+          }
+        }}
       >
         <item.icon
           size={15}
-          color={isActive(item.path) ? '#C0FF00' : '#666'}
+          color={isActive(item.path) ? 'var(--accent)' : 'var(--text-muted)'}
         />
         {item.name}
       </a>
@@ -94,10 +105,10 @@
   </nav>
 
   <!-- Bottom Nav -->
-  <div style="padding: 10px; border-top: 1px solid #1e1e1e;">
+  <div style="padding: 10px; border-top: 1px solid var(--border-color);">
     <p style="
       font-size: 10px; font-weight: 700; text-transform: uppercase; 
-      letter-spacing: 0.1em; color: #555; padding: 6px 10px 8px;
+      letter-spacing: 0.1em; color: var(--text-subtle); padding: 6px 10px 8px;
     ">Account</p>
     {#each bottomItems as item}
       <a
@@ -107,41 +118,55 @@
           border-radius: 8px; text-decoration: none; margin-bottom: 2px;
           font-size: 13px; font-weight: 500; transition: all 0.15s;
           {isActive(item.path)
-            ? 'background: #1c1c1c; color: #F8F8F8; border: 1px solid #2a2a2a;'
-            : 'background: transparent; color: #888; border: 1px solid transparent;'}
+            ? 'background: var(--bg-active); color: var(--text-main); border: 1px solid var(--border-color);'
+            : 'background: transparent; color: var(--text-muted); border: 1px solid transparent;'}
         "
+        onmouseenter={(e) => {
+          if (!isActive(item.path)) {
+            (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)';
+          }
+        }}
+        onmouseleave={(e) => {
+          if (!isActive(item.path)) {
+            (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
+          }
+        }}
       >
-        <item.icon size={15} color={isActive(item.path) ? '#C0FF00' : '#666'} />
+        <item.icon size={15} color={isActive(item.path) ? 'var(--accent)' : 'var(--text-muted)'} />
         {item.name}
       </a>
     {/each}
-    <div style="height: 1px; background: #1e1e1e; margin: 8px 6px;"></div>
+    <div style="height: 1px; background: var(--border-color); margin: 8px 6px;"></div>
     <a href={PUBLIC_DOCS_URL} style="
       display: flex; align-items: center; gap: 10px; padding: 7px 10px;
       border-radius: 8px; text-decoration: none; font-size: 13px; 
-      font-weight: 500; color: #888; border: 1px solid transparent;
-    ">
-      <BookOpen size={15} color="#555" /> Documentation
+      font-weight: 500; color: var(--text-muted); border: 1px solid transparent; transition: background 0.2s;
+    "
+    onmouseenter={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)'}
+    onmouseleave={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}>
+      <BookOpen size={15} color="var(--text-subtle)" /> Documentation
     </a>
     <a href="/support" style="
       display: flex; align-items: center; gap: 10px; padding: 7px 10px;
       border-radius: 8px; text-decoration: none; font-size: 13px; 
-      font-weight: 500; color: #888; border: 1px solid transparent;
-    ">
-      <LifeBuoy size={15} color="#555" /> Support
+      font-weight: 500; color: var(--text-muted); border: 1px solid transparent; transition: background 0.2s;
+    "
+    onmouseenter={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)'}
+    onmouseleave={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}>
+      <LifeBuoy size={15} color="var(--text-subtle)" /> Support
     </a>
-    <div style="height: 1px; background: #1e1e1e; margin: 8px 6px;"></div>
+    <div style="height: 1px; background: var(--border-color); margin: 8px 6px;"></div>
     <form method="POST" action="/auth/logout">
       <button type="submit" style="
         display: flex; align-items: center; gap: 10px; padding: 7px 10px;
         border-radius: 8px; text-decoration: none; font-size: 13px; width: 100%;
-        font-weight: 500; color: #f87171; border: 1px solid transparent; background: transparent; cursor: pointer; text-align: left;
+        font-weight: 500; color: var(--error-color); border: 1px solid transparent; background: transparent; cursor: pointer; text-align: left; transition: background 0.2s;
       "
-      onmouseenter={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'rgba(248,113,113,0.1)'}
+      onmouseenter={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'var(--error-bg)'}
       onmouseleave={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}
       >
-        <span style="display: flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid #f87171; position: relative;">
-          <span style="position: absolute; width: 6px; height: 1.5px; background: #f87171; right: -2px;"></span>
+        <span style="display: flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--error-color); position: relative;">
+          <span style="position: absolute; width: 6px; height: 1.5px; background: var(--error-color); right: -2px;"></span>
         </span>
         Logout
       </button>

@@ -36,28 +36,28 @@
 <div class="space-y-6">
   <!-- Quick Links -->
   <div>
-    <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin-bottom: 8px;">
+    <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-subtle); margin-bottom: 8px;">
       Quick Links
     </p>
-    <div style="border: 1px solid #1e1e1e; border-radius: 8px; overflow: hidden;">
+    <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;">
       {#each actions as a, i}
         <a href={a.href} style="
           display: flex; align-items: center; justify-content: space-between;
           padding: 12px 14px; text-decoration: none;
-          border-bottom: {i < actions.length - 1 ? '1px solid #111' : 'none'};
+          border-bottom: {i < actions.length - 1 ? '1px solid var(--border-color)' : 'none'};
           transition: background 0.1s;
         "
-          onmouseenter={(e) => (e.currentTarget as HTMLAnchorElement).style.background = '#0f0f0f'}
+          onmouseenter={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)'}
           onmouseleave={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}
         >
           <div style="display: flex; align-items: center; gap: 10px;">
-            <a.icon size={14} color="#555" />
+            <a.icon size={14} color="var(--text-subtle)" />
             <div>
-              <p style="font-size: 14px; font-weight: 600; color: #C8C8C8; margin: 0;">{a.label}</p>
-              <p style="font-size: 12px; color: #555; margin: 2px 0 0;">{a.sub}</p>
+              <p style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0;">{a.label}</p>
+              <p style="font-size: 12px; color: var(--text-subtle); margin: 2px 0 0;">{a.sub}</p>
             </div>
           </div>
-          <ArrowUpRight size={13} color="#333" />
+          <ArrowUpRight size={13} color="var(--text-muted)" />
         </a>
       {/each}
     </div>
@@ -66,31 +66,31 @@
   <!-- Setup Checklist -->
   <div>
     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-      <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #555; margin: 0;">
+      <p style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-subtle); margin: 0;">
         Setup Checklist
       </p>
-      <span style="font-family: monospace; font-size: 12px; color: #C0FF00;">{pct}%</span>
+      <span style="font-family: monospace; font-size: 12px; color: var(--accent);">{pct}%</span>
     </div>
     <div style="
-      width: 100%; height: 2px; background: #1a1a1a;
+      width: 100%; height: 2px; background: var(--border-color);
       border-radius: 2px; margin-bottom: 12px; overflow: hidden;
     ">
       <div style="
-        height: 100%; width: {pct}%; background: #C0FF00;
+        height: 100%; width: {pct}%; background: var(--accent);
         box-shadow: 0 0 6px rgba(192,255,0,0.5); border-radius: 2px;
       "></div>
     </div>
-    <div style="border: 1px solid #1e1e1e; border-radius: 8px; overflow: hidden;">
+    <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;">
       {#each checklist as item, i}
         <div style="
           display: flex; align-items: center; gap: 10px;
           padding: 10px 14px;
-          border-bottom: {i < checklist.length - 1 ? '1px solid #111' : 'none'};
+          border-bottom: {i < checklist.length - 1 ? '1px solid var(--border-color)' : 'none'};
         ">
-          <CheckCircle2 size={13} color={item.done ? '#C0FF00' : '#333'} />
+          <CheckCircle2 size={13} color={item.done ? 'var(--accent)' : 'var(--text-muted)'} />
           <span style="
             font-size: 13px;
-            color: {item.done ? '#666' : '#C8C8C8'};
+            color: {item.done ? 'var(--text-subtle)' : 'var(--text-main)'};
             text-decoration: {item.done ? 'line-through' : 'none'};
           ">{item.label}</span>
         </div>
