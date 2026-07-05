@@ -28,18 +28,100 @@
   --color-true-black: #000000;
 
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(250, 204, 21, 0.1);
-  --ifm-background-color: var(--color-void-black);
-  --ifm-navbar-background-color: var(--color-void-black);
   --ifm-navbar-height: 4rem;
-  --ifm-footer-background-color: var(--color-void-black);
+
+  /* Light Theme Variables */
+  --ifm-background-color: #ffffff;
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-footer-background-color: #f8f9fa;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.05);
+  
+  /* Kobo Custom Theme Variables */
+  --kobo-sidebar-bg: #f8f9fa;
+  --kobo-sidebar-border: rgba(0, 0, 0, 0.05);
+  --kobo-sidebar-heading: #475569;
+  --kobo-sidebar-link: #334155;
+  --kobo-sidebar-link-hover-bg: rgba(0, 0, 0, 0.05);
+  --kobo-sidebar-link-hover: #0f172a;
+  
+  --kobo-toc-border: rgba(0, 0, 0, 0.05);
+  --kobo-toc-link: #475569;
+  --kobo-toc-link-hover: #0f172a;
+  --kobo-toc-active-border: #3b82f6;
+
+  --kobo-footer-bg: #f8f9fa;
+  --kobo-footer-border: rgba(0, 0, 0, 0.05);
+  --kobo-footer-text: #475569;
+  --kobo-footer-text-hover: #0f172a;
+  --kobo-footer-title: #0f172a;
+  
+  --kobo-navbar-border: rgba(0, 0, 0, 0.05);
+  --kobo-navbar-separator: rgba(0, 0, 0, 0.1);
+  --kobo-navbar-dropdown-bg: rgba(0, 0, 0, 0.05);
+  --kobo-navbar-dropdown-bg-hover: rgba(0, 0, 0, 0.1);
+  --kobo-navbar-text: #475569;
+  --kobo-navbar-text-hover: #0f172a;
+  
+  --kobo-search-bg: rgba(0, 0, 0, 0.03);
+  --kobo-search-border: rgba(0, 0, 0, 0.1);
+  --kobo-search-border-hover: rgba(0, 0, 0, 0.2);
+  --kobo-search-text: #475569;
+  --kobo-search-key-bg: rgba(0, 0, 0, 0.05);
+  --kobo-search-key-border: rgba(0, 0, 0, 0.1);
+  
+  --kobo-review-title: #0f172a;
+  --kobo-review-divider: rgba(0, 0, 0, 0.05);
+  --kobo-review-star: #64748B;
+  --kobo-review-star-hover: rgba(250, 204, 21, 0.2);
+
+  --kobo-logo-blend: darken;
 }
 
 [data-theme='dark'] {
   --ifm-color-primary: #FACC15;
   --ifm-background-color: var(--color-void-black);
   --ifm-navbar-background-color: var(--color-void-black);
+  --ifm-footer-background-color: #0F172A;
   --docusaurus-highlighted-code-line-bg: rgba(250, 204, 21, 0.1);
+
+  --kobo-sidebar-bg: #0F172A;
+  --kobo-sidebar-border: rgba(255, 255, 255, 0.05);
+  --kobo-sidebar-heading: #64748B;
+  --kobo-sidebar-link: #CBD5E1;
+  --kobo-sidebar-link-hover-bg: rgba(255, 255, 255, 0.05);
+  --kobo-sidebar-link-hover: #FFFFFF;
+  
+  --kobo-toc-border: rgba(255, 255, 255, 0.05);
+  --kobo-toc-link: #64748B;
+  --kobo-toc-link-hover: #FFFFFF;
+  --kobo-toc-active-border: #60A5FA;
+
+  --kobo-footer-bg: #0F172A;
+  --kobo-footer-border: rgba(255, 255, 255, 0.05);
+  --kobo-footer-text: #64748B;
+  --kobo-footer-text-hover: #FFFFFF;
+  --kobo-footer-title: #FFFFFF;
+
+  --kobo-navbar-border: rgba(255, 255, 255, 0.05);
+  --kobo-navbar-separator: rgba(255, 255, 255, 0.1);
+  --kobo-navbar-dropdown-bg: rgba(255, 255, 255, 0.05);
+  --kobo-navbar-dropdown-bg-hover: rgba(255, 255, 255, 0.1);
+  --kobo-navbar-text: #E2E8F0;
+  --kobo-navbar-text-hover: #FFFFFF;
+  
+  --kobo-search-bg: rgba(255, 255, 255, 0.05);
+  --kobo-search-border: rgba(255, 255, 255, 0.1);
+  --kobo-search-border-hover: rgba(255, 255, 255, 0.2);
+  --kobo-search-text: #94A3B8;
+  --kobo-search-key-bg: rgba(255, 255, 255, 0.1);
+  --kobo-search-key-border: rgba(255, 255, 255, 0.05);
+
+  --kobo-review-title: #E2E8F0;
+  --kobo-review-divider: rgba(255, 255, 255, 0.05);
+  --kobo-review-star: #64748B;
+  --kobo-review-star-hover: rgba(250, 204, 21, 0.2);
+
+  --kobo-logo-blend: lighten;
 }
 
 .navbar__logo {
@@ -47,14 +129,14 @@
   /* Forces the logo to render much larger than the default 2rem */
   margin-right: 1.5rem;
   object-fit: contain;
-  mix-blend-mode: lighten;
+  mix-blend-mode: var(--kobo-logo-blend);
   /* This seamlessly removes the dark #09090B background! */
 }
 
 /* Sidebar Layout */
 .theme-doc-sidebar-container {
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  background-color: #0F172A;
+  border-right: 1px solid var(--kobo-sidebar-border);
+  background-color: var(--kobo-sidebar-bg);
   /* Match navbar background */
 }
 
@@ -64,7 +146,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 700;
-  color: #64748B;
+  color: var(--kobo-sidebar-heading);
   /* Muted slate */
   margin-top: 1.5rem;
   padding-left: 0.5rem;
@@ -72,13 +154,13 @@
 
 .menu__list .menu__link--sublist:hover {
   background-color: transparent;
-  color: #94A3B8;
+  color: var(--kobo-sidebar-link-hover);
 }
 
 /* Sidebar Links */
 .menu__link {
   font-size: 0.9rem;
-  color: #CBD5E1;
+  color: var(--kobo-sidebar-link);
   border-radius: 6px;
   padding: 0.4rem 0.75rem;
   transition: all 0.2s ease;
@@ -92,14 +174,14 @@
 }
 
 .menu__link:hover:not(.menu__link--sublist) {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #FFFFFF;
+  background-color: var(--kobo-sidebar-link-hover-bg);
+  color: var(--kobo-sidebar-link-hover);
 }
 
 /* Right TOC */
 .table-of-contents__link {
   font-size: 0.85rem;
-  color: #64748B;
+  color: var(--kobo-toc-link);
 }
 
 .table-of-contents__link--active {
@@ -127,8 +209,8 @@
 /* Minimalist Footer */
 .footer {
   padding: 1.5rem 0 !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
-  background-color: #0F172A !important;
+  border-top: 1px solid var(--kobo-footer-border) !important;
+  background-color: var(--kobo-footer-bg) !important;
 }
 
 .footer__bottom {
@@ -161,11 +243,11 @@
 
 .kobo-footer-brand img {
   height: 24px;
-  mix-blend-mode: lighten;
+  mix-blend-mode: var(--kobo-logo-blend);
 }
 
 .kobo-footer-title {
-  color: #FFFFFF;
+  color: var(--kobo-footer-title);
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
   font-size: 1.1rem;
@@ -174,7 +256,7 @@
 }
 
 .kobo-footer-copyright {
-  color: #64748B;
+  color: var(--kobo-footer-text);
   font-size: 0.85rem;
 }
 
@@ -185,14 +267,14 @@
 }
 
 .kobo-footer-socials a {
-  color: #64748B;
+  color: var(--kobo-footer-text);
   display: flex;
   align-items: center;
   transition: all 0.2s ease;
 }
 
 .kobo-footer-socials a:hover {
-  color: #FFFFFF;
+  color: var(--kobo-footer-text-hover);
 }
 
 /* ========================================================
@@ -200,7 +282,7 @@
    ======================================================== */
 
 .table-of-contents {
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 1px solid var(--kobo-toc-border);
   padding-left: 0;
 }
 
@@ -219,14 +301,14 @@
 }
 
 .table-of-contents__link:hover {
-  color: #FFFFFF;
+  color: var(--kobo-toc-link-hover);
   text-decoration: none;
 }
 
 .table-of-contents__link--active {
-  color: #FFFFFF !important;
+  color: var(--kobo-toc-link-hover) !important;
   font-weight: 700;
-  border-left: 2px solid #60A5FA;
+  border-left: 2px solid var(--kobo-toc-active-border);
   /* Bright Blue to match Hasura's active state */
 }
 
@@ -243,14 +325,14 @@
 .toc-review-divider {
   border: 0;
   height: 1px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--kobo-review-divider);
   margin: 1.5rem 0;
 }
 
 .toc-review-title {
   font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  color: #E2E8F0;
+  color: var(--kobo-review-title);
   font-size: 1.05rem;
   margin-bottom: 0.75rem;
   padding-left: 1.5rem;
@@ -265,19 +347,19 @@
 .star-icon {
   width: 24px;
   height: 24px;
-  color: #64748B;
+  color: var(--kobo-review-star);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .star-icon:hover {
   color: var(--ifm-color-primary);
-  fill: rgba(250, 204, 21, 0.2);
+  fill: var(--kobo-review-star-hover);
   transform: scale(1.1);
 }
 
 .navbar {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid var(--kobo-navbar-border) !important;
   box-shadow: none !important;
 }
 
@@ -302,17 +384,17 @@
 .navbar-separator {
   width: 1px;
   height: 24px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--kobo-navbar-separator);
 }
 
 .navbar-version-dropdown {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--kobo-navbar-dropdown-bg);
   padding: 0.4rem 0.75rem;
   border-radius: 20px;
-  color: #E2E8F0 !important;
+  color: var(--kobo-navbar-text) !important;
   font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none !important;
@@ -321,8 +403,8 @@
 }
 
 .navbar-version-dropdown:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #FFFFFF !important;
+  background-color: var(--kobo-navbar-dropdown-bg-hover);
+  color: var(--kobo-navbar-text-hover) !important;
 }
 
 /* Center the search bar by giving the items flex layout */
@@ -342,21 +424,21 @@
 .navbar-fake-search {
   display: flex;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--kobo-search-bg);
+  border: 1px solid var(--kobo-search-border);
   padding: 0.5rem 1rem;
   border-radius: 24px;
   width: 100% !important;
   max-width: 800px !important;
   /* Increased significantly to extend */
-  color: #94A3B8;
+  color: var(--kobo-search-text);
   gap: 0.5rem;
   cursor: text;
   transition: all 0.2s;
 }
 
 .navbar-fake-search:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--kobo-search-border-hover);
 }
 
 .search-text {
@@ -370,12 +452,12 @@
 }
 
 .search-keys kbd {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: var(--kobo-search-key-bg);
+  border: 1px solid var(--kobo-search-key-border);
   border-radius: 4px;
   padding: 0.1rem 0.3rem;
   font-size: 0.65rem;
-  color: #94A3B8;
+  color: var(--kobo-search-text);
   font-family: inherit;
   box-shadow: none;
 }
@@ -385,7 +467,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  color: #94A3B8 !important;
+  color: var(--kobo-navbar-text) !important;
   font-size: 0.9rem;
   font-weight: 500;
   text-decoration: none !important;
@@ -395,7 +477,7 @@
 
 .navbar-assistant-link:hover,
 .navbar-simple-link:hover {
-  color: #FFFFFF !important;
+  color: var(--kobo-navbar-text-hover) !important;
 }
 
 .navbar-menu-dots {
