@@ -15,7 +15,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
+func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.NotFound(func(w http.ResponseWriter, req *http.Request) {
@@ -30,7 +30,7 @@ func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler, ledge
 	_ = yaml.Unmarshal(kobo.OpenAPI, &openapiDoc)
 	openapiJSON, _ := json.Marshal(openapiDoc)
 
-	r.Get("/healthz", handlers.HealthCheck)
+	r.Get("/healthz", healthHandler.HealthCheck)
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, req *http.Request) {
@@ -44,7 +44,7 @@ func NewRouter(q *sqlc.Queries, identityHandler *handlers.IdentityHandler, ledge
 		// Protected routes
 		r.Group(func(r chi.Router) {
 			r.Use(chimiddleware.RequestID)
-			r.Use(chimiddleware.RealIP)
+			r.Use(chimiddleware.ClientIPFromXFF())
 			r.Use(middleware.RequestLogger)
 			r.Use(middleware.Recoverer)
 			r.Use(middleware.AuthMiddleware(q))

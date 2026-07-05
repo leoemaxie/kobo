@@ -49,6 +49,7 @@ func main() {
 	exceptionsSvc := exceptions.NewService(exceptionsRepo)
 	integratorSvc := integrator.NewService(q)
 
+	healthHandler := handlers.NewHealthHandler(pool)
 	identityHandler := handlers.NewIdentityHandler(identitySvc, accountSvc)
 	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc)
 	exceptionsHandler := handlers.NewExceptionsHandler(exceptionsSvc)
@@ -57,7 +58,7 @@ func main() {
 	idemRepo := reconciliation.NewIdempotencyRepository(q)
 	reconEngine := reconciliation.NewEngine(q, idemRepo)
 
-	router := api.NewRouter(q, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, reconEngine, cfg.NombaWebhookSecret)
+	router := api.NewRouter(q, healthHandler, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, reconEngine, cfg.NombaWebhookSecret)
 
 	log.Printf("Starting Kobo server on port %s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {
