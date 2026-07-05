@@ -20,6 +20,19 @@ Add the dependency to your `pom.xml`:
 </dependency>
 ```
 
+### Using Locally (Without Package Manager)
+
+To use the SDK locally without fetching from Maven Central or using a build tool for dependency management:
+
+1. Build the SDK JAR from source:
+   ```bash
+   cd sdks/java
+   mvn clean package -DskipTests
+   ```
+2. Include the generated JAR file (`target/kobo-sdk-0.1.0.jar`) in your project's classpath. Since the SDK has zero external dependencies, no other JARs are required.
+
+*(Alternatively, you can install it to your local Maven repository by running `mvn clean install`)*
+
 ## Quick Start
 
 ```java

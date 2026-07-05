@@ -18,6 +18,25 @@ yarn add @kobo/sdk
 pnpm add @kobo/sdk
 ```
 
+### Using Locally (Without Package Manager)
+
+To use the SDK locally without publishing to npm:
+
+1. Build the SDK:
+   ```bash
+   cd sdks/typescript
+   npm run build
+   ```
+2. Reference the local directory in your project's `package.json`:
+   ```json
+   {
+     "dependencies": {
+       "@kobo/sdk": "file:../relative/path/to/kobo/sdks/typescript"
+     }
+   }
+   ```
+   *Note: If you are not using a package manager at all in your consumer project, you can simply copy the `dist/` directory directly into your project tree and import the compiled Javascript files.*
+
 ## Quick Start
 
 ```typescript

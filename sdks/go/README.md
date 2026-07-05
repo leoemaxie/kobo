@@ -14,6 +14,16 @@ Official Go SDK for the Kobo API. This SDK is built with zero external dependenc
 go get github.com/leoemaxie/kobo-sdk-go
 ```
 
+### Using Locally
+
+To use the SDK locally without fetching from a remote repository, add a `replace` directive to your `go.mod` file pointing to your local clone:
+
+```go
+require github.com/leoemaxie/kobo-sdk-go v0.0.0
+
+replace github.com/leoemaxie/kobo-sdk-go => /absolute/path/to/kobo/sdks/go
+```
+
 ## Quick Start
 
 ```go
