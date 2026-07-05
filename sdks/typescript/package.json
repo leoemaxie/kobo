@@ -11,17 +11,27 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsc && node --test dist/client.test.js"
   },
   "devDependencies": {
+    "@types/node": "^26.1.0",
     "typescript": "^5.5.0"
   },
   "engines": {
     "node": ">=18"
   },
-  "keywords": ["kobo", "fintech", "virtual-account", "nigeria", "payments"],
+  "keywords": [
+    "kobo",
+    "fintech",
+    "virtual-account",
+    "nigeria",
+    "payments"
+  ],
   "license": "MIT"
 }
