@@ -46,7 +46,7 @@ paths:
       tags: [Identities]
       operationId: createIdentity
       summary: Register a new identity and provision its virtual account.
-      description: >
+      description:
         Creates an Identity record in PENDING state and asynchronously
         provisions a Nomba virtual account against it. The response returns
         immediately with the identity in PENDING state; integrators should

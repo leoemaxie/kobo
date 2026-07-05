@@ -26,7 +26,15 @@ func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityH
 		apierrors.WriteError(w, http.StatusMethodNotAllowed, "method_not_allowed", "The requested method is not allowed for this resource")
 	})
 
-	var openapiDoc map[string]interface{}
+	var openapiDoc struct {
+		OpenAPI    string                 `yaml:"openapi" json:"openapi"`
+		Info       map[string]interface{} `yaml:"info" json:"info"`
+		Servers    []interface{}          `yaml:"servers,omitempty" json:"servers,omitempty"`
+		Security   []interface{}          `yaml:"security,omitempty" json:"security,omitempty"`
+		Tags       []interface{}          `yaml:"tags,omitempty" json:"tags,omitempty"`
+		Paths      map[string]interface{} `yaml:"paths" json:"paths"`
+		Components map[string]interface{} `yaml:"components,omitempty" json:"components,omitempty"`
+	}
 	_ = yaml.Unmarshal(kobo.OpenAPI, &openapiDoc)
 	openapiJSON, _ := json.Marshal(openapiDoc)
 
