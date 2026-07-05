@@ -7,8 +7,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/leoemaxie/kobo/internal/account"
-	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/dto"
+	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/identity"
 )

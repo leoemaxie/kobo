@@ -64,12 +64,12 @@ func (s *Service) Provision(ctx context.Context, identityID, integratorID uuid.U
 
 	// 6. Call Nomba API
 	resp, nombaErr := s.nombaClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "", ident.KycTier)
-	
+
 	if nombaErr != nil {
 		// PENDING -> FAILED
 		failState, _ := ValidTransition(State(ident.State), EventProvisionFail)
 		errStr := nombaErr.Error()
-		
+
 		var failReason pgtype.Text
 		failReason.String = errStr
 		failReason.Valid = true
@@ -80,7 +80,7 @@ func (s *Service) Provision(ctx context.Context, identityID, integratorID uuid.U
 			State:         string(failState),
 			FailureReason: failReason,
 		})
-		
+
 		_, _ = s.repo.InsertIdentityEvent(ctx, sqlc.InsertIdentityEventParams{
 			ID:            uuid.New(),
 			IdentityID:    identityID,
@@ -156,7 +156,7 @@ func (s *Service) Reopen(ctx context.Context, identityID, integratorID uuid.UUID
 	// We'll call Provision again, but since it's CLOSED, Provision would reject PENDING->ACTIVE.
 	// Actually, wait, ValidTransition(CLOSED, EventReopenInitiated) returns ACTIVE.
 	// So we can do the provisioning steps here.
-	
+
 	_ = s.repo.DeactivateVirtualAccount(ctx, identityID)
 	accountRef := uuid.New().String()
 
@@ -243,7 +243,7 @@ func (s *Service) Close(ctx context.Context, identityID, integratorID uuid.UUID,
 	if err != nil {
 		return fmt.Errorf("failed to update identity state: %w", err)
 	}
-	
+
 	if len(sweepDestination) == 0 {
 		sweepDestination = []byte(`{}`)
 	}

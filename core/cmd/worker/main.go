@@ -29,12 +29,12 @@ func main() {
 
 	q := sqlc.New(pool)
 	idemRepo := reconciliation.NewIdempotencyRepository(q)
-	
+
 	nombaClient := nomba.NewClient(
-		cfg.NombaBaseURL, 
-		cfg.NombaClientID, 
-		cfg.NombaClientSecret, 
-		cfg.NombaAccountID, 
+		cfg.NombaBaseURL,
+		cfg.NombaClientID,
+		cfg.NombaClientSecret,
+		cfg.NombaAccountID,
 		nil,
 	)
 
@@ -49,7 +49,7 @@ func main() {
 	log.Println("Starting Kobo background worker...")
 
 	closureSweeper := reconciliation.NewClosureSweeper(q)
-	
+
 	// Initial run
 	go func() {
 		if err := sweeper.RunSweep(ctx); err != nil {

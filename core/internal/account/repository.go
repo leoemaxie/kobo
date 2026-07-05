@@ -14,7 +14,7 @@ type Repository interface {
 	GetVirtualAccountByAccountNumber(ctx context.Context, accountNumber *string) (sqlc.VirtualAccount, error)
 	UpdateVirtualAccountProvisioning(ctx context.Context, arg sqlc.UpdateVirtualAccountProvisioningParams) (sqlc.VirtualAccount, error)
 	DeactivateVirtualAccount(ctx context.Context, identityID uuid.UUID) error
-	
+
 	// Lifecycle operations
 	GetIdentityByID(ctx context.Context, arg sqlc.GetIdentityByIDParams) (sqlc.Identity, error)
 	UpdateIdentityState(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error)

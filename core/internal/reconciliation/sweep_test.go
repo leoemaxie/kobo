@@ -27,7 +27,7 @@ func TestRunSweep_Success(t *testing.T) {
 			}
 		}`))
 	})
-	
+
 	mux.HandleFunc("/transactions/virtual", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{
@@ -55,7 +55,7 @@ func TestRunSweep_Success(t *testing.T) {
 	client := nomba.NewClient(server.URL, "client", "secret", "account", server.Client())
 
 	accID := uuid.New()
-	
+
 	mq := &mockQuerier{
 		ListActiveVirtualAccountsFunc: func(ctx context.Context) ([]sqlc.VirtualAccount, error) {
 			return []sqlc.VirtualAccount{

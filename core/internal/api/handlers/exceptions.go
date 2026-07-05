@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/dto"
+	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/exceptions"
 )
@@ -42,7 +42,7 @@ func (h *ExceptionsHandler) ListOpen(w http.ResponseWriter, r *http.Request) {
 
 func (h *ExceptionsHandler) Resolve(w http.ResponseWriter, r *http.Request) {
 	integratorID := middleware.GetIntegratorID(r.Context())
-	
+
 	idStr := chi.URLParam(r, "exceptionId")
 	id, err := uuid.Parse(idStr)
 	if err != nil {

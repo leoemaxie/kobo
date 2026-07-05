@@ -20,7 +20,7 @@ func NewService(repo Repository) *Service {
 
 func (s *Service) Register(ctx context.Context, integratorID uuid.UUID, externalRef, displayName, kycTier string, metadata json.RawMessage) (*Identity, error) {
 	id := uuid.New()
-	
+
 	metaBytes, err := json.Marshal(metadata)
 	if err != nil || len(metaBytes) == 0 || string(metaBytes) == "null" {
 		metaBytes = []byte("{}")

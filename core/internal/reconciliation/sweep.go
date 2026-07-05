@@ -37,13 +37,13 @@ func (s *sweeper) RunSweep(ctx context.Context) error {
 
 	dateTo := time.Now()
 	// Reconcile the last 2 hours (covers the max 53m retry delay of nomba + buffer)
-	dateFrom := dateTo.Add(-2 * time.Hour) 
+	dateFrom := dateTo.Add(-2 * time.Hour)
 
 	for _, acc := range accounts {
 		if !acc.AccountNumber.Valid {
 			continue
 		}
-		
+
 		txns, err := s.client.FetchTransactions(ctx, acc.AccountNumber.String, dateFrom, dateTo)
 		if err != nil {
 			log.Printf("Failed to fetch transactions for %s: %v", acc.AccountNumber.String, err)
@@ -62,7 +62,7 @@ func (s *sweeper) RunSweep(ctx context.Context) error {
 
 				_, _ = s.idemRepo.CheckOrSetIdempotency(ctx, txn.ID, "sweep", func() (uuid.UUID, error) {
 					entryID := uuid.New()
-					
+
 					var occurredAt time.Time
 					if t, err := time.Parse(time.RFC3339, txn.TimeCreated); err == nil {
 						occurredAt = t
@@ -98,6 +98,6 @@ func (s *sweeper) RunSweep(ctx context.Context) error {
 			}
 		}
 	}
-	
+
 	return nil
 }

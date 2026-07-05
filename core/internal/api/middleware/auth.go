@@ -12,6 +12,7 @@ import (
 )
 
 type contextKey string
+
 const IntegratorContextKey contextKey = "integratorContext"
 
 type IntegratorContext struct {
@@ -46,7 +47,7 @@ func AuthMiddleware(q sqlc.Querier) func(http.Handler) http.Handler {
 			}
 
 			hashedProvidedSecret := auth.HashSecret(apiSecret)
-			
+
 			if subtle.ConstantTimeCompare([]byte(integrator.ApiSecretHash), []byte(hashedProvidedSecret)) != 1 {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return

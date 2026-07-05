@@ -23,7 +23,7 @@ func TestCreateVirtualAccount(t *testing.T) {
 			}
 		}`))
 	})
-	
+
 	mux.HandleFunc("/accounts/virtual", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{
@@ -41,7 +41,7 @@ func TestCreateVirtualAccount(t *testing.T) {
 	defer server.Close()
 
 	client := NewClient(server.URL, "client-id", "client-secret", "account-id", server.Client())
-	
+
 	resp, err := client.CreateVirtualAccount(context.Background(), "ref-123", "Test User", "", "tier_1")
 	assert.NoError(t, err)
 	assert.Equal(t, "1234567890", resp.AccountNumber)

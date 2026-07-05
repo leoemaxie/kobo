@@ -76,7 +76,7 @@ func TestAuthMiddleware_MismatchedPrefix(t *testing.T) {
 
 func TestAuthMiddleware_WrongSecret(t *testing.T) {
 	apiKey, _, hashedSecret, _ := auth.GenerateCredentials(false)
-	
+
 	mq := &mockAuthQuerier{
 		GetApiIntegratorByKeyFunc: func(ctx context.Context, key string) (sqlc.ApiIntegrator, error) {
 			return sqlc.ApiIntegrator{

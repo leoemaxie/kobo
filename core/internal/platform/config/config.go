@@ -8,14 +8,14 @@ import (
 )
 
 type Config struct {
-	Port                string
-	DatabaseURL         string
-	NombaBaseURL        string
-	NombaClientID       string
-	NombaClientSecret   string
-	NombaAccountID      string
-	NombaWebhookSecret  string
-	KYCMaxCeiling       int64 // Stored in kobo
+	Port               string
+	DatabaseURL        string
+	NombaBaseURL       string
+	NombaClientID      string
+	NombaClientSecret  string
+	NombaAccountID     string
+	NombaWebhookSecret string
+	KYCMaxCeiling      int64 // Stored in kobo
 }
 
 func Load() (*Config, error) {

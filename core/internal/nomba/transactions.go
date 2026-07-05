@@ -29,7 +29,7 @@ type FetchTransactionsResponse struct {
 
 func (c *Client) FetchTransactions(ctx context.Context, accountNumber string, dateFrom, dateTo time.Time) ([]TransactionResult, error) {
 	// Example uses: dateFrom=<date>&dateTo=<date>
-	
+
 	q := url.Values{}
 	q.Set("virtual_account", accountNumber)
 	q.Set("dateFrom", dateFrom.Format("2006-01-02T15:04:05Z"))

@@ -54,7 +54,7 @@ func TestVerifyWebhookSignature(t *testing.T) {
 	t.Run("Null Response Code handling", func(t *testing.T) {
 		payloadNull := *payload
 		payloadNull.Data.Transaction.ResponseCode = "null"
-		
+
 		hashingPayloadNull := fmt.Sprintf(
 			"%s:%s:%s:%s:%s:%s:%s:%s:%s",
 			payloadNull.EventType,

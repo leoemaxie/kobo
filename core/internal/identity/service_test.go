@@ -129,11 +129,11 @@ func TestService_UpdateProfile(t *testing.T) {
 			assert.Equal(t, integratorID, arg.IntegratorID)
 			assert.Equal(t, "Jane Doe", arg.DisplayName.String)
 			return sqlc.Identity{
-				ID:                arg.ID,
-				IntegratorID:      arg.IntegratorID,
-				DisplayName:       arg.DisplayName.String,
-				Metadata:          arg.Metadata,
-				State:             "active",
+				ID:           arg.ID,
+				IntegratorID: arg.IntegratorID,
+				DisplayName:  arg.DisplayName.String,
+				Metadata:     arg.Metadata,
+				State:        "active",
 			}, nil
 		},
 		InsertIdentityEventFunc: func(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error) {

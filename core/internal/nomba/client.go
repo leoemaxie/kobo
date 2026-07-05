@@ -20,7 +20,7 @@ type TokenManager struct {
 	accountID    string
 	baseURL      string
 	client       *http.Client
-	
+
 	accessToken  string
 	refreshToken string
 	expiresAt    time.Time
@@ -79,7 +79,7 @@ func (tm *TokenManager) issue(ctx context.Context) error {
 		"client_id":     tm.clientID,
 		"client_secret": tm.clientSecret,
 	}
-	
+
 	return tm.doAuthReq(ctx, url, body, "")
 }
 
@@ -89,7 +89,7 @@ func (tm *TokenManager) refresh(ctx context.Context) error {
 		"grant_type":    "refresh_token",
 		"refresh_token": tm.refreshToken,
 	}
-	
+
 	return tm.doAuthReq(ctx, url, body, tm.accessToken)
 }
 
@@ -218,7 +218,7 @@ func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountNa
 		reqBody["bvn"] = bvn
 	}
 
-	idempotencyKey := accountRef 
+	idempotencyKey := accountRef
 
 	var data createVAData
 	if err := c.doRequest(ctx, http.MethodPost, "/accounts/virtual", reqBody, &data, idempotencyKey); err != nil {

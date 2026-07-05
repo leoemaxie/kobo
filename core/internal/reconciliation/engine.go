@@ -17,7 +17,7 @@ type Engine interface {
 }
 
 type engine struct {
-	q      sqlc.Querier
+	q        sqlc.Querier
 	idemRepo IdempotencyRepository
 }
 
@@ -53,7 +53,7 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 	// Idempotency check and insert
 	isDuplicate, err := e.idemRepo.CheckOrSetIdempotency(ctx, transactionID, "webhook", func() (uuid.UUID, error) {
 		entryID := uuid.New()
-		
+
 		var occurredAt time.Time
 		if t, err := time.Parse(time.RFC3339, payload.Data.Transaction.Time); err == nil {
 			occurredAt = t

@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/leoemaxie/kobo/internal/account"
 	"github.com/leoemaxie/kobo/internal/api"
 	"github.com/leoemaxie/kobo/internal/api/handlers"
-	"github.com/leoemaxie/kobo/internal/account"
 	"github.com/leoemaxie/kobo/internal/exceptions"
 	"github.com/leoemaxie/kobo/internal/identity"
 	"github.com/leoemaxie/kobo/internal/integrator"
@@ -44,7 +44,7 @@ func main() {
 
 	ledgerRepo := ledger.NewRepository(q)
 	ledgerSvc := ledger.NewService(ledgerRepo)
-	
+
 	exceptionsRepo := exceptions.NewRepository(q)
 	exceptionsSvc := exceptions.NewService(exceptionsRepo)
 	integratorSvc := integrator.NewService(q)
@@ -54,7 +54,7 @@ func main() {
 	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc)
 	exceptionsHandler := handlers.NewExceptionsHandler(exceptionsSvc)
 	adminHandler := handlers.NewAdminHandler(integratorSvc)
-	
+
 	idemRepo := reconciliation.NewIdempotencyRepository(q)
 	reconEngine := reconciliation.NewEngine(q, idemRepo)
 

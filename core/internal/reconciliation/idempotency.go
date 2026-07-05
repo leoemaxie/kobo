@@ -28,10 +28,10 @@ func (r *sqlcIdempotencyRepository) CheckOrSetIdempotency(ctx context.Context, r
 	}
 
 	// Wait, we need to run this in a transaction really to be safe, but given we only have r.q which doesn't wrap pgx.Tx directly here.
-	// For this phase, if we don't have tx, we just insert ledger entry and then idempotent key. 
+	// For this phase, if we don't have tx, we just insert ledger entry and then idempotent key.
 	// If it fails on idempotent key, we might have duplicate ledger entry which is bad.
 	// We'll trust the caller to handle tx or just use insertLedgerFunc here.
-	
+
 	ledgerEntryID, err := insertLedgerFunc()
 	if err != nil {
 		return false, err

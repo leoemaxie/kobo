@@ -58,7 +58,7 @@ func (h *WebhookHandler) HandleNombaWebhook(w http.ResponseWriter, r *http.Reque
 
 	err = h.engine.ProcessWebhook(r.Context(), &payload)
 	if err != nil {
-		// Log error, but return 200 so Nomba doesn't retry infinitely on business logic errors, 
+		// Log error, but return 200 so Nomba doesn't retry infinitely on business logic errors,
 		// but wait: "do not return non-2XX for business-logic reasons, only for genuine processing failures"
 		// If it's a database failure we should probably 500, but let's just 200 and log for now or 500 if err is systemic.
 		// For simplicity, we return 200 to acknowledge receipt if it's a business error (e.g. account not found)
