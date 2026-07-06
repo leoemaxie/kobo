@@ -74,6 +74,7 @@ func TestAuthMiddleware_MismatchedPrefix(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, rec.Code)
 }
 
+
 func TestAuthMiddleware_WrongSecret(t *testing.T) {
 	apiKey, _, hashedSecret, _ := auth.GenerateCredentials(false)
 
