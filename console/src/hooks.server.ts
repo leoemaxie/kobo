@@ -1,13 +1,30 @@
-import { redirect, type Handle } from '@sveltejs/kit';
+import { redirect, type Handle, type HandleServerError } from '@sveltejs/kit';
 import { validateSession } from '$lib/server/auth/session';
 import { dev } from '$app/environment';
 
 const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/verify-email', '/auth/forgot-password', '/auth/reset-password'];
 const SUPERADMIN_PREFIX = '/admin';
 
+export const handleError: HandleServerError = ({ error, event }) => {
+  const err = error as any;
+  console.error(`[handleError] ${event.request.method} ${event.url.pathname}`);
+  console.error('Message:', err?.message);
+  if (err?.cause) console.error('Root cause:', err.cause);
+  return { message: 'Internal server error' };
+};
+
 export const handle: Handle = async ({ event, resolve }) => {
   const sessionId = event.cookies.get('session');
-  const result = sessionId ? await validateSession(sessionId) : null;
+  let result = null;
+  if (sessionId) {
+    try {
+      result = await validateSession(sessionId);
+    } catch (err: any) {
+      console.error('[session] validateSession failed — cause:', err?.cause ?? err);
+      // Treat as unauthenticated; clear the broken cookie
+      event.cookies.delete('session', { path: '/' });
+    }
+  }
 
   event.locals.user = result?.users ?? null;
   event.locals.session = result?.sessions ?? null;
@@ -35,7 +52,6 @@ export const handle: Handle = async ({ event, resolve }) => {
     throw redirect(302, '/auth/verify-email');
   }
 
-  // Superadmin guard
   if (path.startsWith(SUPERADMIN_PREFIX) && event.locals.user?.role !== 'superadmin') {
     return new Response('Not found', { status: 404 });
   }

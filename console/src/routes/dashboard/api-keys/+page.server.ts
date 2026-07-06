@@ -18,7 +18,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const keys = dbKeys.map((k) => ({
 		name: k.label || 'Default Key',
 		id: k.keyId,
-		secret: k.secretHash,
 		created: k.createdAt.toISOString().split('T')[0],
 		lastUsed: 'N/A',
 		environment: k.environment,

@@ -143,6 +143,42 @@ export const billingRecords = consoleSchema.table(
   ]
 );
 
+export const usageEvents = consoleSchema.table('usage_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
+  environment: environmentEnum('environment').notNull(),
+  eventType: text('event_type').notNull(),
+  referenceId: text('reference_id').notNull(),
+  amountKobo: bigint('amount_kobo', { mode: 'number' }).notNull(),
+  occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const paymentMethods = consoleSchema.table('payment_methods', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
+  nombaTokenKey: text('nomba_token_key').notNull(),
+  cardLast4: text('card_last4').notNull(),
+  cardBrand: text('card_brand').notNull(),
+  isDefault: boolean('is_default').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const invoiceStatusEnum = consoleSchema.enum('invoice_status', ['open', 'paid', 'failed', 'void']);
+
+export const invoices = consoleSchema.table('invoices', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
+  billingRecordId: uuid('billing_record_id').notNull().references(() => billingRecords.id),
+  period: text('period').notNull(),
+  amountKobo: bigint('amount_kobo', { mode: 'number' }).notNull(),
+  status: invoiceStatusEnum('status').notNull().default('open'),
+  nombaOrderRef: text('nomba_order_ref'),
+  paidAt: timestamp('paid_at', { withTimezone: true }),
+  retryCount: bigint('retry_count', { mode: 'number' }).notNull().default(0),
+  nextRetryAt: timestamp('next_retry_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const webhooks = consoleSchema.table('webhooks', {
   id: uuid('id').primaryKey().defaultRandom(),
   integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),

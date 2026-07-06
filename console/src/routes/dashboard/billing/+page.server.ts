@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { billingRecords } from '$lib/server/db/schema';
+import { billingRecords, invoices } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { redirect } from '@sveltejs/kit';
 
@@ -15,12 +15,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 		orderBy: [desc(billingRecords.syncedAt)]
 	});
 
-	const invoices = dbBilling.map((b) => ({
-		id: `inv_${b.period.replace('-', '_')}`,
-		date: b.syncedAt.toISOString().split('T')[0],
-		period: b.period,
-		amount: `₦${(b.amountDueKobo / 100).toLocaleString()}`,
-		status: 'paid'
+	const dbInvoices = await db.query.invoices.findMany({
+		where: eq(invoices.integratorId, user.integratorId),
+		orderBy: [desc(invoices.createdAt)]
+	});
+
+	const mappedInvoices = dbInvoices.map((inv) => ({
+		id: inv.id,
+		date: inv.createdAt.toISOString().split('T')[0],
+		period: inv.period,
+		amount: `₦${(inv.amountKobo / 100).toLocaleString()}`,
+		status: inv.status
 	}));
 
 	const billingOverview = {
@@ -41,5 +46,5 @@ export const load: PageServerLoad = async ({ locals }) => {
 		]
 	};
 
-	return { invoices, billingOverview };
+	return { invoices: mappedInvoices, billingOverview };
 };

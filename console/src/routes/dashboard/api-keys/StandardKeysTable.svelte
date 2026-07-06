@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Eye, EyeOff, Copy, RefreshCw, Plus, Trash2 } from '@lucide/svelte';
+  import { Copy, RefreshCw, Plus, Trash2 } from '@lucide/svelte';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/state/toast.svelte';
   import RollKeyModal from './RollKeyModal.svelte';
@@ -8,7 +8,6 @@
   export let keys: any[] = [];
   const dispatch = createEventDispatcher();
 
-  let keyRevealed: Record<string, boolean> = {};
   let rollingKeyId: string | null = null;
 
   const cols = ['NAME', 'KEY ID', 'SECRET KEY', 'LAST USED', 'CREATED', ''];
@@ -55,18 +54,9 @@
 
         <code style="font-family: monospace; font-size: 13px; color: var(--text-muted);">{k.id}</code>
 
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <code style="font-family: monospace; font-size: 13px; color: {keyRevealed[k.id] ? '#C8C8C8' : 'var(--text-subtle)'};">
-            {keyRevealed[k.id] ? k.secret : '••••••••••••••••••'}
-          </code>
-          <button
-            on:click={() => (keyRevealed[k.id] = !keyRevealed[k.id])}
-            style="background: none; border: none; cursor: pointer; color: var(--text-subtle); padding: 0; display: flex;"
-            aria-label="Toggle secret"
-          >
-            {#if keyRevealed[k.id]}<EyeOff size={13} />{:else}<Eye size={13} />{/if}
-          </button>
-        </div>
+        <code style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">
+          ••••••••••••••••••
+        </code>
 
         <span style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">{k.lastUsed}</span>
         <span style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">{k.created}</span>

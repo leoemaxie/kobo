@@ -44,12 +44,12 @@
           color: var(--accent);
         ">{inv.status}</span>
         <span style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">{inv.date}</span>
-        <button style="
+        <a href="/dashboard/billing/invoices/{inv.id}" target="_blank" style="
           background: none; border: none; cursor: pointer; color: var(--text-subtle);
           display: flex; padding: 0;
         " title="Download PDF">
           <Download size={13} />
-        </button>
+        </a>
       </div>
     {/each}
   </div>
