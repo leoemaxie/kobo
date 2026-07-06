@@ -30,42 +30,52 @@ export const load: PageServerLoad = async ({ url }) => {
 
 export const actions: Actions = {
 	default: async ({ request }) => {
-		const data = await request.formData();
-		const token = data.get('token')?.toString();
-		const password = data.get('password')?.toString();
+		try {
+			const data = await request.formData();
+			const token = data.get('token')?.toString();
+			const password = data.get('password')?.toString();
 
-		if (!token || !password) {
-			return fail(400, { error: 'Missing required fields' });
-		}
+			if (!token || !password) {
+				return fail(400, { error: 'Missing required fields' });
+			}
 
-		const [tokenData] = await db.select()
-			.from(passwordResetTokens)
-			.where(
-				and(
-					eq(passwordResetTokens.id, token),
-					isNull(passwordResetTokens.usedAt),
-					gt(passwordResetTokens.expiresAt, new Date())
+			const [tokenData] = await db.select()
+				.from(passwordResetTokens)
+				.where(
+					and(
+						eq(passwordResetTokens.id, token),
+						isNull(passwordResetTokens.usedAt),
+						gt(passwordResetTokens.expiresAt, new Date())
+					)
 				)
-			)
-			.limit(1);
+				.limit(1);
 
-		if (!tokenData) {
-			return fail(400, { error: 'Invalid or expired token' });
+			if (!tokenData) {
+				return fail(400, { error: 'Invalid or expired token' });
+			}
+
+			const passwordHash = await argon2.hash(password);
+
+			await db.update(users)
+				.set({ passwordHash, updatedAt: new Date() })
+				.where(eq(users.id, tokenData.userId));
+
+			await db.update(passwordResetTokens)
+				.set({ usedAt: new Date() })
+				.where(eq(passwordResetTokens.id, token));
+
+			// Revoke all existing sessions so old logins are terminated
+			await revokeAllSessionsForUser(tokenData.userId);
+
+			throw redirect(303, '/auth/login?reset=success');
+		} catch (error) {
+			import('@sveltejs/kit').then(({ isRedirect }) => {
+				if (isRedirect(error)) throw error;
+			});
+			if ((error as any)?.status === 303 || (error as any)?.status === 302) throw error; // fallback
+
+			console.error('Password reset error:', error);
+			return fail(500, { error: 'An unexpected error occurred during password reset.' });
 		}
-
-		const passwordHash = await argon2.hash(password);
-
-		await db.update(users)
-			.set({ passwordHash, updatedAt: new Date() })
-			.where(eq(users.id, tokenData.userId));
-
-		await db.update(passwordResetTokens)
-			.set({ usedAt: new Date() })
-			.where(eq(passwordResetTokens.id, token));
-
-		// Revoke all existing sessions so old logins are terminated
-		await revokeAllSessionsForUser(tokenData.userId);
-
-		throw redirect(303, '/auth/login?reset=success');
 	}
 };

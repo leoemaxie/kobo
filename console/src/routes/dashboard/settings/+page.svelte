@@ -2,6 +2,7 @@
   import { Save, AlertTriangle } from '@lucide/svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
   import { enhance } from '$app/forms';
+  import { toast } from '$lib/state/toast.svelte';
 
   let { data } = $props();
   const state = useConsoleState();
@@ -32,7 +33,18 @@
 
   <div style="display: grid; gap: 24px;">
     <!-- General Settings -->
-    <form method="POST" action="?/updateWorkspace" use:enhance style="background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 8px; overflow: hidden;">
+    <form method="POST" action="?/updateWorkspace" use:enhance={() => {
+      return async ({ result, update }) => {
+        if (result.type === 'failure') {
+          toast.error(result.data?.error as string || 'Update failed.');
+        } else if (result.type === 'error') {
+          toast.error('An unexpected server error occurred.');
+        } else {
+          toast.success('Workspace updated successfully.');
+        }
+        await update();
+      };
+    }} style="background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 8px; overflow: hidden;">
       <div style="padding: 16px 20px; border-bottom: 1px solid #1e1e1e; background: #111;">
         <h3 style="font-size: 14px; font-weight: 600; color: #F8F8F8; margin: 0;">General Information</h3>
         <p style="font-size: 12px; color: #666; margin: 4px 0 0;">Manage your workspace details.</p>
@@ -72,6 +84,16 @@
         </div>
         <form method="POST" action="?/deleteWorkspace" use:enhance={({ cancel }) => {
           if (!confirm('Are you sure? This action cannot be undone and will delete all API Keys, Webhooks, and Billing records.')) cancel();
+          return async ({ result, update }) => {
+            if (result.type === 'failure') {
+              toast.error(result.data?.error as string || 'Deletion failed.');
+            } else if (result.type === 'error') {
+              toast.error('An unexpected server error occurred.');
+            } else {
+              toast.success('Workspace deleted.');
+            }
+            await update();
+          };
         }}>
           <button type="submit" class="delete-btn">
             <AlertTriangle size={13} /> Delete Workspace

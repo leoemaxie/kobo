@@ -1,31 +1,97 @@
 <script lang="ts">
-  import Card from '$lib/components/ui/Card.svelte';
-  import Button from '$lib/components/ui/Button.svelte';
-  import { Mail } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
+  import { Mail, ArrowLeft, RefreshCw, CheckCircle2 } from '@lucide/svelte';
+  import { toast } from '$lib/state/toast.svelte';
+  import type { PageData } from './$types';
+
+  let { data }: { data: PageData } = $props();
+  let resending = $state(false);
+  let resent = $state(false);
 </script>
 
+<svelte:head>
+  <title>Verify your email — Kobo Console</title>
+</svelte:head>
+
 <div class="w-full text-center">
-  <div class="mb-8 flex justify-center">
-    <div class="h-16 w-16 rounded-full bg-element border-2 border-border flex items-center justify-center">
-      <Mail size={24} class="text-primary" />
+  <!-- Logo -->
+  <div class="mb-10">
+    <img src="/logo.png" alt="Kobo" class="h-10 w-auto mx-auto" style="filter: var(--logo-filter);" />
+  </div>
+
+  <!-- Main Card -->
+  <div class="bg-element border border-border rounded-[10px] px-12 py-10 shadow-sm flex flex-col items-center max-w-[420px] mx-auto">
+    
+    <!-- Icon -->
+    <div class="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+      <Mail class="text-primary" size={15} />
+    </div>
+
+    <!-- Headers -->
+    <h1 class="text-2xl font-inter font-bold text-main tracking-tight mb-3">Check your inbox</h1>
+    
+    <p class="text-sm text-muted leading-relaxed max-w-[280px] mb-8">
+      We've sent a verification link to 
+      {#if data.email}
+        <strong class="text-main font-semibold">{data.email}</strong>.
+      {:else}
+        your email address.
+      {/if}
+      <br/><br/>
+      Please click the link to activate your account.
+    </p>
+
+    <!-- Error state -->
+    {#if data?.error}
+      <div class="mb-6 w-full text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-[6px] px-4 py-3 text-center">
+        {data.error}
+      </div>
+    {/if}
+
+    <!-- Divider -->
+    <div class="w-full border-t border-border pt-6">
+      {#if resent}
+        <div class="flex flex-col items-center gap-2">
+          <CheckCircle2 class="text-primary" size={20} />
+          <p class="text-sm text-main font-medium">Verification email sent</p>
+          <p class="text-xs text-muted">Check your spam folder if you don't see it.</p>
+        </div>
+      {:else}
+        <p class="text-sm text-muted mb-3">Didn't receive an email?</p>
+        <form method="POST" action="?/resend" class="w-full" use:enhance={() => {
+          resending = true;
+          return async ({ result, update }) => {
+            resending = false;
+            if (result.type === 'success') {
+              resent = true;
+            } else if (result.type === 'failure') {
+              toast.error((result.data?.error as string) || 'Failed to resend. Please try again.');
+            }
+            await update({ reset: false });
+          };
+        }}>
+          <button
+            type="submit"
+            disabled={resending}
+            class="w-full flex items-center justify-center gap-2 rounded-[8px] bg-primary text-primary-text px-6 py-2.5 text-sm font-bold tracking-tight shadow-md hover:opacity-90 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {#if resending}
+              <RefreshCw size={14} class="animate-spin" />
+              Resending…
+            {:else}
+              Resend verification email
+            {/if}
+          </button>
+        </form>
+      {/if}
     </div>
   </div>
-  
-  <h1 class="text-2xl font-basier font-semibold text-main mb-2">Check your email</h1>
-  <p class="text-muted text-sm mt-2 mb-8 max-w-sm mx-auto">
-    We sent a verification link to your email address. Please click the link to verify your account and access the console.
-  </p>
 
-  <Card>
-    <div class="space-y-4">
-      <p class="text-sm text-main">Didn't receive an email?</p>
-      <Button variant="ghost" class="w-full">Resend Verification Email</Button>
-    </div>
-  </Card>
-
-  <div class="mt-8">
-    <a href="/login" class="text-sm font-medium text-muted hover:text-primary transition-colors">
-      ← Back to login
+  <!-- Footer link -->
+  <p class="text-center text-sm text-muted mt-8">
+    <a href="/auth/login" class="inline-flex items-center gap-1.5 font-medium hover:text-primary transition-colors">
+      <ArrowLeft size={13} />
+      Back to login
     </a>
-  </div>
+  </p>
 </div>

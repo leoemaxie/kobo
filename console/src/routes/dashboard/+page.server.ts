@@ -3,9 +3,11 @@ import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const user = locals.user;
-	if (!user || !user.integratorId) {
-		throw redirect(302, '/auth/login');
-	}
+	if (!user) throw redirect(302, '/auth/login');
+
+	// If the user hasn't created a workspace yet, send them to onboarding
+	if (!user.integratorId) throw redirect(302, '/dashboard/onboarding');
+
 
 	// This data will eventually come from the Kobo Core API (usage stats/metrics)
 	// For now, we provide the 1-to-1 mapping expected by the frontend components.

@@ -1,5 +1,7 @@
 <script lang="ts">
   import { Lock, Eye, EyeOff, Save } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
+  import { toast } from '$lib/state/toast.svelte';
 
   let password = $state('');
   let confirmPassword = $state('');
@@ -20,7 +22,20 @@
 
   <!-- Card -->
   <div class="bg-element border border-border rounded-[10px] px-16 py-8 shadow-sm">
-    <form class="space-y-6" method="POST">
+    <form class="space-y-6" method="POST" use:enhance={() => {
+      loading = true;
+      return async ({ result, update }) => {
+        loading = false;
+        if (result.type === 'failure') {
+          toast.error(result.data?.error as string || 'Password reset failed. Please try again.');
+        } else if (result.type === 'error') {
+          toast.error('An unexpected server error occurred.');
+        } else if (result.type === 'redirect' || result.type === 'success') {
+          toast.success('Password updated successfully!');
+        }
+        await update();
+      };
+    }}>
       
       <!-- New Password field -->
       <div class="space-y-1.5">
@@ -31,6 +46,7 @@
           </div>
           <input
             id="password"
+            name="password"
             type={showPassword ? 'text' : 'password'}
             bind:value={password}
             required
@@ -61,6 +77,7 @@
           </div>
           <input
             id="confirmPassword"
+            name="confirmPassword"
             type={showConfirmPassword ? 'text' : 'password'}
             bind:value={confirmPassword}
             required

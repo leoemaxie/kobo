@@ -1,4 +1,5 @@
 import {
+  pgTable,
   pgSchema,
   uuid,
   text,
@@ -13,15 +14,14 @@ import {
 export const consoleSchema = pgSchema('console');
 
 export const webhookStatusEnum = consoleSchema.enum('webhook_status', ['active', 'disabled']);
-
 export const environmentEnum = consoleSchema.enum('environment', ['sandbox', 'production']);
 export const integratorStatusEnum = consoleSchema.enum('integrator_status', [
   'active',
   'suspended',
 ]);
 
-export const apiIntegrators = consoleSchema.table('api_integrators', {
-  id: uuid('id').primaryKey().defaultRandom(),
+export const apiIntegrators = pgTable('api_integrators', {
+  id: uuid('id').primaryKey(),
   name: text('name').notNull(),
   plan: text('plan').notNull().default('pay_as_you_go'),
   status: integratorStatusEnum('status').notNull().default('active'),
@@ -32,7 +32,7 @@ export const apiIntegrators = consoleSchema.table('api_integrators', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const apiCredentials = consoleSchema.table(
+export const apiCredentials = pgTable(
   'api_credentials',
   {
     id: uuid('id').primaryKey().defaultRandom(),
@@ -42,19 +42,19 @@ export const apiCredentials = consoleSchema.table(
     secretHash: text('secret_hash').notNull(),
     label: text('label'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    createdBy: uuid('created_by').notNull(),
+    createdBy: uuid('created_by'),
     rotatedAt: timestamp('rotated_at', { withTimezone: true }),
     revokedAt: timestamp('revoked_at', { withTimezone: true }),
     revokedBy: uuid('revoked_by'),
     revokedReason: text('revoked_reason'),
   },
-  (table) => ({
-    keyIdIdx: uniqueIndex('idx_api_credentials_key_id').on(table.keyId),
-    integratorEnvIdx: index('idx_api_credentials_integrator_env').on(
+  (table) => [
+    uniqueIndex('idx_api_credentials_key_id').on(table.keyId),
+    index('idx_api_credentials_integrator_env').on(
       table.integratorId,
       table.environment
     ),
-  })
+  ]
 );
 
 export const userRoleEnum = consoleSchema.enum('user_role', ['owner', 'member', 'superadmin']);
@@ -71,9 +71,9 @@ export const users = consoleSchema.table(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
-    emailIdx: uniqueIndex('idx_users_email').on(table.email),
-  })
+  (table) => [
+    uniqueIndex('idx_users_email').on(table.email),
+  ]
 );
 
 export const sessions = consoleSchema.table(
@@ -85,9 +85,9 @@ export const sessions = consoleSchema.table(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     revokedAt: timestamp('revoked_at', { withTimezone: true }),
   },
-  (table) => ({
-    userIdx: index('idx_sessions_user').on(table.userId),
-  })
+  (table) => [
+    index('idx_sessions_user').on(table.userId),
+  ]
 );
 
 export const emailVerificationTokens = consoleSchema.table('email_verification_tokens', {
@@ -121,13 +121,13 @@ export const billingRecords = consoleSchema.table(
     adjustmentReason: text('adjustment_reason'),
     syncedAt: timestamp('synced_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
-    integratorPeriodIdx: uniqueIndex('idx_billing_integrator_period_env').on(
+  (table) => [
+    uniqueIndex('idx_billing_integrator_period_env').on(
       table.integratorId,
       table.period,
       table.environment
     ),
-  })
+  ]
 );
 
 export const webhooks = consoleSchema.table('webhooks', {

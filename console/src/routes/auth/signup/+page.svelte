@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Building2, Mail, Lock, Eye, EyeOff, UserPlus } from '@lucide/svelte';
+  import { Mail, Lock, Eye, EyeOff, UserPlus } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
+  import { toast } from '$lib/state/toast.svelte';
 
-  let companyName = $state('');
   let email = $state('');
   let password = $state('');
   let showPassword = $state(false);
@@ -21,25 +22,20 @@
 
   <!-- Card -->
   <div class="bg-element border border-border rounded-[10px] px-16 py-6 shadow-sm">
-    <form class="space-y-6" method="POST">
-      
-      <!-- Company field -->
-      <div class="space-y-1.5">
-        <label for="company" class="block text-xs font-semibold text-muted uppercase tracking-widest">Company / Integrator Name</label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Building2 size={15} class="text-subtle" />
-          </div>
-          <input
-            id="company"
-            type="text"
-            bind:value={companyName}
-            required
-            placeholder="Acme Corp"
-            class="block w-full rounded-[8px] border border-border bg-background pl-10 pr-4 py-3 text-sm text-main placeholder-subtle focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
-          />
-        </div>
-      </div>
+    <form class="space-y-6" method="POST" use:enhance={() => {
+      loading = true;
+      return async ({ result, update }) => {
+        loading = false;
+        if (result.type === 'failure') {
+          toast.error(result.data?.error as string || 'Signup failed. Please check your details.');
+        } else if (result.type === 'error') {
+          toast.error('An unexpected server error occurred.');
+        }
+        // Don't toast on redirect — user is navigating away
+        await update();
+      };
+    }}>
+
 
       <!-- Email field -->
       <div class="space-y-1.5">
@@ -50,6 +46,7 @@
           </div>
           <input
             id="email"
+            name="email"
             type="email"
             bind:value={email}
             required
@@ -68,6 +65,7 @@
           </div>
           <input
             id="password"
+            name="password"
             type={showPassword ? 'text' : 'password'}
             bind:value={password}
             required

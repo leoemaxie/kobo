@@ -1,13 +1,22 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
+import { env } from '$env/dynamic/private';
 import * as schema from './schema';
 
-// This is a placeholder for the actual env variable
-const connectionString = process.env.DATABASE_URL || 'postgres://kobo_console_app:pass@localhost:5432/kobo';
+const connectionString = env.DATABASE_URL;
 
-const queryClient = postgres(connectionString);
+if (!connectionString) {
+    throw new Error('DATABASE_URL is not set in the environment variables');
+}
+
+const queryClient = postgres(connectionString, {
+    ssl: 'require',
+    max: 1,
+    connection: {
+        search_path: 'public,console'
+    }
+});
 export const db = drizzle(queryClient, { schema });
 
-// Export inferred types for convenience in app.d.ts
 export type User = typeof schema.users.$inferSelect;
 export type Session = typeof schema.sessions.$inferSelect;

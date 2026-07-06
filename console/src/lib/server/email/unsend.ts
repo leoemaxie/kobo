@@ -1,7 +1,6 @@
 import { env } from '$env/dynamic/private';
 
-// Assuming unosend endpoint, fallback to a generic if unosend.com is different.
-const UNSEND_API_URL = env.UNSEND_API_URL || 'https://api.unosend.com/v1/emails';
+const UNSEND_API_URL = env.UNSEND_API_URL || 'https://api.unosend.co/v1/emails';
 
 export interface EmailPayload {
 	to: string | string[];
@@ -18,7 +17,8 @@ export async function sendEmail(payload: EmailPayload) {
 		return { success: false, error: 'Missing API Key' };
 	}
 
-	const from = payload.from || 'Kobo Support <support@kobo.dev>';
+	const domain = env.KOBO_DOMAIN || 'kobo.dev';
+	const from = payload.from || `Kobo Support <support@${domain}>`;
 	const to = Array.isArray(payload.to) ? payload.to : [payload.to];
 
 	try {

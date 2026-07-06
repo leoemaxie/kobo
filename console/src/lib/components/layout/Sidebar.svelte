@@ -5,6 +5,8 @@
     LayoutDashboard, Key, CreditCard, Settings, Users,
     Webhook, BookOpen, LifeBuoy, ChevronDown
   } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
+  import { toast } from '$lib/state/toast.svelte';
 
   const navItems = [
     { name: 'Overview', path: '/dashboard', icon: LayoutDashboard },
@@ -156,7 +158,16 @@
       <LifeBuoy size={15} color="var(--text-subtle)" /> Support
     </a>
     <div style="height: 1px; background: var(--border-color); margin: 8px 6px;"></div>
-    <form method="POST" action="/auth/logout">
+    <form method="POST" action="/auth/logout" use:enhance={() => {
+      return async ({ result, update }) => {
+        if (result.type === 'failure' || result.type === 'error') {
+          toast.error('Logout failed.');
+        } else {
+          toast.success('Successfully logged out.');
+        }
+        await update();
+      };
+    }}>
       <button type="submit" style="
         display: flex; align-items: center; gap: 10px; padding: 7px 10px;
         border-radius: 8px; text-decoration: none; font-size: 13px; width: 100%;

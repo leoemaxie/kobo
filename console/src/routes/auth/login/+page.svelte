@@ -1,6 +1,8 @@
 <script lang="ts">
   import Button from '$lib/components/ui/Button.svelte';
   import { Mail, Lock, Eye, EyeOff, LogIn } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
+  import { toast } from '$lib/state/toast.svelte';
 
   let email = $state('');
   let password = $state('');
@@ -19,7 +21,17 @@
 
   <!-- Card -->
   <div class="bg-element border border-border rounded-[10px] px-16 py-6 shadow-sm">
-    <form class="space-y-6" method="POST">
+    <form class="space-y-6" method="POST" use:enhance={() => {
+      loading = true;
+      return async ({ result, update }) => {
+        loading = false;
+        if (result.type === 'failure') {
+          toast.error(result.data?.error as string || 'Login failed. Please check your credentials.');
+        } else if (result.type === 'error') {
+          toast.error('An unexpected server error occurred.');
+        }
+        await update();
+    }}}>
       
       <!-- Email field -->
       <div class="space-y-1.5">
@@ -30,6 +42,7 @@
           </div>
           <input
             id="email"
+            name="email"
             type="email"
             bind:value={email}
             required
@@ -51,6 +64,7 @@
           </div>
           <input
             id="password"
+            name="password"
             type={showPassword ? 'text' : 'password'}
             bind:value={password}
             required

@@ -1,55 +1,66 @@
 export function verificationEmailTemplate(token: string, baseUrl: string = 'https://console.kobo.dev'): string {
 	const verifyUrl = `${baseUrl}/auth/verify-email?token=${token}`;
 	return `
-		<div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #080808; background-color: #fcfcfc; border: 1px solid #eee; border-radius: 8px;">
-			<h1 style="font-size: 24px; font-weight: 700; color: #080808; margin-top: 0;">Verify your email</h1>
-			<p style="font-size: 15px; color: #555; line-height: 1.6;">
-				Welcome to Kobo. Please verify your email address to complete your registration and unlock your sandbox environment.
-			</p>
-			<div style="margin: 32px 0;">
-				<a href="${verifyUrl}" style="display: inline-block; padding: 12px 24px; background-color: #080808; color: #C0FF00; text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 14px;">
+		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
+			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">
+				<div style="margin-bottom: 24px;">
+					<span style="font-size: 28px; font-weight: 800; color: #c6f135; letter-spacing: -1px;">k.</span>
+				</div>
+				<h1 style="font-size: 24px; font-weight: 700; color: #f5f5f5; margin: 0 0 16px 0; letter-spacing: -0.5px;">Verify your email</h1>
+				<p style="font-size: 15px; color: #888; line-height: 1.6; margin: 0 0 32px 0;">
+					Welcome to Kobo. Please verify your email address to complete your registration and unlock your environment.
+				</p>
+				<a href="${verifyUrl}" style="display: inline-block; padding: 14px 28px; background-color: #c6f135; color: #080808; text-decoration: none; font-weight: 700; border-radius: 6px; font-size: 14px; letter-spacing: -0.2px;">
 					Verify Email Address
 				</a>
+				<p style="font-size: 13px; color: #555; margin-top: 40px; padding-top: 24px; border-top: 1px solid #222;">
+					If you did not request this, please ignore this email. The link will expire in 24 hours.
+				</p>
 			</div>
-			<p style="font-size: 13px; color: #888; margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee;">
-				If you did not request this, please ignore this email.
-			</p>
 		</div>
 	`;
 }
 
 export function keyRotationAlertTemplate(environment: string, keyId: string): string {
 	return `
-		<div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #080808; border: 1px solid #eee; border-radius: 8px;">
-			<h1 style="font-size: 20px; font-weight: 700; margin-top: 0;">API Key Rotated</h1>
-			<p style="font-size: 15px; color: #555; line-height: 1.6;">
-				Your Kobo API key for the <strong>${environment}</strong> environment has been successfully rotated.
-			</p>
-			<div style="background: #f5f5f5; padding: 12px; border-radius: 6px; margin: 20px 0;">
-				<p style="font-family: monospace; font-size: 13px; color: #333; margin: 0;">
-					<strong>Key ID:</strong> ${keyId}
+		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
+			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px;">
+				<div style="margin-bottom: 24px; text-align: center;">
+					<span style="font-size: 28px; font-weight: 800; color: #c6f135; letter-spacing: -1px;">k.</span>
+				</div>
+				<h1 style="font-size: 20px; font-weight: 700; color: #f5f5f5; margin: 0 0 16px 0; letter-spacing: -0.5px; text-align: center;">API Key Rotated</h1>
+				<p style="font-size: 15px; color: #888; line-height: 1.6; margin: 0 0 24px 0; text-align: center;">
+					Your Kobo API key for the <strong>${environment}</strong> environment has been successfully rotated.
+				</p>
+				<div style="background: #0f0f0f; border: 1px solid #1e1e1e; padding: 16px; border-radius: 8px; margin: 0 0 24px 0;">
+					<p style="font-family: monospace; font-size: 13px; color: #aaa; margin: 0;">
+						<strong style="color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-right: 8px;">Key ID</strong> ${keyId}
+					</p>
+				</div>
+				<p style="font-size: 14px; color: #666; line-height: 1.5; margin: 0; padding: 16px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; color: #f87171;">
+					The previous secret key is no longer valid. Please ensure your infrastructure has been updated with the new secret.
 				</p>
 			</div>
-			<p style="font-size: 14px; color: #444; line-height: 1.5;">
-				The previous secret key is no longer valid. Please ensure your infrastructure has been updated with the new secret.
-			</p>
 		</div>
 	`;
 }
 
 export function billingNoticeTemplate(period: string, amount: string, invoiceUrl: string = 'https://console.kobo.dev/dashboard/billing'): string {
 	return `
-		<div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #080808; border: 1px solid #eee; border-radius: 8px;">
-			<h1 style="font-size: 20px; font-weight: 700; margin-top: 0;">New Invoice Available</h1>
-			<p style="font-size: 15px; color: #555; line-height: 1.6;">
-				Your invoice for the period of <strong>${period}</strong> is now available in your Kobo Console.
-			</p>
-			<div style="margin: 24px 0;">
-				<p style="font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 4px 0;">Amount Due</p>
-				<p style="font-size: 24px; font-weight: 600; color: #080808; margin: 0;">${amount}</p>
-			</div>
-			<div style="margin: 32px 0 16px 0;">
-				<a href="${invoiceUrl}" style="display: inline-block; padding: 10px 20px; background-color: #080808; color: #C0FF00; text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 13px;">
+		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
+			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">
+				<div style="margin-bottom: 24px;">
+					<span style="font-size: 28px; font-weight: 800; color: #c6f135; letter-spacing: -1px;">k.</span>
+				</div>
+				<h1 style="font-size: 20px; font-weight: 700; color: #f5f5f5; margin: 0 0 16px 0; letter-spacing: -0.5px;">New Invoice Available</h1>
+				<p style="font-size: 15px; color: #888; line-height: 1.6; margin: 0 0 32px 0;">
+					Your invoice for the period of <strong style="color: #aaa;">${period}</strong> is now available in your Kobo Console.
+				</p>
+				<div style="background: #0f0f0f; border: 1px solid #1e1e1e; padding: 24px; border-radius: 8px; margin: 0 0 32px 0;">
+					<p style="font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 8px 0; font-weight: 600;">Amount Due</p>
+					<p style="font-size: 32px; font-weight: 700; color: #c6f135; margin: 0; letter-spacing: -1px;">${amount}</p>
+				</div>
+				<a href="${invoiceUrl}" style="display: inline-block; padding: 14px 28px; background-color: #c6f135; color: #080808; text-decoration: none; font-weight: 700; border-radius: 6px; font-size: 14px; letter-spacing: -0.2px;">
 					View & Pay Invoice
 				</a>
 			</div>
@@ -60,19 +71,22 @@ export function billingNoticeTemplate(period: string, amount: string, invoiceUrl
 export function passwordResetTemplate(token: string, baseUrl: string = 'https://console.kobo.dev'): string {
 	const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
 	return `
-		<div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #080808; border: 1px solid #eee; border-radius: 8px;">
-			<h1 style="font-size: 20px; font-weight: 700; margin-top: 0;">Reset Your Password</h1>
-			<p style="font-size: 15px; color: #555; line-height: 1.6;">
-				We received a request to reset the password for your Kobo Console account.
-			</p>
-			<div style="margin: 32px 0 16px 0;">
-				<a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #080808; color: #C0FF00; text-decoration: none; font-weight: 600; border-radius: 6px; font-size: 13px;">
+		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
+			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">
+				<div style="margin-bottom: 24px;">
+					<span style="font-size: 28px; font-weight: 800; color: #c6f135; letter-spacing: -1px;">k.</span>
+				</div>
+				<h1 style="font-size: 20px; font-weight: 700; color: #f5f5f5; margin: 0 0 16px 0; letter-spacing: -0.5px;">Reset Your Password</h1>
+				<p style="font-size: 15px; color: #888; line-height: 1.6; margin: 0 0 32px 0;">
+					We received a request to reset the password for your Kobo Console account.
+				</p>
+				<a href="${resetUrl}" style="display: inline-block; padding: 14px 28px; background-color: #c6f135; color: #080808; text-decoration: none; font-weight: 700; border-radius: 6px; font-size: 14px; letter-spacing: -0.2px;">
 					Reset Password
 				</a>
+				<p style="font-size: 13px; color: #555; margin-top: 40px; padding-top: 24px; border-top: 1px solid #222;">
+					If you did not request this password reset, please ignore this email or contact support if you have concerns.
+				</p>
 			</div>
-			<p style="font-size: 13px; color: #888; margin-top: 32px; padding-top: 16px; border-top: 1px solid #eee;">
-				If you did not request this password reset, please ignore this email or contact support if you have concerns.
-			</p>
 		</div>
 	`;
 }

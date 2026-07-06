@@ -1,5 +1,6 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 import { validateSession } from '$lib/server/auth/session';
+import { dev } from '$app/environment';
 
 const PUBLIC_ROUTES = ['/auth/login', '/auth/signup', '/auth/verify-email', '/auth/forgot-password', '/auth/reset-password'];
 const SUPERADMIN_PREFIX = '/admin';
@@ -39,5 +40,15 @@ export const handle: Handle = async ({ event, resolve }) => {
     return new Response('Not found', { status: 404 });
   }
 
-  return resolve(event);
+  const startTime = Date.now();
+  const response = await resolve(event);
+  const duration = Date.now() - startTime;
+
+  if (dev) {
+    const isError = response.status >= 400;
+    const logPrefix = isError ? '❌' : '✅';
+    console.log(`${logPrefix} [${event.request.method}] ${path} - ${response.status} (${duration}ms)`);
+  }
+
+  return response;
 };
