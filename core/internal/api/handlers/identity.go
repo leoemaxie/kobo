@@ -30,7 +30,7 @@ func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var req dto.CreateIdentityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_request", "failed to decode request", err)
 		return
 	}
 
@@ -41,7 +41,7 @@ func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	ident, err := h.svc.Register(r.Context(), integratorID, req.ExternalReference, req.DisplayName, req.KYCTier, req.Metadata)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", err.Error())
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to create identity", err)
 		return
 	}
 
@@ -61,13 +61,13 @@ func (h *IdentityHandler) Get(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID")
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID", err)
 		return
 	}
 
 	ident, err := h.svc.Get(r.Context(), id, integratorID)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusNotFound, "not_found", "identity not found")
+		apierrors.LogAndWriteError(w, http.StatusNotFound, "not_found", "identity not found", err)
 		return
 	}
 
@@ -80,13 +80,13 @@ func (h *IdentityHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID")
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID", err)
 		return
 	}
 
 	var req dto.UpdateIdentityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_request", "failed to decode request", err)
 		return
 	}
 
@@ -97,7 +97,7 @@ func (h *IdentityHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ident, err := h.svc.UpdateProfile(r.Context(), id, integratorID, displayName, req.Metadata)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", err.Error())
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to update identity", err)
 		return
 	}
 
@@ -110,13 +110,13 @@ func (h *IdentityHandler) Close(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID")
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID", err)
 		return
 	}
 
 	var req dto.CloseIdentityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_request", "failed to decode request", err)
 		return
 	}
 
@@ -127,7 +127,7 @@ func (h *IdentityHandler) Close(w http.ResponseWriter, r *http.Request) {
 
 	err = h.accountSvc.Close(r.Context(), id, integratorID, req.Reason, req.SweepDestination)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", err.Error())
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to close identity", err)
 		return
 	}
 
@@ -140,13 +140,13 @@ func (h *IdentityHandler) Reopen(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		http.Error(w, "invalid identity ID", http.StatusBadRequest)
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_id", "invalid identity ID", err)
 		return
 	}
 
 	err = h.accountSvc.Reopen(r.Context(), id, integratorID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to reopen identity", err)
 		return
 	}
 

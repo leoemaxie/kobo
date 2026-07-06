@@ -37,7 +37,7 @@ func (h *ExceptionsHandler) ListOpen(w http.ResponseWriter, r *http.Request) {
 
 	entries, err := h.svc.ListOpen(r.Context(), integratorID, int32(limit), 0)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", "failed to get exceptions")
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to get exceptions", err)
 		return
 	}
 
@@ -51,13 +51,13 @@ func (h *ExceptionsHandler) Resolve(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "exceptionId")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid exception ID")
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_id", "invalid exception ID", err)
 		return
 	}
 
 	var req dto.ResolveExceptionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_request", "failed to decode request", err)
 		return
 	}
 
@@ -67,7 +67,7 @@ func (h *ExceptionsHandler) Resolve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.svc.Resolve(r.Context(), id, integratorID, req.ResolutionAction, req.ResolutionNotes, req.SuccessorIdentityID); err != nil {
-		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", "failed to resolve exception")
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to resolve exception", err)
 		return
 	}
 

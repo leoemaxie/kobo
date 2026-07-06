@@ -33,7 +33,7 @@ func (h *LedgerHandler) GetStatement(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "accountId")
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_id", "invalid account ID")
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_id", "invalid account ID", err)
 		return
 	}
 
@@ -59,7 +59,7 @@ func (h *LedgerHandler) GetStatement(w http.ResponseWriter, r *http.Request) {
 
 	entries, err := h.svc.GetStatements(r.Context(), id, limit, offset)
 	if err != nil {
-		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", "failed to get statements")
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to get statements", err)
 		return
 	}
 
