@@ -30,6 +30,9 @@ type Querier interface {
 	GetPendingInvoices(ctx context.Context) ([]Invoice, error)
 	UpdateInvoiceStatus(ctx context.Context, arg UpdateInvoiceStatusParams) error
 	SuspendIntegrator(ctx context.Context, integratorID uuid.UUID) error
+	GetIntegratorWalletBalance(ctx context.Context, id uuid.UUID) (int64, error)
+	UpdateIntegratorWalletBalance(ctx context.Context, arg UpdateIntegratorWalletBalanceParams) error
+	GenerateMonthlyInvoices(ctx context.Context, period string) error
 	// Calculates the sum of all 'inbound' matched transactions before the given time
 	GetLedgerOpeningBalance(ctx context.Context, arg GetLedgerOpeningBalanceParams) (int64, error)
 	GetVirtualAccountByAccountNumber(ctx context.Context, accountNumber pgtype.Text) (VirtualAccount, error)

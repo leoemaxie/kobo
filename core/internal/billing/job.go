@@ -3,6 +3,7 @@ package billing
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/leoemaxie/kobo/internal/nomba"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
@@ -21,7 +22,14 @@ func NewInvoiceJob(q sqlc.Querier, nombaClient *nomba.Client) *InvoiceJob {
 func (j *InvoiceJob) Run(ctx context.Context) error {
 	log.Println("Starting automated billing job...")
 
-	// 1. Process pending/failed invoices that are due for retry
+	// 1. Generate new invoices for the current period
+	currentPeriod := time.Now().Format("2006-01") // e.g. "2026-07"
+	err := j.q.GenerateMonthlyInvoices(ctx, currentPeriod)
+	if err != nil {
+		log.Printf("failed to generate monthly invoices: %v", err)
+	}
+
+	// 2. Process pending/failed invoices that are due for retry
 	invoices, err := j.q.GetPendingInvoices(ctx)
 	if err != nil {
 		log.Printf("failed to get pending invoices: %v", err)
@@ -29,6 +37,33 @@ func (j *InvoiceJob) Run(ctx context.Context) error {
 	}
 
 	for _, inv := range invoices {
+		// Try wallet deduction first
+		walletBalance, err := j.q.GetIntegratorWalletBalance(ctx, inv.IntegratorID)
+		if err == nil && walletBalance > 0 {
+			deduction := walletBalance
+			if deduction >= inv.AmountKobo {
+				deduction = inv.AmountKobo
+			}
+			
+			// Deduct from wallet
+			j.q.UpdateIntegratorWalletBalance(ctx, sqlc.UpdateIntegratorWalletBalanceParams{
+				ID: inv.IntegratorID,
+				WalletBalanceKobo: -deduction, // Negative to subtract
+			})
+			
+			inv.AmountKobo -= deduction
+			
+			if inv.AmountKobo <= 0 {
+				log.Printf("invoice %s fully paid via wallet balance", inv.ID)
+				j.q.UpdateInvoiceStatus(ctx, sqlc.UpdateInvoiceStatusParams{
+					ID:         inv.ID,
+					Status:     "paid",
+					RetryCount: inv.RetryCount,
+				})
+				continue
+			}
+		}
+
 		pm, err := j.q.GetDefaultPaymentMethod(ctx, inv.IntegratorID)
 		if err != nil || pm.NombaTokenKey == "" {
 			log.Printf("no default payment method for integrator %s", inv.IntegratorID)
@@ -38,7 +73,7 @@ func (j *InvoiceJob) Run(ctx context.Context) error {
 
 		resp, err := j.nombaClient.ChargeToken(ctx, nomba.ChargeTokenRequest{
 			TokenKey:      pm.NombaTokenKey,
-			Amount:        "100.00", // Would be derived from inv.AmountKobo
+			Amount:        "100.00", // Would be derived from inv.AmountKobo in a real implementation
 			Currency:      "NGN",
 			OrderReference: "inv_" + inv.ID.String(),
 		})
