@@ -24,6 +24,12 @@ type Querier interface {
 	GetIdempotencyKey(ctx context.Context, nombaReference string) (IdempotencyKey, error)
 	GetIdentityByExternalReference(ctx context.Context, arg GetIdentityByExternalReferenceParams) (Identity, error)
 	GetIdentityByID(ctx context.Context, arg GetIdentityByIDParams) (Identity, error)
+	GetIdentityByVirtualAccountID(ctx context.Context, id uuid.UUID) (GetIdentityByVirtualAccountIDRow, error)
+	InsertUsageEvent(ctx context.Context, arg InsertUsageEventParams) error
+	GetDefaultPaymentMethod(ctx context.Context, integratorID uuid.UUID) (PaymentMethod, error)
+	GetPendingInvoices(ctx context.Context) ([]Invoice, error)
+	UpdateInvoiceStatus(ctx context.Context, arg UpdateInvoiceStatusParams) error
+	SuspendIntegrator(ctx context.Context, integratorID uuid.UUID) error
 	// Calculates the sum of all 'inbound' matched transactions before the given time
 	GetLedgerOpeningBalance(ctx context.Context, arg GetLedgerOpeningBalanceParams) (int64, error)
 	GetVirtualAccountByAccountNumber(ctx context.Context, accountNumber pgtype.Text) (VirtualAccount, error)

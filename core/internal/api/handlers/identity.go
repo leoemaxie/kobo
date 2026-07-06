@@ -10,16 +10,19 @@ import (
 	"github.com/leoemaxie/kobo/internal/api/dto"
 	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
+	"github.com/leoemaxie/kobo/internal/billing"
 	"github.com/leoemaxie/kobo/internal/identity"
+	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
 type IdentityHandler struct {
 	svc        *identity.Service
 	accountSvc *account.Service
+	recorder   *billing.UsageRecorder
 }
 
-func NewIdentityHandler(svc *identity.Service, accountSvc *account.Service) *IdentityHandler {
-	return &IdentityHandler{svc: svc, accountSvc: accountSvc}
+func NewIdentityHandler(svc *identity.Service, accountSvc *account.Service, recorder *billing.UsageRecorder) *IdentityHandler {
+	return &IdentityHandler{svc: svc, accountSvc: accountSvc, recorder: recorder}
 }
 
 func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -36,6 +39,12 @@ func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
 		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", err.Error())
 		return
 	}
+
+	env := sqlc.ConsoleEnvironmentProduction
+	if middleware.GetIntegratorContext(r.Context()).IsSandbox {
+		env = sqlc.ConsoleEnvironmentSandbox
+	}
+	h.recorder.RecordAsync(integratorID, env, "account_provisioned", ident.ID.String(), 5000) // ₦50 in kobo
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

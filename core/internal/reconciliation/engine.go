@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/leoemaxie/kobo/internal/billing"
 	"github.com/leoemaxie/kobo/internal/nomba"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
@@ -19,10 +20,11 @@ type Engine interface {
 type engine struct {
 	q        sqlc.Querier
 	idemRepo IdempotencyRepository
+	recorder *billing.UsageRecorder
 }
 
-func NewEngine(q sqlc.Querier, idemRepo IdempotencyRepository) Engine {
-	return &engine{q: q, idemRepo: idemRepo}
+func NewEngine(q sqlc.Querier, idemRepo IdempotencyRepository, recorder *billing.UsageRecorder) Engine {
+	return &engine{q: q, idemRepo: idemRepo, recorder: recorder}
 }
 
 func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPayload) error {
@@ -95,6 +97,15 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 
 	if isDuplicate {
 		return nil // Already processed, return success
+	}
+
+	ident, err := e.q.GetIdentityByVirtualAccountID(ctx, account.ID)
+	if err == nil {
+		env := sqlc.ConsoleEnvironmentProduction
+		if ident.CredentialEnvironment == sqlc.ConsoleEnvironmentSandbox {
+			env = sqlc.ConsoleEnvironmentSandbox
+		}
+		e.recorder.RecordAsync(ident.IntegratorID, env, "transaction_processed", transactionID, 200) // ₦2 fee
 	}
 
 	return nil

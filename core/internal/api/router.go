@@ -15,7 +15,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
+func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, adminBillingHandler *handlers.AdminBillingHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.NotFound(func(w http.ResponseWriter, req *http.Request) {
@@ -48,6 +48,7 @@ func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityH
 
 		// Admin routes
 		r.Post("/admin/integrators", adminHandler.ProvisionIntegrator)
+		r.Post("/admin/billing/checkout", adminBillingHandler.CreateCheckout)
 
 		// Protected routes
 		r.Group(func(r chi.Router) {

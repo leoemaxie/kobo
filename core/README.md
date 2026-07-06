@@ -12,3 +12,7 @@ The backend services powering Kobo.
 ## Architecture
 
 Please refer to `docs/ARCHITECTURE.md` for package boundaries and architectural constraints.
+
+## Background Worker
+
+Refer to `docs/BACKGROUND_JOBS.md` for instructions on setting up and modifying the background worker, which acts as the system's cron job runner.

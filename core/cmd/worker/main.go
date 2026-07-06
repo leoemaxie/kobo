@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 	"time"
-
+	"github.com/leoemaxie/kobo/internal/billing"
 	"github.com/leoemaxie/kobo/internal/nomba"
 	"github.com/leoemaxie/kobo/internal/platform/config"
 	"github.com/leoemaxie/kobo/internal/platform/db"
@@ -49,6 +49,10 @@ func main() {
 	log.Println("Starting Kobo background worker...")
 
 	closureSweeper := reconciliation.NewClosureSweeper(q)
+	invoiceJob := billing.NewInvoiceJob(q, nombaClient)
+
+	billingTicker := time.NewTicker(12 * time.Hour) // Run billing job twice a day
+	defer billingTicker.Stop()
 
 	// Initial run
 	go func() {
@@ -57,6 +61,9 @@ func main() {
 		}
 		if err := closureSweeper.Run(ctx); err != nil {
 			log.Printf("Error running closure sweep: %v", err)
+		}
+		if err := invoiceJob.Run(ctx); err != nil {
+			log.Printf("Error running invoice job: %v", err)
 		}
 	}()
 
@@ -72,6 +79,10 @@ func main() {
 		case <-kycTicker.C:
 			// Run KYC check
 			log.Println("Running KYC checks (placeholder)...")
+		case <-billingTicker.C:
+			if err := invoiceJob.Run(ctx); err != nil {
+				log.Printf("Error running invoice job: %v", err)
+			}
 		}
 	}
 }
