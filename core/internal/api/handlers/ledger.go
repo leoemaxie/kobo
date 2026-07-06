@@ -39,15 +39,21 @@ func (h *LedgerHandler) GetStatement(w http.ResponseWriter, r *http.Request) {
 
 	limit := int32(50)
 	if l := r.URL.Query().Get("limit"); l != "" {
-		if parsed, err := strconv.ParseInt(l, 10, 32); err == nil {
+		if parsed, err := strconv.ParseInt(l, 10, 32); err == nil && parsed > 0 && parsed <= 1000 {
 			limit = int32(parsed)
+		} else {
+			apierrors.WriteError(w, http.StatusBadRequest, "invalid_query", "limit must be between 1 and 1000")
+			return
 		}
 	}
 
 	offset := int32(0)
 	if o := r.URL.Query().Get("offset"); o != "" {
-		if parsed, err := strconv.ParseInt(o, 10, 32); err == nil {
+		if parsed, err := strconv.ParseInt(o, 10, 32); err == nil && parsed >= 0 {
 			offset = int32(parsed)
+		} else {
+			apierrors.WriteError(w, http.StatusBadRequest, "invalid_query", "offset must be non-negative")
+			return
 		}
 	}
 

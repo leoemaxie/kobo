@@ -27,7 +27,12 @@ func (h *ExceptionsHandler) ListOpen(w http.ResponseWriter, r *http.Request) {
 	limitStr := r.URL.Query().Get("limit")
 	limit := 50
 	if limitStr != "" {
-		limit, _ = strconv.Atoi(limitStr)
+		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= 1000 {
+			limit = l
+		} else {
+			apierrors.WriteError(w, http.StatusBadRequest, "invalid_query", "limit must be between 1 and 1000")
+			return
+		}
 	}
 
 	entries, err := h.svc.ListOpen(r.Context(), integratorID, int32(limit), 0)
@@ -53,6 +58,11 @@ func (h *ExceptionsHandler) Resolve(w http.ResponseWriter, r *http.Request) {
 	var req dto.ResolveExceptionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
+		return
+	}
+
+	if req.ResolutionAction == "" {
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", "resolution_action is required")
 		return
 	}
 

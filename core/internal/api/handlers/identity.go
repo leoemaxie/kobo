@@ -34,6 +34,11 @@ func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.ExternalReference == "" || req.DisplayName == "" || req.KYCTier == "" {
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", "external_reference, display_name, and kyc_tier are required")
+		return
+	}
+
 	ident, err := h.svc.Register(r.Context(), integratorID, req.ExternalReference, req.DisplayName, req.KYCTier, req.Metadata)
 	if err != nil {
 		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", err.Error())
@@ -112,6 +117,11 @@ func (h *IdentityHandler) Close(w http.ResponseWriter, r *http.Request) {
 	var req dto.CloseIdentityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", err.Error())
+		return
+	}
+
+	if req.Reason == "" || len(req.SweepDestination) == 0 || string(req.SweepDestination) == "null" {
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", "reason and sweep_destination are required")
 		return
 	}
 

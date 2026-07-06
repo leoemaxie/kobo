@@ -31,6 +31,19 @@ func (h *AdminBillingHandler) CreateCheckout(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	if req.IntegratorID == "" {
+		http.Error(w, "integrator_id is required", http.StatusBadRequest)
+		return
+	}
+	if req.CallbackUrl == "" {
+		http.Error(w, "callback_url is required", http.StatusBadRequest)
+		return
+	}
+	if req.Type != "save_card" && req.Type != "topup" {
+		http.Error(w, "type must be 'save_card' or 'topup'", http.StatusBadRequest)
+		return
+	}
+
 	orderRef := "ref_" + uuid.New().String()
 
 	amount := "100.00" // Default for save card (authorization hold)
