@@ -42,7 +42,7 @@
         <div style="
           height: 100%; width: {m.bar}%; border-radius: 2px;
           background: {m.trend === 'up' ? 'var(--accent)' : m.trend === 'down' ? 'var(--error-color)' : 'var(--text-subtle)'};
-          box-shadow: {m.trend === 'up' ? '0 0 6px rgba(192,255,0,0.5)' : 'none'};
+          box-shadow: {m.trend === 'up' ? '0 0 6px var(--accent-glow)' : 'none'};
         "></div>
       </div>
 

@@ -7,6 +7,7 @@
   } from '@lucide/svelte';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/state/toast.svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
 
   const navItems = [
     { name: 'Overview', path: '/dashboard', icon: LayoutDashboard },
@@ -24,6 +25,11 @@
     if (path === '/dashboard') return page.url.pathname === '/dashboard';
     return page.url.pathname.startsWith(path);
   }
+
+  const consoleState = useConsoleState();
+  let workspaceName = $derived(consoleState.user?.integrator?.name || 'Workspace');
+  let workspaceInitial = $derived(workspaceName.charAt(0).toUpperCase());
+  let workspacePlan = $derived((consoleState.user?.integrator?.plan || 'Free Tier').replace(/_/g, ' '));
 </script>
 
 <aside style="
@@ -54,16 +60,16 @@
         height: 32px; width: 32px; border-radius: 6px; background: var(--accent);
         display: flex; align-items: center; justify-content: center;
         font-weight: 900; font-size: 14px; color: var(--accent-text); flex-shrink: 0;
-      ">K</div>
+      ">{workspaceInitial}</div>
       <div style="flex: 1; overflow: hidden;">
         <p style="
           font-size: 13px; font-weight: 600; color: var(--text-main); 
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;
-        ">Kobo Inc.</p>
+        ">{workspaceName}</p>
         <p style="
           font-size: 10px; font-weight: 500; color: var(--text-muted); 
           text-transform: uppercase; letter-spacing: 0.08em; margin: 2px 0 0;
-        ">Free Tier</p>
+        ">{workspacePlan}</p>
       </div>
       <ChevronDown size={13} color="var(--text-subtle)" />
     </button>

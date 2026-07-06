@@ -77,7 +77,7 @@
     ">
       <div style="
         height: 100%; width: {pct}%; background: var(--accent);
-        box-shadow: 0 0 6px rgba(192,255,0,0.5); border-radius: 2px;
+        box-shadow: 0 0 6px var(--accent-glow, rgba(192,255,0,0.5)); border-radius: 2px;
       "></div>
     </div>
     <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;">

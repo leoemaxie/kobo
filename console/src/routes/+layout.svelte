@@ -22,18 +22,22 @@
       '/auth/signup',
       '/auth/verify-email',
       '/auth/forgot-password',
-      '/auth/reset-password'
+      '/auth/reset-password',
+      '/dashboard/onboarding'
     ].includes(page.url.pathname)
   );
 </script>
 
+<svelte:head>
+  <title>Kobo Console</title>
+</svelte:head>
 {#if !isAuthRoute}
   <div style="display:flex; height:100vh; width:100vw; overflow:hidden; background:var(--bg-app);">
     <Sidebar />
     <div style="display:flex; flex-direction:column; flex:1; min-width:0; overflow:hidden;">
       <Header />
       <main style="flex:1; overflow-y:auto; padding: 2rem 3rem 4rem;">
-        {#if navigating}
+        {#if navigating.to}
           <PageSkeleton />
         {:else}
           {@render children()}

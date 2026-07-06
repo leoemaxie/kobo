@@ -2,6 +2,11 @@
   import { Search, Bell, Slash, Moon, Sun } from '@lucide/svelte';
   import { page } from '$app/state';
   import { onMount } from 'svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
+
+  const consoleState = useConsoleState();
+  let workspaceName = $derived(consoleState.user?.integrator?.name || 'Workspace');
+  let workspaceInitial = $derived(workspaceName.charAt(0).toUpperCase());
 
   let currentEnv = $state('sandbox');
   let currentTheme = $state('dark');
@@ -44,8 +49,8 @@
       height: 22px; width: 22px; border-radius: 5px; background: var(--bg-active);
       border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
       font-size: 10px; font-weight: 800; color: var(--text-main);
-    ">K</div>
-    <span style="color: var(--text-muted); padding: 2px 6px; border-radius: 5px;">Kobo Inc.</span>
+    ">{workspaceInitial}</div>
+    <span style="color: var(--text-muted); padding: 2px 6px; border-radius: 5px;">{workspaceName}</span>
     <span style="color: var(--text-subtle); font-size: 16px; font-weight: 300; margin: 0 2px;">/</span>
     <span style="
       color: var(--text-main); font-weight: 600; padding: 2px 8px; 
@@ -94,7 +99,7 @@
       <span style="
         height: 7px; width: 7px; border-radius: 50%;
         background: {currentEnv === 'sandbox' ? 'var(--text-subtle)' : 'var(--accent)'};
-        box-shadow: {currentEnv === 'production' ? '0 0 8px rgba(192,255,0,0.6)' : 'none'};
+        box-shadow: {currentEnv === 'production' ? '0 0 8px var(--accent-glow)' : 'none'};
         display: inline-block; transition: all 0.2s;
       "></span>
       {currentEnv === 'sandbox' ? 'Sandbox' : 'Production'}
@@ -154,6 +159,6 @@
       background: var(--bg-active);
       border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
       font-size: 12px; font-weight: 700; color: var(--text-main); cursor: pointer;
-    ">A</div>
+    ">{workspaceInitial}</div>
   </div>
 </header>

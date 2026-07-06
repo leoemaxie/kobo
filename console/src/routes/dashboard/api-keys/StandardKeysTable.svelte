@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { Eye, EyeOff, Copy, RefreshCw, Plus } from '@lucide/svelte';
-  import { useConsoleState } from '$lib/state/console.svelte';
+  import { Eye, EyeOff, Copy, RefreshCw, Plus, Trash2 } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
+  import { toast } from '$lib/state/toast.svelte';
+  import RollKeyModal from './RollKeyModal.svelte';
+  import { createEventDispatcher } from 'svelte';
 
-  const consoleState = useConsoleState();
-  const keys = $derived(consoleState.apiKeys);
+  export let keys: any[] = [];
+  const dispatch = createEventDispatcher();
 
-  let keyRevealed = $state(false);
+  let keyRevealed: Record<string, boolean> = {};
+  let rollingKeyId: string | null = null;
 
   const cols = ['NAME', 'KEY ID', 'SECRET KEY', 'LAST USED', 'CREATED', ''];
 </script>
@@ -17,26 +21,26 @@
   ">
     <p style="
       font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.1em; color: #555; margin: 0;
+      letter-spacing: 0.1em; color: var(--text-subtle); margin: 0;
     ">Standard Keys</p>
-    <button style="
+    <button on:click={() => dispatch('create')} style="
       display: flex; align-items: center; gap: 5px;
       border: 1px solid #2a2a2a; border-radius: 6px;
-      background: #111; padding: 5px 10px;
-      font-size: 11px; font-weight: 600; color: #888; cursor: pointer;
+      background: var(--bg-sidebar); padding: 5px 10px;
+      font-size: 11px; font-weight: 600; color: var(--text-muted); cursor: pointer;
     ">
       <Plus size={12} /> Create secret key
     </button>
   </div>
 
-  <div style="border: 1px solid #1e1e1e; border-radius: 8px; overflow: hidden;">
+  <div style="border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;">
     <!-- Header -->
     <div style="
       display: grid; grid-template-columns: 1fr 1.4fr 1.6fr 90px 100px 72px;
-      padding: 9px 16px; background: #0d0d0d; border-bottom: 1px solid #1e1e1e;
+      padding: 9px 16px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border-subtle);
     ">
       {#each cols as col}
-        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: #444; text-transform: uppercase;">
+        <span style="font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase;">
           {col}
         </span>
       {/each}
@@ -45,39 +49,61 @@
     {#each keys as k}
       <div style="
         display: grid; grid-template-columns: 1fr 1.4fr 1.6fr 90px 100px 72px;
-        padding: 11px 16px; align-items: center; border-bottom: 1px solid #111;
+        padding: 11px 16px; align-items: center; border-bottom: 1px solid var(--bg-sidebar);
       ">
         <span style="font-size: 14px; font-weight: 500; color: #C8C8C8;">{k.name}</span>
 
-        <code style="font-family: monospace; font-size: 13px; color: #888;">{k.id}</code>
+        <code style="font-family: monospace; font-size: 13px; color: var(--text-muted);">{k.id}</code>
 
         <div style="display: flex; align-items: center; gap: 8px;">
-          <code style="font-family: monospace; font-size: 13px; color: {keyRevealed ? '#C8C8C8' : '#555'};">
-            {keyRevealed ? k.secret : '••••••••••••••••••'}
+          <code style="font-family: monospace; font-size: 13px; color: {keyRevealed[k.id] ? '#C8C8C8' : 'var(--text-subtle)'};">
+            {keyRevealed[k.id] ? k.secret : '••••••••••••••••••'}
           </code>
           <button
-            onclick={() => (keyRevealed = !keyRevealed)}
-            style="background: none; border: none; cursor: pointer; color: #555; padding: 0; display: flex;"
+            on:click={() => (keyRevealed[k.id] = !keyRevealed[k.id])}
+            style="background: none; border: none; cursor: pointer; color: var(--text-subtle); padding: 0; display: flex;"
             aria-label="Toggle secret"
           >
-            {#if keyRevealed}<EyeOff size={13} />{:else}<Eye size={13} />{/if}
+            {#if keyRevealed[k.id]}<EyeOff size={13} />{:else}<Eye size={13} />{/if}
           </button>
         </div>
 
-        <span style="font-family: monospace; font-size: 13px; color: #555;">{k.lastUsed}</span>
-        <span style="font-family: monospace; font-size: 13px; color: #555;">{k.created}</span>
+        <span style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">{k.lastUsed}</span>
+        <span style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">{k.created}</span>
 
         <div style="display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
-          <button style="background: none; border: none; cursor: pointer; color: #555; padding: 0; display: flex;"
-            title="Copy key">
+          <button on:click={() => { navigator.clipboard.writeText(k.id); toast.success('Key ID copied'); }} 
+            style="background: none; border: none; cursor: pointer; color: var(--text-subtle); padding: 0; display: flex;"
+            title="Copy key ID">
             <Copy size={13} />
           </button>
-          <button style="background: none; border: none; cursor: pointer; color: #555; padding: 0; display: flex;"
+          <button on:click={() => rollingKeyId = k.id}
+            style="background: none; border: none; cursor: pointer; color: var(--text-subtle); padding: 0; display: flex;"
             title="Roll key">
             <RefreshCw size={13} />
           </button>
+          <form method="POST" action="?/revokeKey" use:enhance={() => {
+            return async ({ result, update }) => {
+              if (result.type === 'success') {
+                toast.success('Key revoked');
+              } else {
+                toast.error(result.data?.error || 'Failed to revoke key');
+              }
+              await update();
+            };
+          }} style="display: inline-block;">
+            <input type="hidden" name="keyId" value={k.id} />
+            <button type="submit" style="background: none; border: none; cursor: pointer; color: var(--text-subtle); padding: 0; display: flex;"
+              title="Revoke key" on:click={(e) => { if(!confirm('Are you sure you want to revoke this key?')) e.preventDefault(); }}>
+              <Trash2 size={13} />
+            </button>
+          </form>
         </div>
       </div>
     {/each}
   </div>
 </div>
+
+{#if rollingKeyId}
+  <RollKeyModal keyId={rollingKeyId} onClose={() => rollingKeyId = null} />
+{/if}

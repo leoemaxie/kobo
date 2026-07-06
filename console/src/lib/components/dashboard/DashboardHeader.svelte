@@ -15,7 +15,7 @@
       ">Overview</h1>
       <span style="
         display: inline-flex; align-items: center; gap: 5px;
-        background: rgba(192,255,0,0.08); border: 1px solid rgba(192,255,0,0.2);
+        background: var(--accent-transparent); border: 1px solid var(--accent-border);
         border-radius: 4px; padding: 2px 7px;
         font-size: 12px; font-weight: 700; text-transform: uppercase;
         letter-spacing: 0.1em; color: var(--accent);

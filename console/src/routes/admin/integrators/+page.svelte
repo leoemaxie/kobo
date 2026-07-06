@@ -1,13 +1,14 @@
 <script lang="ts">
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  import { Search, Ban, CheckCircle, MoreHorizontal } from '@lucide/svelte';
-  import { useConsoleState } from '$lib/state/console.svelte';
+  import { Search, Ban, CheckCircle, MoreHorizontal, Play } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
+  import { toast } from '$lib/state/toast.svelte';
 
-  const consoleState = useConsoleState();
-  const integrators = $derived(consoleState.adminIntegrators);
+  export let data;
+  const integrators = data.integrators;
 
-  let searchQuery = $state('');
+  let searchQuery = '';
 </script>
 
 <div class="space-y-6">
@@ -64,18 +65,47 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-smoke">{integrator.joined}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-2">
               {#if !integrator.prodAccess && integrator.status === 'active'}
-                <Button variant="pill" class="!px-2 !py-1 text-xs gap-1">
-                  <CheckCircle size={12} /> Grant Prod
-                </Button>
+                <form method="POST" action="?/grantProduction" use:enhance={() => {
+                  return async ({ result, update }) => {
+                    if (result.type === 'success') toast.success('Granted production access');
+                    else toast.error(result.data?.error || 'Failed to grant access');
+                    await update();
+                  };
+                }}>
+                  <input type="hidden" name="id" value={integrator.id} />
+                  <Button type="submit" variant="pill" class="!px-2 !py-1 text-xs gap-1">
+                    <CheckCircle size={12} /> Grant Prod
+                  </Button>
+                </form>
               {/if}
+              
               {#if integrator.status === 'active'}
-                <button class="text-smoke hover:text-red-400 transition-colors" title="Suspend Integrator">
-                  <Ban size={16} />
-                </button>
+                <form method="POST" action="?/suspendIntegrator" use:enhance={() => {
+                  return async ({ result, update }) => {
+                    if (result.type === 'success') toast.success('Integrator suspended');
+                    else toast.error(result.data?.error || 'Failed to suspend');
+                    await update();
+                  };
+                }}>
+                  <input type="hidden" name="id" value={integrator.id} />
+                  <button type="submit" on:click={(e) => { if(!confirm('Suspend integrator?')) e.preventDefault(); }} class="text-smoke hover:text-red-400 transition-colors mt-1.5" title="Suspend Integrator">
+                    <Ban size={16} />
+                  </button>
+                </form>
+              {:else}
+                <form method="POST" action="?/reinstateIntegrator" use:enhance={() => {
+                  return async ({ result, update }) => {
+                    if (result.type === 'success') toast.success('Integrator reinstated');
+                    else toast.error(result.data?.error || 'Failed to reinstate');
+                    await update();
+                  };
+                }}>
+                  <input type="hidden" name="id" value={integrator.id} />
+                  <button type="submit" class="text-smoke hover:text-electric-lime transition-colors mt-1.5" title="Reinstate Integrator">
+                    <Play size={16} />
+                  </button>
+                </form>
               {/if}
-              <button class="text-smoke hover:text-electric-lime transition-colors" title="More Options">
-                <MoreHorizontal size={16} />
-              </button>
             </td>
           </tr>
         {/each}
