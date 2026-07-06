@@ -28,7 +28,7 @@
     </div>
 
     {#each invoices as inv}
-      <div role="row" style="
+      <div role="row" tabindex="0" style="
         display: grid; grid-template-columns: 1.4fr 1fr 1fr 80px 100px 40px;
         padding: 11px 16px; align-items: center; border-bottom: 1px solid var(--bg-sidebar);
         transition: background 0.1s;

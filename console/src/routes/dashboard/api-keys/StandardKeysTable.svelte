@@ -87,7 +87,7 @@
               if (result.type === 'success') {
                 toast.success('Key revoked');
               } else {
-                toast.error(result.data?.error || 'Failed to revoke key');
+                toast.error((result as any).data?.error || 'Failed to revoke key');
               }
               await update();
             };

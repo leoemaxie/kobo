@@ -40,7 +40,7 @@
                 {secretRevealed[ep.id] ? ep.secret : '••••••••••••••••••'}
               </code>
               <button
-                on:click={() => (secretRevealed[ep.id] = !secretRevealed[ep.id])}
+                onclick={() => (secretRevealed[ep.id] = !secretRevealed[ep.id])}
                 style="background: none; border: none; cursor: pointer; color: var(--text-subtle); padding: 0; display: flex;"
               >
                 {#if secretRevealed[ep.id]}<EyeOff size={13} />{:else}<Eye size={13} />{/if}
@@ -54,21 +54,21 @@
             </div>
           </td>
           <td style="padding: 16px 20px; text-align: right; position: relative;">
-            <button on:click={() => openDropdownId = openDropdownId === ep.id ? null : ep.id} style="background: transparent; border: none; color: var(--text-subtle); cursor: pointer; padding: 4px;"><MoreVertical size={16} /></button>
+            <button onclick={() => openDropdownId = openDropdownId === ep.id ? null : ep.id} style="background: transparent; border: none; color: var(--text-subtle); cursor: pointer; padding: 4px;"><MoreVertical size={16} /></button>
             
             {#if openDropdownId === ep.id}
-              <div class="absolute right-6 top-10 w-36 bg-carbon border border-iron rounded-md shadow-lg py-1 z-10" on:mouseleave={() => openDropdownId = null}>
+              <div role="menu" tabindex="-1" class="absolute right-6 top-10 w-36 bg-element border border-border rounded-md shadow-lg py-1 z-10" onmouseleave={() => openDropdownId = null}>
                 <form method="POST" action="?/toggleEndpoint" use:enhance={() => {
                   return async ({ result, update }) => {
                     if (result.type === 'success') toast.success('Status updated');
-                    else toast.error(result.data?.error || 'Failed to update');
+                    else toast.error((result as any).data?.error || 'Failed to update');
                     openDropdownId = null;
                     await update();
                   };
                 }}>
                   <input type="hidden" name="id" value={ep.id} />
                   <input type="hidden" name="currentStatus" value={ep.status} />
-                  <button type="submit" class="w-full text-left px-4 py-2 text-sm text-paper hover:bg-graphite transition-colors">
+                  <button type="submit" class="w-full text-left px-4 py-2 text-sm text-main hover:bg-element-hover transition-colors">
                     {ep.status === 'active' ? 'Disable' : 'Enable'}
                   </button>
                 </form>
@@ -76,13 +76,13 @@
                 <form method="POST" action="?/deleteEndpoint" use:enhance={() => {
                   return async ({ result, update }) => {
                     if (result.type === 'success') toast.success('Webhook deleted');
-                    else toast.error(result.data?.error || 'Failed to delete');
+                    else toast.error((result as any).data?.error || 'Failed to delete');
                     openDropdownId = null;
                     await update();
                   };
                 }}>
                   <input type="hidden" name="id" value={ep.id} />
-                  <button type="submit" on:click={(e) => { if(!confirm('Are you sure?')) e.preventDefault(); }} class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors">
+                  <button type="submit" onclick={(e) => { if(!confirm('Are you sure?')) e.preventDefault(); }} class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors">
                     Delete
                   </button>
                 </form>

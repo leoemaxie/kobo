@@ -5,10 +5,15 @@
   import CreateKeyModal from './CreateKeyModal.svelte';
   import CreateRestrictedKeyModal from './CreateRestrictedKeyModal.svelte';
   
-  export let data;
+  import { useConsoleState } from '$lib/state/console.svelte';
 
-  let showCreateModal = false;
-  let showCreateRestrictedModal = false;
+  let { data } = $props();
+
+  const consoleState = useConsoleState();
+  let currentEnv = $derived(consoleState.currentEnvironment);
+
+  let showCreateModal = $state(false);
+  let showCreateRestrictedModal = $state(false);
 </script>
 
 <svelte:head>
@@ -34,12 +39,12 @@
           font-family: monospace; font-size: 11px;
           background: var(--accent-transparent); border: 1px solid var(--accent-border);
           border-radius: 4px; padding: 2px 8px; color: var(--accent); letter-spacing: 0.05em;
-        ">sandbox</code>
+        ">{currentEnv}</code>
         <span style="font-size: 11px; color: var(--text-muted);">·</span>
         <span style="font-size: 13px; color: var(--text-subtle);">Toggle in header to switch to production</span>
       </div>
     </div>
-    <button on:click={() => showCreateModal = true} style="
+    <button onclick={() => showCreateModal = true} style="
       display: flex; align-items: center; gap: 6px;
       border: 1px solid var(--accent); border-radius: 7px;
       background: var(--accent); padding: 6px 12px;
@@ -50,8 +55,8 @@
     </button>
   </div>
 
-  <StandardKeysTable keys={data.keys.filter(k => k.status === 'active' && !k.id.includes('restricted'))} on:create={() => showCreateModal = true} />
-  <RestrictedKeysSection keys={data.keys.filter(k => k.status === 'active' && k.id.includes('restricted'))} on:create={() => showCreateRestrictedModal = true} />
+  <StandardKeysTable keys={data.keys.filter(k => k.status === 'active' && !k.id.includes('restricted') && k.environment === currentEnv)} on:create={() => showCreateModal = true} />
+  <RestrictedKeysSection keys={data.keys.filter(k => k.status === 'active' && k.id.includes('restricted') && k.environment === currentEnv)} on:create={() => showCreateRestrictedModal = true} />
 </div>
 
 {#if showCreateModal}

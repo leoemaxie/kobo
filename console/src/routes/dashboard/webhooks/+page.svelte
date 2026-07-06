@@ -2,10 +2,15 @@
   import { Plus } from '@lucide/svelte';
   import WebhookList from './WebhookList.svelte';
   import AddWebhookModal from './AddWebhookModal.svelte';
+  import { useConsoleState } from '$lib/state/console.svelte';
 
-  export let data;
+  let { data } = $props();
 
-  let showAddModal = false;
+  const consoleState = useConsoleState();
+  let currentEnv = $derived(consoleState.currentEnvironment);
+  let filteredEndpoints = $derived(data.endpoints.filter((e: any) => e.environment === currentEnv || !e.environment));
+
+  let showAddModal = $state(false);
 </script>
 
 <svelte:head>
@@ -24,15 +29,24 @@
         letter-spacing: 0.1em; color: var(--text-subtle); margin: 0 0 6px;
       ">Webhooks</p>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">endpoints:</span>
+        <span style="
+          font-family: monospace; font-size: 13px; color: var(--text-subtle);
+        ">environment:</span>
         <code style="
           font-family: monospace; font-size: 11px;
           background: var(--accent-transparent); border: 1px solid var(--accent-border);
           border-radius: 4px; padding: 2px 8px; color: var(--accent); letter-spacing: 0.05em;
-        ">{data.endpoints.length} / 5</code>
+        ">{currentEnv}</code>
+        <span style="font-size: 11px; color: var(--text-muted);">·</span>
+        <span style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">endpoints:</span>
+        <code style="
+          font-family: monospace; font-size: 11px;
+          background: var(--bg-active); border: 1px solid var(--border-color);
+          border-radius: 4px; padding: 2px 8px; color: var(--text-main); letter-spacing: 0.05em;
+        ">{filteredEndpoints.length} / 5</code>
       </div>
     </div>
-    <button on:click={() => showAddModal = true} style="
+    <button onclick={() => showAddModal = true} style="
       display: flex; align-items: center; gap: 6px;
       border: 1px solid var(--accent); border-radius: 7px;
       background: var(--accent); padding: 6px 12px;
@@ -43,5 +57,9 @@
     </button>
   </div>
 
-  <WebhookList endpoints={data.endpoints} />
+  <WebhookList endpoints={filteredEndpoints} />
 </div>
+
+{#if showAddModal}
+  <AddWebhookModal onClose={() => showAddModal = false} />
+{/if}

@@ -43,7 +43,6 @@
           required
           minlength="2"
           autocomplete="organization"
-          autofocus
           class="bg-[#0f0f0f] border border-[#2a2a2a] rounded-md py-2.5 px-3 text-[#f5f5f5] text-sm focus:outline-none transition-colors duration-150 w-full focus:border-[var(--accent)] placeholder:text-[var(--text-muted)]"
         />
         <span class="text-[11px] text-[var(--text-subtle)]">This will be the display name for your integrator.</span>

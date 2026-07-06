@@ -49,7 +49,7 @@
     </div>
 
     {#each logs as log}
-      <div role="row" style="
+      <div role="row" tabindex="0" style="
         display: grid; grid-template-columns: 60px 1fr 60px 70px 80px 32px;
         padding: 10px 16px; border-bottom: 1px solid var(--border-color);
         align-items: center; cursor: pointer; transition: background 0.1s;

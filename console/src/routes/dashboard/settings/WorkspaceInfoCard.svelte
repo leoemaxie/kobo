@@ -26,12 +26,12 @@
   </div>
   <div style="padding: 20px; display: grid; gap: 16px;">
     <div>
-      <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Workspace Name</label>
-      <input type="text" name="name" value={integrator?.name || 'Kobo Inc.'} class="settings-input" required />
+      <label for="workspaceName" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Workspace Name</label>
+      <input id="workspaceName" type="text" name="name" value={integrator?.name || 'Kobo Inc.'} class="settings-input" required />
     </div>
     <div>
-      <label style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Support Email</label>
-      <input type="email" value={state.user?.email || ''} class="settings-input" disabled />
+      <label for="supportEmail" style="display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;">Support Email</label>
+      <input id="supportEmail" type="email" value={state.user?.email || ''} class="settings-input" disabled />
       <p style="font-size: 11px; color: var(--text-subtle); margin: 6px 0 0;">Linked to the owner's authentication email.</p>
     </div>
     <div style="margin-top: 10px;">

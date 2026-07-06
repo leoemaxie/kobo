@@ -19,7 +19,7 @@
         border-radius: 4px; padding: 2px 7px;
         font-size: 12px; font-weight: 700; text-transform: uppercase;
         letter-spacing: 0.1em; color: var(--accent);
-      ">Sandbox</span>
+      ">{state.currentEnvironment}</span>
     </div>
     <div style="display: flex; align-items: baseline; gap: 8px;">
       <span style="

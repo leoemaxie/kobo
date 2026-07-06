@@ -1,10 +1,10 @@
-import type { PageServerLoad, Actions } from './$types';
+import type { PageServerLoad, Actions, PageServerLoadEvent } from './$types';
 import { db } from '$lib/server/db';
 import { webhooks } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
-import { eq, desc } from 'drizzle-orm';
 import { redirect, fail } from '@sveltejs/kit';
-export const load: PageServerLoad = async ({ locals }) => {
+
+export const load: PageServerLoad = async ({ locals }: PageServerLoadEvent) => {
 	const user = locals.user;
 	if (!user || !user.integratorId) {
 		throw redirect(302, '/auth/login');
@@ -20,7 +20,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		url: w.url,
 		status: w.status,
 		events: w.events as string[],
-		secret: w.secret
+		secret: w.secret,
+		environment: w.environment
 	}));
 
 	return { endpoints };
@@ -34,6 +35,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const url = data.get('url')?.toString();
 		const eventsStr = data.get('events')?.toString();
+		const environment = data.get('environment')?.toString() || 'sandbox';
 
 		if (!url || !url.startsWith('https://')) return fail(400, { error: 'Invalid HTTPS URL' });
 		
@@ -46,7 +48,7 @@ export const actions: Actions = {
 
 		await db.insert(webhooks).values({
 			integratorId: user.integratorId,
-			environment: 'sandbox', // Could make this dynamic later
+			environment: environment as 'sandbox' | 'production',
 			url,
 			secret,
 			events

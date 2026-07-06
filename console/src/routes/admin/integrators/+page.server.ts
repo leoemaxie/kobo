@@ -28,6 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		if (!seen.has(row.id)) {
 			seen.add(row.id);
 			mapped.push({
+				id: row.id,
 				name: row.name,
 				email: row.email || 'No owner email',
 				status: row.status,

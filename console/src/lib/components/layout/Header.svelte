@@ -8,7 +8,8 @@
   let workspaceName = $derived(consoleState.user?.integrator?.name || 'Workspace');
   let workspaceInitial = $derived(workspaceName.charAt(0).toUpperCase());
 
-  let currentEnv = $state('sandbox');
+  // Use global state for environment
+  let currentEnv = $derived(consoleState.currentEnvironment);
   let currentTheme = $state('dark');
 
   onMount(() => {
@@ -16,7 +17,7 @@
   });
 
   function toggleEnv() {
-    currentEnv = currentEnv === 'sandbox' ? 'production' : 'sandbox';
+    consoleState.currentEnvironment = consoleState.currentEnvironment === 'sandbox' ? 'production' : 'sandbox';
   }
 
   function toggleTheme() {

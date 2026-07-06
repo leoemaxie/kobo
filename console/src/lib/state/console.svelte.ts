@@ -12,6 +12,7 @@ export class ConsoleState {
 	logs = $state<any[]>([]); // API Logs from the dashboard
 	settings = $state<any>(null);
 	user = $state<any>(null);
+	currentEnvironment = $state<'sandbox' | 'production'>('sandbox');
 
 	// Admin-specific state
 	adminIntegrators = $state<any[]>([]);
