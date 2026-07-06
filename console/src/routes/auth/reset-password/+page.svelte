@@ -2,23 +2,23 @@
   import { Lock, Eye, EyeOff, Save } from '@lucide/svelte';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/state/toast.svelte';
+  import AuthLogo from '$lib/components/ui/AuthLogo.svelte';
+  import IconInput from '$lib/components/ui/IconInput.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
 
   let password = $state('');
   let confirmPassword = $state('');
   let showPassword = $state(false);
   let showConfirmPassword = $state(false);
   let loading = $state(false);
+
+  let mismatch = $derived(password.length > 0 && confirmPassword.length > 0 && password !== confirmPassword);
 </script>
 
 <div class="w-full">
-  <!-- Logo + heading -->
-  <div class="mb-8 text-center">
-    <img src="/logo.png" alt="Kobo" class="h-10 w-auto mx-auto mb-6" style="filter: var(--logo-filter);" />
-    <h1 class="text-3xl font-inter font-bold text-main tracking-tight">Set new password</h1>
-    <p class="text-muted text-sm mt-3 leading-relaxed">
-      Must be at least 8 characters long
-    </p>
-  </div>
+  <AuthLogo heading="Set new password">
+    <span>Must be at least 8 characters long</span>
+  </AuthLogo>
 
   <!-- Card -->
   <div class="bg-element border border-border rounded-[10px] px-16 py-8 shadow-sm">
@@ -37,82 +37,35 @@
       };
     }}>
       
-      <!-- New Password field -->
-      <div class="space-y-1.5">
-        <label for="password" class="block text-xs font-semibold text-muted uppercase tracking-widest">New Password</label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Lock size={15} class="text-subtle" />
-          </div>
-          <input
-            id="password"
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            bind:value={password}
-            required
-            placeholder="••••••••••••"
-            class="block w-full rounded-[8px] border border-border bg-background pl-10 pr-10 py-3 text-sm text-main placeholder-subtle focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
-          />
-          <button
-            type="button"
-            onclick={() => (showPassword = !showPassword)}
-            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-subtle hover:text-muted transition-colors"
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
-          >
-            {#if showPassword}
-              <EyeOff size={15} />
-            {:else}
-              <Eye size={15} />
-            {/if}
+      <!-- New Password -->
+      <IconInput id="password" label="New Password" type={showPassword ? 'text' : 'password'} name="password" placeholder="••••••••••••" bind:value={password} required>
+        {#snippet icon()}<Lock size={15} class="text-subtle" />{/snippet}
+        {#snippet trailing()}
+          <button type="button" onclick={() => (showPassword = !showPassword)} class="pr-3.5 flex items-center text-subtle hover:text-muted transition-colors" aria-label={showPassword ? 'Hide password' : 'Show password'}>
+            {#if showPassword}<EyeOff size={15} />{:else}<Eye size={15} />{/if}
           </button>
-        </div>
-      </div>
+        {/snippet}
+      </IconInput>
 
-      <!-- Confirm Password field -->
-      <div class="space-y-1.5">
-        <label for="confirmPassword" class="block text-xs font-semibold text-muted uppercase tracking-widest">Confirm Password</label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Lock size={15} class="text-subtle" />
-          </div>
-          <input
-            id="confirmPassword"
-            name="confirmPassword"
-            type={showConfirmPassword ? 'text' : 'password'}
-            bind:value={confirmPassword}
-            required
-            placeholder="••••••••••••"
-            class="block w-full rounded-[8px] border border-border bg-background pl-10 pr-10 py-3 text-sm text-main placeholder-subtle focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
-          />
-          <button
-            type="button"
-            onclick={() => (showConfirmPassword = !showConfirmPassword)}
-            class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-subtle hover:text-muted transition-colors"
-            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-          >
-            {#if showConfirmPassword}
-              <EyeOff size={15} />
-            {:else}
-              <Eye size={15} />
-            {/if}
+      <!-- Confirm Password -->
+      <IconInput id="confirmPassword" label="Confirm Password" type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" placeholder="••••••••••••" bind:value={confirmPassword} required>
+        {#snippet icon()}<Lock size={15} class="text-subtle" />{/snippet}
+        {#snippet trailing()}
+          <button type="button" onclick={() => (showConfirmPassword = !showConfirmPassword)} class="pr-3.5 flex items-center text-subtle hover:text-muted transition-colors" aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}>
+            {#if showConfirmPassword}<EyeOff size={15} />{:else}<Eye size={15} />{/if}
           </button>
-        </div>
-      </div>
+        {/snippet}
+      </IconInput>
+
+      {#if mismatch}
+        <p class="text-xs text-red-500 text-center">Passwords do not match.</p>
+      {/if}
 
       <div class="pt-2">
-        <button
-          type="submit"
-          disabled={loading || (password.length > 0 && password !== confirmPassword)}
-          class="w-full flex items-center justify-center gap-2 rounded-[8px] bg-primary text-primary-text px-6 py-2.5 text-sm font-bold tracking-tight shadow-md hover:opacity-90 hover:-translate-y-0.5 active:translate-y-0 transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-element disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          <Save size={16} />
-          Update Password
-        </button>
+        <Button type="submit" variant="primary" size="lg" class="w-full" disabled={loading || mismatch}>
+          <Save size={16} /> Update Password
+        </Button>
       </div>
-      
-      {#if password.length > 0 && password !== confirmPassword && confirmPassword.length > 0}
-        <p class="text-xs text-red-500 text-center mt-2">Passwords do not match.</p>
-      {/if}
     </form>
   </div>
 </div>

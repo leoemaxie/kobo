@@ -2,6 +2,9 @@
   import { Plus } from '@lucide/svelte';
   import WebhookList from './WebhookList.svelte';
   import AddWebhookModal from './AddWebhookModal.svelte';
+  import PageHeader from '$lib/components/ui/PageHeader.svelte';
+  import CodeBadge from '$lib/components/ui/CodeBadge.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
 
   let { data } = $props();
@@ -17,45 +20,21 @@
   <title>Webhooks — Kobo Console</title>
 </svelte:head>
 
-<div style="display: flex; flex-direction: column; gap: 28px;">
-  <!-- Page bar -->
-  <div style="
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);
-  ">
-    <div>
-      <p style="
-        font-size: 12px; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 0.1em; color: var(--text-subtle); margin: 0 0 6px;
-      ">Webhooks</p>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="
-          font-family: monospace; font-size: 13px; color: var(--text-subtle);
-        ">environment:</span>
-        <code style="
-          font-family: monospace; font-size: 11px;
-          background: var(--accent-transparent); border: 1px solid var(--accent-border);
-          border-radius: 4px; padding: 2px 8px; color: var(--accent); letter-spacing: 0.05em;
-        ">{currentEnv}</code>
-        <span style="font-size: 11px; color: var(--text-muted);">·</span>
-        <span style="font-family: monospace; font-size: 13px; color: var(--text-subtle);">endpoints:</span>
-        <code style="
-          font-family: monospace; font-size: 11px;
-          background: var(--bg-active); border: 1px solid var(--border-color);
-          border-radius: 4px; padding: 2px 8px; color: var(--text-main); letter-spacing: 0.05em;
-        ">{filteredEndpoints.length} / 5</code>
-      </div>
-    </div>
-    <button onclick={() => showAddModal = true} style="
-      display: flex; align-items: center; gap: 6px;
-      border: 1px solid var(--accent); border-radius: 7px;
-      background: var(--accent); padding: 6px 12px;
-      font-size: 13px; font-weight: 700; color: var(--accent-text); cursor: pointer;
-      transition: all 0.15s;
-    ">
-      <Plus size={13} /> Add Endpoint
-    </button>
-  </div>
+<div class="flex flex-col gap-7">
+  <PageHeader title="Webhooks">
+    {#snippet meta()}
+      <span class="font-inconsolata text-[13px] text-subtle">environment:</span>
+      <CodeBadge>{currentEnv}</CodeBadge>
+      <span class="text-[11px] text-muted">·</span>
+      <span class="font-inconsolata text-[13px] text-subtle">endpoints:</span>
+      <CodeBadge variant="neutral">{filteredEndpoints.length} / 5</CodeBadge>
+    {/snippet}
+    {#snippet actions()}
+      <Button variant="primary" size="md" onclick={() => showAddModal = true}>
+        <Plus size={13} /> Add Endpoint
+      </Button>
+    {/snippet}
+  </PageHeader>
 
   <WebhookList endpoints={filteredEndpoints} />
 </div>

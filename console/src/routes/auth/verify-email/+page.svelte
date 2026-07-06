@@ -3,6 +3,7 @@
   import { Mail, ArrowLeft, RefreshCw, CheckCircle2 } from '@lucide/svelte';
   import { toast } from '$lib/state/toast.svelte';
   import type { PageData } from './$types';
+  import Button from '$lib/components/ui/Button.svelte';
 
   let { data }: { data: PageData } = $props();
   let resending = $state(false);
@@ -70,18 +71,13 @@
             await update({ reset: false });
           };
         }}>
-          <button
-            type="submit"
-            disabled={resending}
-            class="w-full flex items-center justify-center gap-2 rounded-[8px] bg-primary text-primary-text px-6 py-2.5 text-sm font-bold tracking-tight shadow-md hover:opacity-90 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-          >
+          <Button type="submit" variant="primary" size="lg" class="w-full" disabled={resending}>
             {#if resending}
-              <RefreshCw size={14} class="animate-spin" />
-              Resending…
+              <RefreshCw size={14} class="animate-spin" /> Resending…
             {:else}
               Resend verification email
             {/if}
-          </button>
+          </Button>
         </form>
       {/if}
     </div>

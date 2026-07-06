@@ -63,7 +63,7 @@ paths:
                 value:
                   external_reference: "school_lautech_001:student:4471"
                   display_name: "John Ade"
-                  kyc_tier_hint: "tier_1"
+                  kyc_tier: "tier_1"
                   metadata:
                     class: "JSS 2"
                     school_id: "school_lautech_001"
