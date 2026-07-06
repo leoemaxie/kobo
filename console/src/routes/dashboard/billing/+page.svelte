@@ -7,8 +7,16 @@
   import Button from '$lib/components/ui/Button.svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
   import { toast } from '$lib/state/toast.svelte';
+  import { page } from '$app/stores';
+  import { onMount } from 'svelte';
 
   const state = useConsoleState();
+
+  onMount(() => {
+    if ($page.url.searchParams.get('payment_success')) {
+      toast.success('Payment method successfully added.');
+    }
+  });
 </script>
 
 <svelte:head>
@@ -26,9 +34,11 @@
       </span>
     {/snippet}
     {#snippet actions()}
-      <Button variant="neutral" size="md" onclick={() => toast.info('Payment gateway integration pending.')}>
-        Manage Payment Method
-      </Button>
+      <form method="POST" action="?/setupPaymentMethod">
+        <Button variant="neutral" size="md" type="submit">
+          Manage Payment Method
+        </Button>
+      </form>
     {/snippet}
   </PageHeader>
 

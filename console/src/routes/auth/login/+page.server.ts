@@ -19,7 +19,7 @@ export const actions: Actions = {
 
 			const user = await db.query.users.findFirst({
 				where: eq(users.email, email)
-			})
+			});
 
 			if (!user) {
 				return fail(400, { error: 'Invalid email or password' });
@@ -38,6 +38,10 @@ export const actions: Actions = {
 				expires: session.expiresAt,
 				secure: !import.meta.env.DEV
 			});
+
+			if (user.role === 'superadmin') {
+				throw redirect(303, '/admin/integrators');
+			}
 
 			throw redirect(303, '/dashboard');
 		} catch (error) {

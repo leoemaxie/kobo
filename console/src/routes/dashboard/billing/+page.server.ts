@@ -2,7 +2,8 @@ import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { billingRecords, invoices } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
-import { redirect } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
+import type { Actions } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const user = locals.user;
@@ -47,4 +48,41 @@ export const load: PageServerLoad = async ({ locals }) => {
 	};
 
 	return { invoices: mappedInvoices, billingOverview };
+};
+
+export const actions: Actions = {
+	setupPaymentMethod: async ({ locals, url }) => {
+		const user = locals.user;
+		if (!user || !user.integratorId) return fail(401, { error: 'Unauthorized' });
+
+		const callbackUrl = new URL('/dashboard/billing/callback', url.origin).toString();
+
+		try {
+			const res = await fetch('http://localhost:8080/v1/admin/billing/checkout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					integrator_id: user.integratorId,
+					type: 'save_card',
+					email: user.email,
+					callback_url: callbackUrl
+				})
+			});
+
+			if (!res.ok) {
+				const err = await res.text();
+				return fail(500, { error: `Payment gateway error: ${err}` });
+			}
+
+			const data = await res.json();
+			if (data.checkoutLink) {
+				throw redirect(303, data.checkoutLink);
+			}
+
+			return fail(500, { error: 'Invalid response from payment gateway' });
+		} catch (e) {
+			if ((e as any).status === 303) throw e;
+			return fail(500, { error: 'Failed to connect to payment gateway' });
+		}
+	}
 };

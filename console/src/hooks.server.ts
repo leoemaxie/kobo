@@ -56,6 +56,10 @@ export const handle: Handle = async ({ event, resolve }) => {
     return new Response('Not found', { status: 404 });
   }
 
+  if (path.startsWith('/dashboard') && event.locals.user?.role === 'superadmin') {
+    throw redirect(302, '/admin/integrators');
+  }
+
   const startTime = Date.now();
   const response = await resolve(event);
   const duration = Date.now() - startTime;
