@@ -9,6 +9,8 @@
   import { toast } from '$lib/state/toast.svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
 
+  let { onCloseMobile } = $props<{ onCloseMobile?: () => void }>();
+
   const navItems = [
     { name: 'Overview', path: '/dashboard', icon: LayoutDashboard },
     { name: 'API Keys', path: '/dashboard/api-keys', icon: Key },
@@ -32,76 +34,32 @@
   let workspacePlan = $derived((consoleState.user?.integrator?.plan || 'Free Tier').replace(/_/g, ' '));
 </script>
 
-<aside style="
-  width: 240px;
-  min-width: 240px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-  transition: background 0.2s, border-color 0.2s;
-">
+<aside class="w-64 min-w-[256px] bg-[var(--bg-sidebar)] border-r border-[var(--border-color)] flex flex-col h-full overflow-hidden transition-colors duration-200">
   <!-- Org Selector -->
-  <div style="
-    height: 64px; display: flex; align-items: center; 
-    padding: 0 16px; border-bottom: 1px solid var(--border-color);
-  ">
-    <button style="
-      display: flex; align-items: center; gap: 10px; width: 100%;
-      background: transparent; border: 1px solid transparent; border-radius: 8px;
-      padding: 8px 10px; cursor: pointer; text-align: left; transition: background 0.2s;
-    "
-    onmouseenter={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-element)'}
-    onmouseleave={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}
-    >
-      <div style="
-        height: 32px; width: 32px; border-radius: 6px; background: var(--accent);
-        display: flex; align-items: center; justify-content: center;
-        font-weight: 900; font-size: 14px; color: var(--accent-text); flex-shrink: 0;
-      ">{workspaceInitial}</div>
-      <div style="flex: 1; overflow: hidden;">
-        <p style="
-          font-size: 13px; font-weight: 600; color: var(--text-main); 
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0;
-        ">{workspaceName}</p>
-        <p style="
-          font-size: 10px; font-weight: 500; color: var(--text-muted); 
-          text-transform: uppercase; letter-spacing: 0.08em; margin: 2px 0 0;
-        ">{workspacePlan}</p>
+  <div class="h-16 flex items-center justify-between px-4 border-b border-[var(--border-color)] shrink-0">
+    <button class="flex items-center gap-2.5 w-full bg-transparent border border-transparent rounded-lg py-2 px-2.5 cursor-pointer text-left transition-colors hover:bg-[var(--bg-element)] flex-1 overflow-hidden">
+      <div class="h-8 w-8 rounded-md bg-[var(--accent)] flex items-center justify-center font-black text-sm text-[var(--accent-text)] shrink-0">
+        {workspaceInitial}
+      </div>
+      <div class="flex-1 overflow-hidden">
+        <p class="text-[13px] font-semibold text-main whitespace-nowrap overflow-hidden text-ellipsis m-0">{workspaceName}</p>
+        <p class="text-[10px] font-medium text-muted uppercase tracking-[0.08em] mt-0.5">{workspacePlan}</p>
       </div>
       <ChevronDown size={13} color="var(--text-subtle)" />
     </button>
   </div>
 
   <!-- Main Nav -->
-  <nav style="flex: 1; overflow-y: auto; padding: 20px 10px 10px;">
-    <p style="
-      font-size: 10px; font-weight: 700; text-transform: uppercase; 
-      letter-spacing: 0.1em; color: var(--text-subtle); padding: 0 10px 8px;
-    ">Workspace</p>
+  <nav class="flex-1 overflow-y-auto px-2.5 pt-5 pb-2.5">
+    <p class="text-[10px] font-bold uppercase tracking-[0.1em] text-subtle px-2.5 pb-2">Workspace</p>
     {#each navItems as item}
       <a
         href={item.path}
-        style="
-          display: flex; align-items: center; gap: 10px; padding: 7px 10px;
-          border-radius: 8px; text-decoration: none; margin-bottom: 2px;
-          font-size: 13px; font-weight: 500; transition: all 0.15s;
+        class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg no-underline mb-0.5 text-[13px] font-medium transition-all hover:bg-[var(--bg-element)]
           {isActive(item.path)
-            ? 'background: var(--bg-active); color: var(--text-main); border: 1px solid var(--border-color);'
-            : 'background: transparent; color: var(--text-muted); border: 1px solid transparent;'}
-        "
-        onmouseenter={(e) => {
-          if (!isActive(item.path)) {
-            (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)';
-          }
-        }}
-        onmouseleave={(e) => {
-          if (!isActive(item.path)) {
-            (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-          }
-        }}
+            ? 'bg-[var(--bg-active)] text-main border border-[var(--border-color)]'
+            : 'bg-transparent text-muted border border-transparent'}"
+        onclick={() => onCloseMobile?.()}
       >
         <item.icon
           size={15}
@@ -113,57 +71,29 @@
   </nav>
 
   <!-- Bottom Nav -->
-  <div style="padding: 10px; border-top: 1px solid var(--border-color);">
-    <p style="
-      font-size: 10px; font-weight: 700; text-transform: uppercase; 
-      letter-spacing: 0.1em; color: var(--text-subtle); padding: 6px 10px 8px;
-    ">Account</p>
+  <div class="p-2.5 border-t border-[var(--border-color)] shrink-0">
+    <p class="text-[10px] font-bold uppercase tracking-[0.1em] text-subtle px-2.5 pt-1.5 pb-2">Account</p>
     {#each bottomItems as item}
       <a
         href={item.path}
-        style="
-          display: flex; align-items: center; gap: 10px; padding: 7px 10px;
-          border-radius: 8px; text-decoration: none; margin-bottom: 2px;
-          font-size: 13px; font-weight: 500; transition: all 0.15s;
+        class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg no-underline mb-0.5 text-[13px] font-medium transition-all hover:bg-[var(--bg-element)]
           {isActive(item.path)
-            ? 'background: var(--bg-active); color: var(--text-main); border: 1px solid var(--border-color);'
-            : 'background: transparent; color: var(--text-muted); border: 1px solid transparent;'}
-        "
-        onmouseenter={(e) => {
-          if (!isActive(item.path)) {
-            (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)';
-          }
-        }}
-        onmouseleave={(e) => {
-          if (!isActive(item.path)) {
-            (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-          }
-        }}
+            ? 'bg-[var(--bg-active)] text-main border border-[var(--border-color)]'
+            : 'bg-transparent text-muted border border-transparent'}"
+        onclick={() => onCloseMobile?.()}
       >
         <item.icon size={15} color={isActive(item.path) ? 'var(--accent)' : 'var(--text-muted)'} />
         {item.name}
       </a>
     {/each}
-    <div style="height: 1px; background: var(--border-color); margin: 8px 6px;"></div>
-    <a href={PUBLIC_DOCS_URL} style="
-      display: flex; align-items: center; gap: 10px; padding: 7px 10px;
-      border-radius: 8px; text-decoration: none; font-size: 13px; 
-      font-weight: 500; color: var(--text-muted); border: 1px solid transparent; transition: background 0.2s;
-    "
-    onmouseenter={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)'}
-    onmouseleave={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}>
+    <div class="h-[1px] bg-[var(--border-color)] mx-1.5 my-2"></div>
+    <a href={PUBLIC_DOCS_URL} class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg no-underline text-[13px] font-medium text-muted border border-transparent transition-colors hover:bg-[var(--bg-element)]">
       <BookOpen size={15} color="var(--text-subtle)" /> Documentation
     </a>
-    <a href="/support" style="
-      display: flex; align-items: center; gap: 10px; padding: 7px 10px;
-      border-radius: 8px; text-decoration: none; font-size: 13px; 
-      font-weight: 500; color: var(--text-muted); border: 1px solid transparent; transition: background 0.2s;
-    "
-    onmouseenter={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'var(--bg-element)'}
-    onmouseleave={(e) => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}>
+    <a href="/support" class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg no-underline text-[13px] font-medium text-muted border border-transparent transition-colors hover:bg-[var(--bg-element)]" onclick={() => onCloseMobile?.()}>
       <LifeBuoy size={15} color="var(--text-subtle)" /> Support
     </a>
-    <div style="height: 1px; background: var(--border-color); margin: 8px 6px;"></div>
+    <div class="h-[1px] bg-[var(--border-color)] mx-1.5 my-2"></div>
     <form method="POST" action="/auth/logout" use:enhance={() => {
       return async ({ result, update }) => {
         if (result.type === 'failure' || result.type === 'error') {
@@ -174,16 +104,9 @@
         await update();
       };
     }}>
-      <button type="submit" style="
-        display: flex; align-items: center; gap: 10px; padding: 7px 10px;
-        border-radius: 8px; text-decoration: none; font-size: 13px; width: 100%;
-        font-weight: 500; color: var(--error-color); border: 1px solid transparent; background: transparent; cursor: pointer; text-align: left; transition: background 0.2s;
-      "
-      onmouseenter={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'var(--error-bg)'}
-      onmouseleave={(e) => (e.currentTarget as HTMLButtonElement).style.background = 'transparent'}
-      >
-        <span style="display: flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--error-color); position: relative;">
-          <span style="position: absolute; width: 6px; height: 1.5px; background: var(--error-color); right: -2px;"></span>
+      <button type="submit" class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg no-underline text-[13px] w-full font-medium text-[var(--error-color)] border border-transparent bg-transparent cursor-pointer text-left transition-colors hover:bg-[var(--error-bg)]">
+        <span class="flex items-center justify-center w-[15px] h-[15px] rounded-full border-[1.5px] border-[var(--error-color)] relative">
+          <span class="absolute w-[6px] h-[1.5px] bg-[var(--error-color)] -right-[2px]"></span>
         </span>
         Logout
       </button>

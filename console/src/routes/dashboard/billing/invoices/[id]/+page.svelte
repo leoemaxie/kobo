@@ -32,7 +32,7 @@
 	</style>
 </svelte:head>
 
-<div class="print-border" style="max-width: 800px; margin: 40px auto; padding: 40px; border: 1px solid var(--border-subtle); background: var(--bg-surface); border-radius: 8px;">
+<div class="print-border" style="max-width: 800px; margin: 40px auto; padding: clamp(16px, 5vw, 40px); border: 1px solid var(--border-subtle); background: var(--bg-surface); border-radius: 8px; overflow-x: auto;">
 	<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
 		<div>
 			<h1 class="print-text" style="font-size: 24px; margin: 0; color: white;">KOBO INC.</h1>

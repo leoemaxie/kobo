@@ -6,12 +6,9 @@
   const metrics = $derived(state.metrics);
 </script>
 
-<div style="
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
-  border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; background: var(--border-color);
-">
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-px bg-[var(--border-color)] border border-[var(--border-color)] rounded-xl overflow-hidden">
   {#each metrics as m}
-    <div style="background: var(--bg-sidebar); padding: 20px 24px;">
+    <div class="bg-[var(--bg-sidebar)] px-6 py-5">
       <p style="
         font-size: 11px; font-weight: 700; text-transform: uppercase;
         letter-spacing: 0.1em; color: var(--text-subtle); margin: 0 0 14px;

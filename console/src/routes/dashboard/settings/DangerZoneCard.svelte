@@ -7,7 +7,7 @@
 </script>
 
 <CardSection title="Danger Zone" danger>
-  <div class="flex items-center justify-between">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
       <h4 class="text-[13px] font-semibold text-main mb-1">Delete Workspace</h4>
       <p class="text-xs text-muted">Permanently remove this workspace and all associated data.</p>

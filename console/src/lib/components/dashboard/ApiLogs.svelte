@@ -35,8 +35,9 @@
     </a>
   </div>
 
-  <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;">
-    <!-- Table header -->
+  <div style="border: 1px solid var(--border-color); border-radius: 8px; overflow-x: auto;">
+    <div style="min-width: 600px;">
+      <!-- Table header -->
     <div style="
       display: grid; grid-template-columns: 60px 1fr 60px 70px 80px 32px;
       padding: 8px 16px; background: var(--bg-active); border-bottom: 1px solid var(--border-color);
@@ -81,5 +82,6 @@
         <ChevronRight size={13} color="var(--text-subtle)" />
       </div>
     {/each}
+    </div>
   </div>
 </div>

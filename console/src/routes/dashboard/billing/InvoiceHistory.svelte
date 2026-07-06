@@ -14,8 +14,9 @@
     letter-spacing: 0.1em; color: var(--text-subtle); margin: 0 0 10px;
   ">Invoice History</p>
 
-  <div style="border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden;">
-    <!-- Header -->
+  <div style="border: 1px solid var(--border-subtle); border-radius: 8px; overflow-x: auto;">
+    <div style="min-width: 800px;">
+      <!-- Header -->
     <div style="
       display: grid; grid-template-columns: 1.4fr 1fr 1fr 80px 100px 40px;
       padding: 8px 16px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border-subtle);
@@ -52,5 +53,6 @@
         </a>
       </div>
     {/each}
+    </div>
   </div>
 </div>

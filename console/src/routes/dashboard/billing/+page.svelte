@@ -43,7 +43,7 @@
   </PageHeader>
 
   <!-- Metrics + plan side-by-side -->
-  <div class="grid grid-cols-2 gap-px bg-border-subtle border border-border-subtle rounded-lg overflow-hidden">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-border-subtle border border-border-subtle rounded-lg overflow-hidden">
     <CurrentPeriodCard />
     <PlanDetailsCard />
   </div>

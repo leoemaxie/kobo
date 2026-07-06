@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { Search, Bell, Slash, Moon, Sun } from '@lucide/svelte';
+  import { Search, Bell, Slash, Moon, Sun, Menu } from '@lucide/svelte';
   import { page } from '$app/state';
   import { onMount } from 'svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
+
+  let { isMobileMenuOpen = $bindable(false) } = $props();
 
   const consoleState = useConsoleState();
   let workspaceName = $derived(consoleState.user?.integrator?.name || 'Workspace');
@@ -38,92 +40,56 @@
   });
 </script>
 
-<header style="
-  height: 64px; border-bottom: 1px solid var(--border-color);
-  background: var(--bg-header); backdrop-filter: blur(12px);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 28px; flex-shrink: 0; position: sticky; top: 0; z-index: 40;
-">
+<header class="h-16 border-b border-[var(--border-color)] bg-[var(--bg-header)]/80 backdrop-blur-md flex items-center justify-between px-4 sm:px-7 shrink-0 sticky top-0 z-40 w-full">
   <!-- Breadcrumb -->
-  <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted);">
-    <div style="
-      height: 22px; width: 22px; border-radius: 5px; background: var(--bg-active);
-      border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 800; color: var(--text-main);
-    ">{workspaceInitial}</div>
-    <span style="color: var(--text-muted); padding: 2px 6px; border-radius: 5px;">{workspaceName}</span>
-    <span style="color: var(--text-subtle); font-size: 16px; font-weight: 300; margin: 0 2px;">/</span>
-    <span style="
-      color: var(--text-main); font-weight: 600; padding: 2px 8px; 
-      background: var(--bg-active); border-radius: 5px; border: 1px solid var(--border-color);
-    ">{breadcrumb()}</span>
+  <div class="flex items-center gap-2 sm:gap-3 text-[13px] text-muted truncate">
+    <button class="lg:hidden p-1 -ml-2 text-muted hover:text-main" onclick={() => isMobileMenuOpen = !isMobileMenuOpen} aria-label="Toggle menu">
+      <Menu size={20} />
+    </button>
+    <div class="hidden sm:flex h-[22px] w-[22px] rounded-md bg-[var(--bg-active)] border border-[var(--border-color)] items-center justify-center text-[10px] font-extrabold text-main">
+      {workspaceInitial}
+    </div>
+    <span class="hidden sm:inline text-muted px-1.5 py-0.5 rounded-md truncate max-w-[120px]">{workspaceName}</span>
+    <span class="hidden sm:inline text-subtle text-base font-light mx-0.5">/</span>
+    <span class="text-main font-semibold px-2 py-0.5 bg-[var(--bg-active)] rounded-md border border-[var(--border-color)] truncate max-w-[150px]">
+      {breadcrumb()}
+    </span>
   </div>
 
   <!-- Right side controls -->
-  <div style="display: flex; align-items: center; gap: 12px;">
+  <div class="flex items-center gap-2 sm:gap-3">
     <!-- Search -->
-    <div style="position: relative; display: flex; align-items: center;">
-      <div style="position: absolute; left: 10px; pointer-events: none; color: var(--text-subtle);">
+    <div class="relative hidden md:flex items-center">
+      <div class="absolute left-2.5 pointer-events-none text-subtle">
         <Search size={13} />
       </div>
       <input
         type="text"
         placeholder="Search..."
-        style="
-          background: var(--bg-element); border: 1px solid var(--border-color); border-radius: 8px;
-          padding: 6px 40px 6px 30px; font-size: 12px; color: var(--text-main);
-          width: 180px; outline: none; transition: border-color 0.2s;
-        "
-        onfocus={(e) => (e.target as HTMLInputElement).style.borderColor = 'var(--border-focus)'}
-        onblur={(e) => (e.target as HTMLInputElement).style.borderColor = 'var(--border-color)'}
+        class="bg-[var(--bg-element)] border border-[var(--border-color)] rounded-lg py-1.5 pl-8 pr-10 text-xs text-main w-36 lg:w-44 outline-none transition-colors focus:border-[var(--border-focus)] placeholder:text-subtle"
       />
-      <span style="
-        position: absolute; right: 8px; font-size: 10px; color: var(--text-subtle);
-        border: 1px solid var(--border-color); border-radius: 4px; padding: 1px 5px;
-        font-family: monospace; background: var(--bg-active);
-      ">⌘K</span>
+      <span class="absolute right-2 text-[10px] text-subtle border border-[var(--border-color)] rounded py-[1px] px-[5px] font-mono bg-[var(--bg-active)]">⌘K</span>
     </div>
 
-    <div style="height: 18px; width: 1px; background: var(--border-color);"></div>
+    <div class="hidden md:block h-4 w-[1px] bg-[var(--border-color)]"></div>
 
     <!-- Env Toggle -->
     <button
       onclick={toggleEnv}
-      style="
-        display: flex; align-items: center; gap: 7px; border-radius: 99px;
-        border: 1px solid var(--border-color); background: var(--bg-element); padding: 5px 12px;
-        font-size: 10px; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s;
-        color: {currentEnv === 'sandbox' ? 'var(--text-muted)' : 'var(--accent)'};
-      "
+      class="flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-element)] px-2.5 sm:px-3 py-1 text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-all hover:bg-[var(--bg-active)]
+      {currentEnv === 'sandbox' ? 'text-muted' : 'text-[var(--accent)]'}"
     >
-      <span style="
-        height: 7px; width: 7px; border-radius: 50%;
-        background: {currentEnv === 'sandbox' ? 'var(--text-subtle)' : 'var(--accent)'};
-        box-shadow: {currentEnv === 'production' ? '0 0 8px var(--accent-glow)' : 'none'};
-        display: inline-block; transition: all 0.2s;
-      "></span>
-      {currentEnv === 'sandbox' ? 'Sandbox' : 'Production'}
+      <span class="h-1.5 w-1.5 rounded-full transition-all {currentEnv === 'sandbox' ? 'bg-subtle' : 'bg-[var(--accent)] drop-shadow-[0_0_4px_var(--accent-glow)]'}"></span>
+      <span class="hidden sm:inline">{currentEnv === 'sandbox' ? 'Sandbox' : 'Production'}</span>
+      <span class="sm:hidden">{currentEnv === 'sandbox' ? 'SBX' : 'PROD'}</span>
     </button>
 
-    <div style="height: 18px; width: 1px; background: var(--border-color);"></div>
+    <div class="h-4 w-[1px] bg-[var(--border-color)]"></div>
 
     <!-- Theme Toggle -->
     <button
       onclick={toggleTheme}
-      style="
-        height: 32px; width: 32px; border-radius: 8px; border: 1px solid transparent;
-        background: transparent; display: flex; align-items: center; justify-content: center;
-        color: var(--text-muted); cursor: pointer; transition: all 0.2s;
-      "
-      onmouseenter={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-element)';
-        (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-color)';
-      }}
-      onmouseleave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-        (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent';
-      }}
+      class="h-8 w-8 rounded-lg border border-transparent bg-transparent flex items-center justify-center text-muted cursor-pointer transition-all hover:bg-[var(--bg-element)] hover:border-[var(--border-color)]"
     >
       {#if currentTheme === 'dark'}
         <Sun size={15} />
@@ -133,33 +99,14 @@
     </button>
 
     <!-- Bell -->
-    <button style="
-      height: 32px; width: 32px; border-radius: 8px; border: 1px solid transparent;
-      background: transparent; display: flex; align-items: center; justify-content: center;
-      color: var(--text-muted); cursor: pointer; position: relative; transition: all 0.2s;
-    "
-    onmouseenter={(e) => {
-      (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-element)';
-      (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-color)';
-    }}
-    onmouseleave={(e) => {
-      (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-      (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent';
-    }}
-    >
+    <button class="h-8 w-8 rounded-lg border border-transparent bg-transparent flex items-center justify-center text-muted cursor-pointer relative transition-all hover:bg-[var(--bg-element)] hover:border-[var(--border-color)]">
       <Bell size={15} />
-      <span style="
-        position: absolute; top: 6px; right: 6px; height: 7px; width: 7px;
-        border-radius: 50%; background: var(--accent); border: 2px solid var(--bg-app);
-      "></span>
+      <span class="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent)] border-2 border-[var(--bg-app)]"></span>
     </button>
 
     <!-- Avatar -->
-    <div style="
-      height: 32px; width: 32px; border-radius: 50%;
-      background: var(--bg-active);
-      border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: var(--text-main); cursor: pointer;
-    ">{workspaceInitial}</div>
+    <div class="h-8 w-8 rounded-full bg-[var(--bg-active)] border border-[var(--border-color)] flex items-center justify-center text-xs font-bold text-main cursor-pointer shrink-0">
+      {workspaceInitial}
+    </div>
   </div>
 </header>

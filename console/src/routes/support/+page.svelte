@@ -21,7 +21,7 @@
     {/snippet}
   </PageHeader>
 
-  <div class="grid grid-cols-2 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Contact Form -->
     <div class="col-span-2">
       <CardSection title="Contact Support" subtitle="We usually respond within 24 hours.">

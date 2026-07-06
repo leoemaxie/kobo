@@ -11,7 +11,8 @@
   <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; background: var(--bg-sidebar); border-top-left-radius: 7px; border-top-right-radius: 7px;">
     <h3 style="font-size: 14px; font-weight: 600; color: var(--text-main); margin: 0;">Workspace Members</h3>
   </div>
-  <table style="width: 100%; border-collapse: collapse; text-align: left;">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: left;">
     <thead>
       <tr style="border-bottom: 1px solid var(--border-subtle);">
         <th style="padding: 12px 20px; font-size: 11px; font-weight: 600; color: var(--text-subtle); text-transform: uppercase; letter-spacing: 0.05em;">Email</th>
@@ -71,7 +72,8 @@
         </tr>
       {/each}
     </tbody>
-  </table>
+    </table>
+  </div>
 </div>
 
 <style>

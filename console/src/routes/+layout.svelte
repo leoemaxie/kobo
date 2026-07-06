@@ -26,17 +26,39 @@
       '/dashboard/onboarding'
     ].includes(page.url.pathname)
   );
+  let isMobileMenuOpen = $state(false);
 </script>
 
 <svelte:head>
   <title>Kobo Console</title>
 </svelte:head>
 {#if !isAuthRoute}
-  <div style="display:flex; height:100vh; width:100vw; overflow:hidden; background:var(--bg-app);">
-    <Sidebar />
-    <div style="display:flex; flex-direction:column; flex:1; min-width:0; overflow:hidden;">
-      <Header />
-      <main style="flex:1; overflow-y:auto; padding: 2rem 3rem 4rem;">
+  <div class="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)]">
+    <!-- Overlay for mobile sidebar -->
+    {#if isMobileMenuOpen}
+      <div 
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        onclick={() => isMobileMenuOpen = false}
+        role="button"
+        tabindex="0"
+        aria-label="Close menu"
+        onkeydown={(e) => e.key === 'Escape' && (isMobileMenuOpen = false)}
+      ></div>
+    {/if}
+
+    <!-- Sidebar -->
+    <div class="
+      fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-in-out
+      lg:relative lg:translate-x-0
+      {isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+    ">
+      <Sidebar onCloseMobile={() => isMobileMenuOpen = false} />
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-col flex-1 min-w-0 overflow-hidden w-full">
+      <Header bind:isMobileMenuOpen={isMobileMenuOpen} />
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:px-12 lg:py-8 pb-16">
         {#if navigating.to}
           <PageSkeleton />
         {:else}

@@ -23,8 +23,9 @@
     </Button>
   </div>
 
-  <div class="border border-border-subtle rounded-lg overflow-hidden">
-    <!-- Header -->
+  <div class="border border-border-subtle rounded-lg overflow-x-auto">
+    <div class="min-w-[800px]">
+      <!-- Header -->
     <div class="grid gap-0 bg-sidebar border-b border-border-subtle px-4 py-2.5"
          style="grid-template-columns: 1fr 1.4fr 1.6fr 90px 100px 72px;">
       {#each cols as col}
@@ -76,6 +77,7 @@
         </div>
       </div>
     {/each}
+    </div>
   </div>
 </div>
 
