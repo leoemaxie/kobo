@@ -9,59 +9,105 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createApiCredential = `-- name: CreateApiCredential :one
+INSERT INTO api_credentials (id, integrator_id, environment, key_id, secret_hash, created_by)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, integrator_id, environment, key_id, secret_hash, label, created_at, created_by, rotated_at, revoked_at, revoked_by, revoked_reason
+`
+
+type CreateApiCredentialParams struct {
+	ID           uuid.UUID          `json:"id"`
+	IntegratorID uuid.UUID          `json:"integrator_id"`
+	Environment  ConsoleEnvironment `json:"environment"`
+	KeyID        string             `json:"key_id"`
+	SecretHash   string             `json:"secret_hash"`
+	CreatedBy    pgtype.UUID        `json:"created_by"`
+}
+
+func (q *Queries) CreateApiCredential(ctx context.Context, arg CreateApiCredentialParams) (ApiCredential, error) {
+	row := q.db.QueryRow(ctx, createApiCredential,
+		arg.ID,
+		arg.IntegratorID,
+		arg.Environment,
+		arg.KeyID,
+		arg.SecretHash,
+		arg.CreatedBy,
+	)
+	var i ApiCredential
+	err := row.Scan(
+		&i.ID,
+		&i.IntegratorID,
+		&i.Environment,
+		&i.KeyID,
+		&i.SecretHash,
+		&i.Label,
+		&i.CreatedAt,
+		&i.CreatedBy,
+		&i.RotatedAt,
+		&i.RevokedAt,
+		&i.RevokedBy,
+		&i.RevokedReason,
+	)
+	return i, err
+}
+
 const createApiIntegrator = `-- name: CreateApiIntegrator :one
-INSERT INTO api_integrators (id, name, api_key, api_secret_hash, is_sandbox)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, name, api_key, api_secret_hash, is_sandbox, created_at, updated_at
+INSERT INTO api_integrators (id, name, plan, status, production_access_granted)
+VALUES ($1, $2, 'pay_as_you_go', 'active', false)
+RETURNING id, name, created_at, updated_at, plan, status, production_access_granted, production_access_granted_at, production_access_granted_by
 `
 
 type CreateApiIntegratorParams struct {
-	ID            uuid.UUID `json:"id"`
-	Name          string    `json:"name"`
-	ApiKey        string    `json:"api_key"`
-	ApiSecretHash string    `json:"api_secret_hash"`
-	IsSandbox     bool      `json:"is_sandbox"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 func (q *Queries) CreateApiIntegrator(ctx context.Context, arg CreateApiIntegratorParams) (ApiIntegrator, error) {
-	row := q.db.QueryRow(ctx, createApiIntegrator,
-		arg.ID,
-		arg.Name,
-		arg.ApiKey,
-		arg.ApiSecretHash,
-		arg.IsSandbox,
-	)
+	row := q.db.QueryRow(ctx, createApiIntegrator, arg.ID, arg.Name)
 	var i ApiIntegrator
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.ApiKey,
-		&i.ApiSecretHash,
-		&i.IsSandbox,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Plan,
+		&i.Status,
+		&i.ProductionAccessGranted,
+		&i.ProductionAccessGrantedAt,
+		&i.ProductionAccessGrantedBy,
 	)
 	return i, err
 }
 
 const getApiIntegratorByKey = `-- name: GetApiIntegratorByKey :one
-SELECT id, name, api_key, api_secret_hash, is_sandbox, created_at, updated_at FROM api_integrators
-WHERE api_key = $1
+SELECT 
+    i.id,
+    i.name,
+    c.secret_hash AS api_secret_hash,
+    (c.environment = 'sandbox')::boolean AS is_sandbox
+FROM api_integrators i
+JOIN api_credentials c ON i.id = c.integrator_id
+WHERE c.key_id = $1 AND c.revoked_at IS NULL
 `
 
-func (q *Queries) GetApiIntegratorByKey(ctx context.Context, apiKey string) (ApiIntegrator, error) {
-	row := q.db.QueryRow(ctx, getApiIntegratorByKey, apiKey)
-	var i ApiIntegrator
+type GetApiIntegratorByKeyRow struct {
+	ID            uuid.UUID `json:"id"`
+	Name          string    `json:"name"`
+	ApiSecretHash string    `json:"api_secret_hash"`
+	IsSandbox     bool      `json:"is_sandbox"`
+}
+
+func (q *Queries) GetApiIntegratorByKey(ctx context.Context, keyID string) (GetApiIntegratorByKeyRow, error) {
+	row := q.db.QueryRow(ctx, getApiIntegratorByKey, keyID)
+	var i GetApiIntegratorByKeyRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.ApiKey,
 		&i.ApiSecretHash,
 		&i.IsSandbox,
-		&i.CreatedAt,
-		&i.UpdatedAt,
 	)
 	return i, err
 }

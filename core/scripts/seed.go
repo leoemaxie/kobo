@@ -25,14 +25,21 @@ func main() {
 	q := sqlc.New(pool)
 	ctx := context.Background()
 
-	// Seed integrator
 	integratorID := uuid.New()
 	_, err = q.CreateApiIntegrator(ctx, sqlc.CreateApiIntegratorParams{
-		ID:            integratorID,
-		Name:          "Sandbox Test Integrator",
-		ApiKey:        "kobo_test_seeded_api_key",
-		ApiSecretHash: "seeded_secret_hash_not_real",
-		IsSandbox:     true,
+		ID:   integratorID,
+		Name: "Sandbox Test Integrator",
+	})
+	if err != nil {
+		log.Fatalf("failed to seed integrator: %v", err)
+	}
+
+	_, err = q.CreateApiCredential(ctx, sqlc.CreateApiCredentialParams{
+		ID:           uuid.New(),
+		IntegratorID: integratorID,
+		Environment:  sqlc.ConsoleEnvironmentSandbox,
+		KeyID:        "kobo_test_seeded_api_key",
+		SecretHash:   "seeded_secret_hash_not_real",
 	})
 	if err != nil {
 		log.Fatalf("failed to seed integrator: %v", err)

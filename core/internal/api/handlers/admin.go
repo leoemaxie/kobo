@@ -49,9 +49,9 @@ func (h *AdminHandler) ProvisionIntegrator(w http.ResponseWriter, r *http.Reques
 	resp := ProvisionIntegratorResponse{
 		ID:        result.Integrator.ID.String(),
 		Name:      result.Integrator.Name,
-		APIKey:    result.Integrator.ApiKey,
+		APIKey:    result.Credential.KeyID,
 		APISecret: result.RawSecret,
-		IsSandbox: result.Integrator.IsSandbox,
+		IsSandbox: result.Credential.Environment == "sandbox", // Ensure we treat "sandbox" as true
 	}
 
 	w.Header().Set("Content-Type", "application/json")

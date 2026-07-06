@@ -15,14 +15,14 @@ import (
 
 type mockAuthQuerier struct {
 	sqlc.Querier
-	GetApiIntegratorByKeyFunc func(ctx context.Context, apiKey string) (sqlc.ApiIntegrator, error)
+	GetApiIntegratorByKeyFunc func(ctx context.Context, apiKey string) (sqlc.GetApiIntegratorByKeyRow, error)
 }
 
-func (m *mockAuthQuerier) GetApiIntegratorByKey(ctx context.Context, apiKey string) (sqlc.ApiIntegrator, error) {
+func (m *mockAuthQuerier) GetApiIntegratorByKey(ctx context.Context, apiKey string) (sqlc.GetApiIntegratorByKeyRow, error) {
 	if m.GetApiIntegratorByKeyFunc != nil {
 		return m.GetApiIntegratorByKeyFunc(ctx, apiKey)
 	}
-	return sqlc.ApiIntegrator{}, errors.New("unimplemented GetApiIntegratorByKey")
+	return sqlc.GetApiIntegratorByKeyRow{}, errors.New("unimplemented GetApiIntegratorByKey")
 }
 
 func TestAuthMiddleware_Valid(t *testing.T) {
@@ -30,9 +30,9 @@ func TestAuthMiddleware_Valid(t *testing.T) {
 	integratorID := uuid.New()
 
 	mq := &mockAuthQuerier{
-		GetApiIntegratorByKeyFunc: func(ctx context.Context, key string) (sqlc.ApiIntegrator, error) {
+		GetApiIntegratorByKeyFunc: func(ctx context.Context, key string) (sqlc.GetApiIntegratorByKeyRow, error) {
 			assert.Equal(t, apiKey, key)
-			return sqlc.ApiIntegrator{
+			return sqlc.GetApiIntegratorByKeyRow{
 				ID:            integratorID,
 				Name:          "Test Integrator",
 				ApiSecretHash: hashedSecret,
@@ -78,8 +78,8 @@ func TestAuthMiddleware_WrongSecret(t *testing.T) {
 	apiKey, _, hashedSecret, _ := auth.GenerateCredentials(false)
 
 	mq := &mockAuthQuerier{
-		GetApiIntegratorByKeyFunc: func(ctx context.Context, key string) (sqlc.ApiIntegrator, error) {
-			return sqlc.ApiIntegrator{
+		GetApiIntegratorByKeyFunc: func(ctx context.Context, key string) (sqlc.GetApiIntegratorByKeyRow, error) {
+			return sqlc.GetApiIntegratorByKeyRow{
 				ID:            uuid.New(),
 				ApiSecretHash: hashedSecret,
 				IsSandbox:     true,

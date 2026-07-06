@@ -5,21 +5,326 @@
 package sqlc
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type ConsoleAdminAction string
+
+const (
+	ConsoleAdminActionIntegratorSuspended      ConsoleAdminAction = "integrator_suspended"
+	ConsoleAdminActionIntegratorReinstated     ConsoleAdminAction = "integrator_reinstated"
+	ConsoleAdminActionProductionAccessGranted  ConsoleAdminAction = "production_access_granted"
+	ConsoleAdminActionCredentialForceRevoked   ConsoleAdminAction = "credential_force_revoked"
+	ConsoleAdminActionBillingAdjustmentApplied ConsoleAdminAction = "billing_adjustment_applied"
+	ConsoleAdminActionUserSessionRevoked       ConsoleAdminAction = "user_session_revoked"
+)
+
+func (e *ConsoleAdminAction) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ConsoleAdminAction(s)
+	case string:
+		*e = ConsoleAdminAction(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ConsoleAdminAction: %T", src)
+	}
+	return nil
+}
+
+type NullConsoleAdminAction struct {
+	ConsoleAdminAction ConsoleAdminAction `json:"console_admin_action"`
+	Valid              bool               `json:"valid"` // Valid is true if ConsoleAdminAction is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullConsoleAdminAction) Scan(value interface{}) error {
+	if value == nil {
+		ns.ConsoleAdminAction, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ConsoleAdminAction.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullConsoleAdminAction) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ConsoleAdminAction), nil
+}
+
+type ConsoleEnvironment string
+
+const (
+	ConsoleEnvironmentSandbox    ConsoleEnvironment = "sandbox"
+	ConsoleEnvironmentProduction ConsoleEnvironment = "production"
+)
+
+func (e *ConsoleEnvironment) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ConsoleEnvironment(s)
+	case string:
+		*e = ConsoleEnvironment(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ConsoleEnvironment: %T", src)
+	}
+	return nil
+}
+
+type NullConsoleEnvironment struct {
+	ConsoleEnvironment ConsoleEnvironment `json:"console_environment"`
+	Valid              bool               `json:"valid"` // Valid is true if ConsoleEnvironment is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullConsoleEnvironment) Scan(value interface{}) error {
+	if value == nil {
+		ns.ConsoleEnvironment, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ConsoleEnvironment.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullConsoleEnvironment) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ConsoleEnvironment), nil
+}
+
+type ConsoleIntegratorStatus string
+
+const (
+	ConsoleIntegratorStatusActive    ConsoleIntegratorStatus = "active"
+	ConsoleIntegratorStatusSuspended ConsoleIntegratorStatus = "suspended"
+)
+
+func (e *ConsoleIntegratorStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ConsoleIntegratorStatus(s)
+	case string:
+		*e = ConsoleIntegratorStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ConsoleIntegratorStatus: %T", src)
+	}
+	return nil
+}
+
+type NullConsoleIntegratorStatus struct {
+	ConsoleIntegratorStatus ConsoleIntegratorStatus `json:"console_integrator_status"`
+	Valid                   bool                    `json:"valid"` // Valid is true if ConsoleIntegratorStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullConsoleIntegratorStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.ConsoleIntegratorStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ConsoleIntegratorStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullConsoleIntegratorStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ConsoleIntegratorStatus), nil
+}
+
+type ConsoleUserRole string
+
+const (
+	ConsoleUserRoleOwner      ConsoleUserRole = "owner"
+	ConsoleUserRoleMember     ConsoleUserRole = "member"
+	ConsoleUserRoleSuperadmin ConsoleUserRole = "superadmin"
+)
+
+func (e *ConsoleUserRole) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ConsoleUserRole(s)
+	case string:
+		*e = ConsoleUserRole(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ConsoleUserRole: %T", src)
+	}
+	return nil
+}
+
+type NullConsoleUserRole struct {
+	ConsoleUserRole ConsoleUserRole `json:"console_user_role"`
+	Valid           bool            `json:"valid"` // Valid is true if ConsoleUserRole is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullConsoleUserRole) Scan(value interface{}) error {
+	if value == nil {
+		ns.ConsoleUserRole, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ConsoleUserRole.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullConsoleUserRole) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ConsoleUserRole), nil
+}
+
+type ConsoleWebhookStatus string
+
+const (
+	ConsoleWebhookStatusActive   ConsoleWebhookStatus = "active"
+	ConsoleWebhookStatusDisabled ConsoleWebhookStatus = "disabled"
+)
+
+func (e *ConsoleWebhookStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ConsoleWebhookStatus(s)
+	case string:
+		*e = ConsoleWebhookStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ConsoleWebhookStatus: %T", src)
+	}
+	return nil
+}
+
+type NullConsoleWebhookStatus struct {
+	ConsoleWebhookStatus ConsoleWebhookStatus `json:"console_webhook_status"`
+	Valid                bool                 `json:"valid"` // Valid is true if ConsoleWebhookStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullConsoleWebhookStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.ConsoleWebhookStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ConsoleWebhookStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullConsoleWebhookStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ConsoleWebhookStatus), nil
+}
+
+type ApiCredential struct {
+	ID            uuid.UUID          `json:"id"`
+	IntegratorID  uuid.UUID          `json:"integrator_id"`
+	Environment   ConsoleEnvironment `json:"environment"`
+	KeyID         string             `json:"key_id"`
+	SecretHash    string             `json:"secret_hash"`
+	Label         pgtype.Text        `json:"label"`
+	CreatedAt     time.Time          `json:"created_at"`
+	CreatedBy     pgtype.UUID        `json:"created_by"`
+	RotatedAt     pgtype.Timestamptz `json:"rotated_at"`
+	RevokedAt     pgtype.Timestamptz `json:"revoked_at"`
+	RevokedBy     pgtype.UUID        `json:"revoked_by"`
+	RevokedReason pgtype.Text        `json:"revoked_reason"`
+}
+
 type ApiIntegrator struct {
-	ID            uuid.UUID `json:"id"`
-	Name          string    `json:"name"`
-	ApiKey        string    `json:"api_key"`
-	ApiSecretHash string    `json:"api_secret_hash"`
-	IsSandbox     bool      `json:"is_sandbox"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID                        uuid.UUID               `json:"id"`
+	Name                      string                  `json:"name"`
+	CreatedAt                 time.Time               `json:"created_at"`
+	UpdatedAt                 time.Time               `json:"updated_at"`
+	Plan                      string                  `json:"plan"`
+	Status                    ConsoleIntegratorStatus `json:"status"`
+	ProductionAccessGranted   bool                    `json:"production_access_granted"`
+	ProductionAccessGrantedAt pgtype.Timestamptz      `json:"production_access_granted_at"`
+	ProductionAccessGrantedBy pgtype.UUID             `json:"production_access_granted_by"`
+}
+
+type ConsoleAdminAuditLog struct {
+	ID                 uuid.UUID          `json:"id"`
+	ActorUserID        uuid.UUID          `json:"actor_user_id"`
+	Action             ConsoleAdminAction `json:"action"`
+	TargetIntegratorID pgtype.UUID        `json:"target_integrator_id"`
+	TargetUserID       pgtype.UUID        `json:"target_user_id"`
+	TargetCredentialID pgtype.UUID        `json:"target_credential_id"`
+	Detail             json.RawMessage    `json:"detail"`
+	CreatedAt          time.Time          `json:"created_at"`
+}
+
+type ConsoleBillingRecord struct {
+	ID                    uuid.UUID          `json:"id"`
+	IntegratorID          uuid.UUID          `json:"integrator_id"`
+	Environment           ConsoleEnvironment `json:"environment"`
+	Period                string             `json:"period"`
+	AccountsProvisioned   int64              `json:"accounts_provisioned"`
+	TransactionsProcessed int64              `json:"transactions_processed"`
+	WebhookDeliveries     int64              `json:"webhook_deliveries"`
+	AmountDueKobo         int64              `json:"amount_due_kobo"`
+	AdjustmentKobo        int64              `json:"adjustment_kobo"`
+	AdjustmentReason      pgtype.Text        `json:"adjustment_reason"`
+	SyncedAt              time.Time          `json:"synced_at"`
+}
+
+type ConsoleEmailVerificationToken struct {
+	ID        string             `json:"id"`
+	UserID    uuid.UUID          `json:"user_id"`
+	ExpiresAt time.Time          `json:"expires_at"`
+	UsedAt    pgtype.Timestamptz `json:"used_at"`
+	CreatedAt time.Time          `json:"created_at"`
+}
+
+type ConsolePasswordResetToken struct {
+	ID        string             `json:"id"`
+	UserID    uuid.UUID          `json:"user_id"`
+	ExpiresAt time.Time          `json:"expires_at"`
+	UsedAt    pgtype.Timestamptz `json:"used_at"`
+	CreatedAt time.Time          `json:"created_at"`
+}
+
+type ConsoleSession struct {
+	ID        string             `json:"id"`
+	UserID    uuid.UUID          `json:"user_id"`
+	ExpiresAt time.Time          `json:"expires_at"`
+	CreatedAt time.Time          `json:"created_at"`
+	RevokedAt pgtype.Timestamptz `json:"revoked_at"`
+}
+
+type ConsoleUser struct {
+	ID              uuid.UUID          `json:"id"`
+	IntegratorID    pgtype.UUID        `json:"integrator_id"`
+	Email           string             `json:"email"`
+	PasswordHash    string             `json:"password_hash"`
+	Role            ConsoleUserRole    `json:"role"`
+	EmailVerifiedAt pgtype.Timestamptz `json:"email_verified_at"`
+	CreatedAt       time.Time          `json:"created_at"`
+	UpdatedAt       time.Time          `json:"updated_at"`
+}
+
+type ConsoleWebhook struct {
+	ID           uuid.UUID            `json:"id"`
+	IntegratorID uuid.UUID            `json:"integrator_id"`
+	Environment  ConsoleEnvironment   `json:"environment"`
+	Url          string               `json:"url"`
+	Secret       string               `json:"secret"`
+	Status       ConsoleWebhookStatus `json:"status"`
+	Events       json.RawMessage      `json:"events"`
+	CreatedAt    time.Time            `json:"created_at"`
 }
 
 type Exception struct {

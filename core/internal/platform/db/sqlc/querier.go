@@ -12,13 +12,14 @@ import (
 )
 
 type Querier interface {
+	CreateApiCredential(ctx context.Context, arg CreateApiCredentialParams) (ApiCredential, error)
 	CreateApiIntegrator(ctx context.Context, arg CreateApiIntegratorParams) (ApiIntegrator, error)
 	CreateIdentity(ctx context.Context, arg CreateIdentityParams) (Identity, error)
 	CreateVirtualAccount(ctx context.Context, arg CreateVirtualAccountParams) (VirtualAccount, error)
 	// Sets is_active to false when a new account is provisioned for the identity
 	DeactivateVirtualAccount(ctx context.Context, identityID uuid.UUID) error
 	GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (VirtualAccount, error)
-	GetApiIntegratorByKey(ctx context.Context, apiKey string) (ApiIntegrator, error)
+	GetApiIntegratorByKey(ctx context.Context, keyID string) (GetApiIntegratorByKeyRow, error)
 	GetExceptionByID(ctx context.Context, arg GetExceptionByIDParams) (Exception, error)
 	GetIdempotencyKey(ctx context.Context, nombaReference string) (IdempotencyKey, error)
 	GetIdentityByExternalReference(ctx context.Context, arg GetIdentityByExternalReferenceParams) (Identity, error)
@@ -32,9 +33,9 @@ type Querier interface {
 	InsertIdentityEvent(ctx context.Context, arg InsertIdentityEventParams) (IdentityEvent, error)
 	InsertLedgerEntry(ctx context.Context, arg InsertLedgerEntryParams) (LedgerEntry, error)
 	ListActiveVirtualAccounts(ctx context.Context) ([]VirtualAccount, error)
+	ListAllIdentitiesByState(ctx context.Context, state string) ([]Identity, error)
 	ListExceptionsByStatus(ctx context.Context, arg ListExceptionsByStatusParams) ([]Exception, error)
 	ListIdentitiesByState(ctx context.Context, arg ListIdentitiesByStateParams) ([]Identity, error)
-	ListAllIdentitiesByState(ctx context.Context, state string) ([]Identity, error)
 	ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]IdentityEvent, error)
 	ListLedgerEntriesByAccount(ctx context.Context, arg ListLedgerEntriesByAccountParams) ([]LedgerEntry, error)
 	ListLedgerEntriesByIdentityAndPeriod(ctx context.Context, arg ListLedgerEntriesByIdentityAndPeriodParams) ([]LedgerEntry, error)

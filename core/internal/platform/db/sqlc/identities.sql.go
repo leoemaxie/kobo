@@ -146,6 +146,43 @@ func (q *Queries) InsertIdentityEvent(ctx context.Context, arg InsertIdentityEve
 	return i, err
 }
 
+const listAllIdentitiesByState = `-- name: ListAllIdentitiesByState :many
+SELECT id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at FROM identities
+WHERE state = $1
+ORDER BY created_at ASC
+`
+
+func (q *Queries) ListAllIdentitiesByState(ctx context.Context, state string) ([]Identity, error) {
+	rows, err := q.db.Query(ctx, listAllIdentitiesByState, state)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Identity{}
+	for rows.Next() {
+		var i Identity
+		if err := rows.Scan(
+			&i.ID,
+			&i.IntegratorID,
+			&i.ExternalReference,
+			&i.DisplayName,
+			&i.KycTier,
+			&i.State,
+			&i.FailureReason,
+			&i.Metadata,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listIdentitiesByState = `-- name: ListIdentitiesByState :many
 SELECT id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at FROM identities
 WHERE integrator_id = $1 AND state = $2
@@ -310,41 +347,4 @@ func (q *Queries) UpdateIdentityState(ctx context.Context, arg UpdateIdentitySta
 		&i.UpdatedAt,
 	)
 	return i, err
-}
-
-const listAllIdentitiesByState = `-- name: ListAllIdentitiesByState :many
-SELECT id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at FROM identities
-WHERE state = $1
-ORDER BY created_at ASC
-`
-
-func (q *Queries) ListAllIdentitiesByState(ctx context.Context, state string) ([]Identity, error) {
-	rows, err := q.db.Query(ctx, listAllIdentitiesByState, state)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []Identity{}
-	for rows.Next() {
-		var i Identity
-		if err := rows.Scan(
-			&i.ID,
-			&i.IntegratorID,
-			&i.ExternalReference,
-			&i.DisplayName,
-			&i.KycTier,
-			&i.State,
-			&i.FailureReason,
-			&i.Metadata,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
