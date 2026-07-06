@@ -47,6 +47,8 @@ export const apiCredentials = pgTable(
     revokedAt: timestamp('revoked_at', { withTimezone: true }),
     revokedBy: uuid('revoked_by'),
     revokedReason: text('revoked_reason'),
+    allowedIps: text('allowed_ips').array().notNull().default([]),
+    scopes: text('scopes').array().notNull().default([]),
   },
   (table) => [
     uniqueIndex('idx_api_credentials_key_id').on(table.keyId),
@@ -103,6 +105,17 @@ export const passwordResetTokens = consoleSchema.table('password_reset_tokens', 
   userId: uuid('user_id').notNull().references(() => users.id),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
   usedAt: timestamp('used_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const invitations = consoleSchema.table('invitations', {
+  id: text('id').primaryKey(),
+  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
+  invitedBy: uuid('invited_by').notNull().references(() => users.id),
+  email: text('email').notNull(),
+  role: userRoleEnum('role').notNull().default('member'),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  acceptedAt: timestamp('accepted_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
