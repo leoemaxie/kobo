@@ -1,0 +1,36 @@
+name: Run Worker
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *' # Every hour
+
+jobs:
+  run-worker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./core
+        
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.26'
+        cache-dependency-path: core/go.sum
+        
+    - name: Install dependencies
+      run: go mod download
+      
+    - name: Run Worker
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        NOMBA_CLIENT_ID: ${{ secrets.NOMBA_CLIENT_ID }}
+        NOMBA_CLIENT_SECRET: ${{ secrets.NOMBA_CLIENT_SECRET }}
+        NOMBA_ACCOUNT_ID: ${{ secrets.NOMBA_ACCOUNT_ID }}
+        NOMBA_WEBHOOK_SECRET: ${{ secrets.NOMBA_WEBHOOK_SECRET }}
+        NOMBA_BASE_URL: ${{ vars.NOMBA_BASE_URL || 'https://api.nomba.com/v1' }}
+      run: go run cmd/worker/main.go
