@@ -1,5 +1,7 @@
 <script lang="ts">
   import { Mail, ArrowRight, ArrowLeft } from '@lucide/svelte';
+  import { enhance } from '$app/forms';
+  import { toast } from '$lib/state/toast.svelte';
 
   let email = $state('');
   let loading = $state(false);
@@ -20,7 +22,21 @@
   <!-- Card -->
   <div class="bg-element border border-border rounded-[10px] px-16 py-8 shadow-sm">
     {#if !submitted}
-      <form class="space-y-6" onsubmit={(e) => { e.preventDefault(); submitted = true; }}>
+      <form class="space-y-6" method="POST" use:enhance={() => {
+        loading = true;
+        return async ({ result, update }) => {
+          loading = false;
+          if (result.type === 'failure') {
+            toast.error(result.data?.error as string || 'Operation failed. Please try again.');
+          } else if (result.type === 'error') {
+            toast.error('An unexpected server error occurred.');
+          } else {
+            toast.success('Reset link sent to your email.');
+            submitted = true;
+          }
+          await update();
+        };
+      }}>
         
         <p class="text-sm text-muted text-center mb-6 mt-2">
           Enter the email associated with your account and we'll send you a link to reset your password.
@@ -35,6 +51,7 @@
             </div>
             <input
               id="email"
+              name="email"
               type="email"
               bind:value={email}
               required

@@ -4,6 +4,7 @@
   import Header from '$lib/components/layout/Header.svelte';
   import Sidebar from '$lib/components/layout/Sidebar.svelte';
   import PageSkeleton from '$lib/components/layout/PageSkeleton.svelte';
+  import ToastProvider from '$lib/components/ui/ToastProvider.svelte';
   import { initConsoleState } from '$lib/state/console.svelte';
 
   let { data, children } = $props();
@@ -49,3 +50,5 @@
     </main>
   </div>
 {/if}
+
+<ToastProvider />
