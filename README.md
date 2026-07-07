@@ -1,80 +1,77 @@
-# Kobo - Virtual Account Infrastructure
+# Kobo - B2B Ledger & Virtual Account Infrastructure
 
-Kobo is a robust virtual account management system designed as a foundation for Nigerian fintech applications. It provides identity-anchored virtual accounts, real-time bank notifications (Push), and an SDK for seamless integration.
+Kobo is a robust virtual account management system and B2B ledger designed as a foundation for modern fintech applications. It provides identity-anchored virtual accounts, real-time bank notifications (Push), and a comprehensive ecosystem for seamless integration.
 
-## Features
+This repository is a monorepo containing the entire Kobo infrastructure, including the backend API, the developer portal, our documentation site, official SDKs, and reference applications.
 
-- **Identity-Anchored Accounts**: Every virtual account is tied to a verified identity, ensuring user accountability.
-- **Push Notifications**: Built-in support for real-time Push notifications for transactions and account events.
-- **SDK Library**: A comprehensive Go SDK (`pkg/kobo`) for easy client integration.
-- **Resilient Architecture**: Features retry mechanisms and idempotent operations to handle network failures gracefully.
+---
 
-## Getting Started
+## 🏗️ Ecosystem Overview
 
-### Prerequisites
+The Kobo platform is composed of several isolated, specialized components, each located in its own directory:
 
-- Go 1.22+
+| Component | Path | Description | Stack |
+| --- | --- | --- | --- |
+| **Kobo Core** | [`/core`](./core) | The central API server and background worker powering the system. It handles the core ledger, webhooks, and database migrations. | Go, PostgreSQL |
+| **Kobo Console** | [`/console`](./console) | The developer portal. Integrators use this to manage API keys, billing, and monitor their virtual accounts. | SvelteKit, Tailwind v4 |
+| **Documentation Portal** | [`/www`](./www) | The official documentation site featuring guides, API references, and OpenAPI models. | Docusaurus, React |
+| **Official SDKs** | [`/sdks`](./sdks) | Zero-dependency, type-safe client libraries for integrating with the Kobo API. | Go, Java, TypeScript |
+| **Reference Apps** | [`/apps`](./apps) | Example applications, such as a "School Fees" app, demonstrating how to integrate Kobo into real-world products. | SvelteKit, Tailwind v4 |
 
-### Installation
+---
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd kobo
-   ```
+## 🚀 Getting Started
 
-2. **Run the setup script**:
-   This script will generate the necessary database migrations and seed the database with a test integrator.
-   ```bash
-   go run scripts/setup.go
-   ```
+To get the full Kobo platform running locally, you'll need to set up the individual services. We recommend starting with **Kobo Core**.
 
-### Running the Server
+### 1. Start the Core API
+The Core API is the foundation of Kobo.
+1. Navigate to [`/core`](./core).
+2. Set up your `.env` (copying from `.env.sample`).
+3. Run migrations: `make migrate-up`.
+4. Start the server: `make run` and `make worker`.
 
-Start the API server:
-```bash
-go run cmd/server/main.go
-```
-The server will start on `http://localhost:8080`.
+*See the [Core README](./core/README.md) for detailed prerequisites (like PostgreSQL).*
 
-## Usage
+### 2. Start the Developer Console
+Once the core is running, you can spin up the Kobo Console to manage your account.
+1. Navigate to [`/console`](./console).
+2. Install dependencies: `pnpm install`.
+3. Set up your `.env` file.
+4. Start the dev server: `pnpm run dev`.
 
-### Using the SDK
+*See the [Console README](./console/README.md) for further details.*
 
-Import the SDK into your application:
-```go
-import "github.com/leoemaxie/kobo/pkg/kobo"
-```
+### 3. Explore the Documentation
+To read the full API spec and architectural guides:
+1. Navigate to [`/www`](./www).
+2. Install dependencies: `pnpm install`.
+3. Generate OpenAPI models: `pnpm run gen:docs`.
+4. Start the docs server: `pnpm start`.
 
-Initialize the client with your API credentials:
-```go
-client := kobo.New("your-api-key", "your-api-secret")
-```
+*See the [Docs README](./www/README.md) for more info.*
 
-Create an identity and generate an account:
-```go
-identity, err := client.Identities.Create(
-    context.Background(),
-    "some_external_id",
-    &kobo.IdentityCreateOptions{
-        DisplayName: "John Doe",
-    },
-)
+---
 
-account, err := client.Accounts.Create(
-    context.Background(),
-    identity.ID,
-    &kobo.AccountCreateOptions{
-        BankName: "GTBank",
-    },
-)
-```
+## 💻 Integrating with Kobo
 
-### API Endpoints
+If you are an external developer looking to build on top of Kobo, you don't need to run this entire monorepo. Instead, you can integrate with Kobo using our official SDKs!
 
-Key endpoints available in the sandbox:
+### Available SDKs:
+- **TypeScript**: `npm install @kobo/typescript-sdk` *(Check the SDK docs for the exact package name)*
+- **Go**: `go get github.com/leoemaxie/kobo/sdks/go`
+- **Java**: Maven/Gradle integration available.
 
-- `POST /v1/accounts`: Create an account for an identity.
-- `GET /v1/accounts/{id}`: Get account details.
-- `POST /v1/identities`: Create an identity.
-- `POST /v1/webhooks/push`: Receive notifications from the Push provider.
+Check the [`/sdks` directory](./sdks/README.md) for documentation on how to authenticate, create identities, generate virtual accounts, and handle errors robustly.
+
+### Reference Application
+Want to see Kobo in action? Check out our [School Fees reference app](./apps/school-fees) in `/apps/school-fees`. It demonstrates a complete end-to-end integration for a school management system provisioning virtual accounts for students!
+
+---
+
+## 🛠️ Contributing
+
+We welcome contributions to any part of the Kobo ecosystem!
+- **Core backend changes**: Please refer to `core/docs/ARCHITECTURE.md`.
+- **Database schema changes**: Migrations live in `core/migrations/`. Do not use Drizzle in the `console` directory to modify schemas.
+- **Documentation**: All guides and OpenAPI specs are generated from `core/openapi.yaml` and styled in `www`.
