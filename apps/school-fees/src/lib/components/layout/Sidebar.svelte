@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { LayoutDashboard, Users, LogOut, GraduationCap, X } from '@lucide/svelte';
   import { ui } from '$lib/state.svelte';
+  import { enhance } from '$app/forms';
   
   let navItems = $derived(
     page.data.user?.isAdmin
@@ -61,9 +62,11 @@
   </div>
 
   <div class="p-4 border-t border-iron mt-auto">
-    <a href="/login" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-smoke hover:bg-danger/10 hover:text-danger transition-colors">
-      <LogOut size={16} />
-      Sign Out
-    </a>
+    <form method="POST" action="/logout" use:enhance>
+      <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-smoke hover:bg-danger/10 hover:text-danger transition-colors cursor-pointer border-none bg-transparent text-left">
+        <LogOut size={16} />
+        Sign Out
+      </button>
+    </form>
   </div>
 </aside>

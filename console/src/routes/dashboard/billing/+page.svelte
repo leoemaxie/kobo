@@ -8,6 +8,7 @@
   import { useConsoleState } from '$lib/state/console.svelte';
   import { toast } from '$lib/state/toast.svelte';
   import { page } from '$app/stores';
+  import { enhance } from '$app/forms';
   import { onMount } from 'svelte';
 
   const state = useConsoleState();
@@ -34,7 +35,13 @@
       </span>
     {/snippet}
     {#snippet actions()}
-      <form method="POST" action="?/setupPaymentMethod">
+      <form method="POST" action="?/setupPaymentMethod" use:enhance={() => {
+        return async ({ result, update }) => {
+          if (result.type === 'failure') toast.error((result.data?.error as string) || 'Failed to initialize checkout');
+          else if (result.type === 'error') toast.error('Server error occurred');
+          await update();
+        };
+      }}>
         <Button variant="neutral" size="md" type="submit">
           Manage Payment Method
         </Button>

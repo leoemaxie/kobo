@@ -1,7 +1,7 @@
 <script lang="ts">
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  import { Search, Ban, CheckCircle, MoreHorizontal, Play } from '@lucide/svelte';
+  import { Search, Ban, CheckCircle, Play } from '@lucide/svelte';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/state/toast.svelte';
 

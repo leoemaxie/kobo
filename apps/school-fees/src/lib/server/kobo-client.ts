@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private';
 
 export async function koboFetch(endpoint: string, options: RequestInit = {}) {
-    const KOBO_API_URL = env.KOBO_API_URL || 'http://localhost:8080/v1';
+    const KOBO_API_URL = env.KOBO_API_URL || 'https://api.kobo.dev/v1';
     const apiKey = env.KOBO_API_KEY as string;
     const apiSecret = env.KOBO_API_SECRET as string;
 

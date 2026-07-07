@@ -29,7 +29,7 @@ Fill in the credentials:
 - `DATABASE_URL`: Your local Postgres connection string (e.g., `postgres://user:pass@localhost:5432/school_fees`).
 - `KOBO_API_KEY`: A valid Secret Key generated from the Kobo Console.
 - `KOBO_API_SECRET`: The API Secret used to sign HMAC requests.
-- `KOBO_API_URL`: The base URL of the Kobo API (e.g., `http://localhost:8080/v1`).
+- `KOBO_API_URL`: The base URL of the Kobo API (e.g., `https://api.kobo.dev/v1`).
 
 ### 3. Database Setup
 We use Drizzle ORM to manage the local schema. Push the schema to your database:

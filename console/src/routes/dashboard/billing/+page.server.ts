@@ -1,4 +1,5 @@
 import type { PageServerLoad } from './$types';
+import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
 import { billingRecords, invoices } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -58,7 +59,7 @@ export const actions: Actions = {
 		const callbackUrl = new URL('/dashboard/billing/callback', url.origin).toString();
 
 		try {
-			const res = await fetch(`${url.origin}/v1/admin/billing/checkout`, {
+			const res = await fetch(`${env.CORE_URL}/v1/admin/billing/checkout`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

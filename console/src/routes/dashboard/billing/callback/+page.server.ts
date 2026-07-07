@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -10,7 +11,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const orderRef = url.searchParams.get('orderRef');
 	if (orderRef) {
 		try {
-			const res = await fetch(`${import.meta.env.CORE_URL}/v1/admin/billing/verify`, {
+			const res = await fetch(`${env.CORE_URL}/v1/admin/billing/verify`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
