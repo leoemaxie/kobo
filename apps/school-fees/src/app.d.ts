@@ -6,7 +6,7 @@ declare global {
 				id: string;
 				email: string;
 				name: string;
-				isAdmin: boolean;
+				role: string;
 			} | null;
 			session: any | null;
 		}

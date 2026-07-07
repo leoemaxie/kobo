@@ -8,6 +8,10 @@
   let isSubmitting = $state(false);
 </script>
 
+<svelte:head>
+  <title>Sign Up | Triumph Academy</title>
+</svelte:head>
+
 <div class="w-full max-w-md space-y-8">
   <div class="text-center">
     <div class="w-12 h-12 rounded-lg bg-electric-lime text-void-black flex items-center justify-center text-2xl font-bold mx-auto mb-4 shadow-lg shadow-electric-lime/20">K</div>

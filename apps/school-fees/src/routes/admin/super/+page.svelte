@@ -6,6 +6,10 @@
 
 </script>
 
+<svelte:head>
+  <title>Superadmin | Triumph Academy</title>
+</svelte:head>
+
 <div class="space-y-10 w-full">
   <div class="flex items-center justify-between border-b border-iron pb-6">
     <div>

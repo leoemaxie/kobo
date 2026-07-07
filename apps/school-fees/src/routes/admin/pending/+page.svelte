@@ -2,6 +2,10 @@
   import { enhance } from '$app/forms';
 </script>
 
+<svelte:head>
+  <title>Account Pending | Triumph Academy</title>
+</svelte:head>
+
 <div class="flex flex-col items-center justify-center min-h-[60vh] text-center max-w-lg mx-auto space-y-6">
   <div class="w-16 h-16 rounded-full bg-carbon border border-iron flex items-center justify-center text-3xl mb-2">
     ⏳

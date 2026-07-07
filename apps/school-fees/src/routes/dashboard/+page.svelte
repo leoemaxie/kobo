@@ -3,6 +3,10 @@
   let students = $derived(data.students);
 </script>
 
+<svelte:head>
+  <title>Dashboard | Triumph Academy</title>
+</svelte:head>
+
 <div class="space-y-8 w-full">
   <div class="flex items-center justify-between border-b border-iron pb-6">
     <div>

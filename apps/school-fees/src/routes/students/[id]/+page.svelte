@@ -15,6 +15,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>{student.name} | Triumph Academy</title>
+</svelte:head>
+
 <div class="space-y-8 w-full">
   <div class="flex items-center gap-4 border-b border-iron pb-6">
     <a href="/dashboard" class="w-10 h-10 rounded-full bg-carbon border border-iron flex items-center justify-center text-smoke hover:text-electric-lime hover:border-electric-lime transition-colors">
