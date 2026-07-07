@@ -36,9 +36,9 @@
 
 <aside class="w-64 min-w-[256px] bg-[var(--bg-sidebar)] border-r border-[var(--border-color)] flex flex-col h-full overflow-hidden transition-colors duration-200">
   <!-- Org Selector -->
-  <div class="h-16 flex items-center justify-between px-4 border-b border-[var(--border-color)] shrink-0">
+  <div class="h-18 flex items-center justify-between px-4 border-b border-[var(--border-color)] shrink-0">
     <button class="flex items-center gap-2.5 w-full bg-transparent border border-transparent rounded-lg py-2 px-2.5 cursor-pointer text-left transition-colors hover:bg-[var(--bg-element)] flex-1 overflow-hidden">
-      <div class="h-8 w-8 rounded-md bg-[var(--accent)] flex items-center justify-center font-black text-sm text-[var(--accent-text)] shrink-0">
+      <div class="h-9 w-9 rounded-md bg-[var(--accent)] flex items-center justify-center font-black text-sm text-[var(--accent-text)] shrink-0">
         {workspaceInitial}
       </div>
       <div class="flex-1 overflow-hidden">

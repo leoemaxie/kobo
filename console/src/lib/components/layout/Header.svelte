@@ -40,7 +40,7 @@
   });
 </script>
 
-<header class="h-16 border-b border-[var(--border-color)] bg-[var(--bg-header)]/80 backdrop-blur-md flex items-center justify-between px-4 sm:px-7 shrink-0 sticky top-0 z-40 w-full">
+<header class="h-18 border-b border-[var(--border-color)] bg-[var(--bg-header)]/80 backdrop-blur-md flex items-center justify-between px-4 sm:px-7 shrink-0 sticky top-0 z-40 w-full">
   <!-- Breadcrumb -->
   <div class="flex items-center gap-2 sm:gap-3 text-[13px] text-muted truncate">
     <button class="lg:hidden p-1 -ml-2 text-muted hover:text-main" onclick={() => isMobileMenuOpen = !isMobileMenuOpen} aria-label="Toggle menu">
@@ -66,7 +66,7 @@
       <input
         type="text"
         placeholder="Search..."
-        class="bg-[var(--bg-element)] border border-[var(--border-color)] rounded-lg py-1.5 pl-8 pr-10 text-xs text-main w-36 lg:w-44 outline-none transition-colors focus:border-[var(--border-focus)] placeholder:text-subtle"
+        class="bg-[var(--bg-element)] border border-[var(--border-color)] rounded-lg py-2 pl-16 pr-16 text-xs text-main w-48 lg:w-64 outline-none transition-colors focus:border-[var(--border-focus)] placeholder:text-subtle"
       />
       <span class="absolute right-2 text-[10px] text-subtle border border-[var(--border-color)] rounded py-[1px] px-[5px] font-mono bg-[var(--bg-active)]">⌘K</span>
     </div>
@@ -76,7 +76,7 @@
     <!-- Env Toggle -->
     <button
       onclick={toggleEnv}
-      class="flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-element)] px-2.5 sm:px-3 py-1 text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-all hover:bg-[var(--bg-active)]
+      class="flex items-center gap-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-element)] px-2.5 sm:px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-all hover:bg-[var(--bg-active)]
       {currentEnv === 'sandbox' ? 'text-muted' : 'text-[var(--accent)]'}"
     >
       <span class="h-1.5 w-1.5 rounded-full transition-all {currentEnv === 'sandbox' ? 'bg-subtle' : 'bg-[var(--accent)] drop-shadow-[0_0_4px_var(--accent-glow)]'}"></span>
@@ -89,7 +89,7 @@
     <!-- Theme Toggle -->
     <button
       onclick={toggleTheme}
-      class="h-8 w-8 rounded-lg border border-transparent bg-transparent flex items-center justify-center text-muted cursor-pointer transition-all hover:bg-[var(--bg-element)] hover:border-[var(--border-color)]"
+      class="h-9 w-9 rounded-lg border border-transparent bg-transparent flex items-center justify-center text-muted cursor-pointer transition-all hover:bg-[var(--bg-element)] hover:border-[var(--border-color)]"
     >
       {#if currentTheme === 'dark'}
         <Sun size={15} />
@@ -99,13 +99,13 @@
     </button>
 
     <!-- Bell -->
-    <button class="h-8 w-8 rounded-lg border border-transparent bg-transparent flex items-center justify-center text-muted cursor-pointer relative transition-all hover:bg-[var(--bg-element)] hover:border-[var(--border-color)]">
+    <button class="h-9 w-9 rounded-lg border border-transparent bg-transparent flex items-center justify-center text-muted cursor-pointer relative transition-all hover:bg-[var(--bg-element)] hover:border-[var(--border-color)]">
       <Bell size={15} />
       <span class="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[var(--accent)] border-2 border-[var(--bg-app)]"></span>
     </button>
 
     <!-- Avatar -->
-    <div class="h-8 w-8 rounded-full bg-[var(--bg-active)] border border-[var(--border-color)] flex items-center justify-center text-xs font-bold text-main cursor-pointer shrink-0">
+    <div class="h-9 w-9 rounded-full bg-[var(--bg-active)] border border-[var(--border-color)] flex items-center justify-center text-xs font-bold text-main cursor-pointer shrink-0">
       {workspaceInitial}
     </div>
   </div>
