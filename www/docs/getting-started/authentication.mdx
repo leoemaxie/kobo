@@ -1,0 +1,70 @@
+---
+sidebar_position: 3
+title: Authenticate
+---
+
+Learn how to ensure secure access to Kobo API Resources.
+
+## Overview
+
+The Kobo API uses OAuth 2.0 and API keys for authentication. You will use your `client_id` (Public Key) and `client_secret` (Secret Key) obtained from the [API Keys](/docs/getting-started/get-api-keys) page to retrieve an `access_token`.
+
+The general workflow is:
+1. Obtain an `access_token` and `refresh_token`.
+2. Refresh the token when it expires.
+3. Revoke the token when no longer needed.
+
+## Obtain Access Token
+
+Use the `client_credentials` grant type to obtain an access token.
+
+```bash
+curl --request POST \
+  --url https://api.kobo.com/v1/auth/token/issue \
+  --header 'Content-Type: application/json' \
+  --header 'accountId: <account_id>' \
+  --data '{
+    "grant_type": "client_credentials",
+    "client_id": "replace-with-your-public-key",
+    "client_secret": "replace-with-your-secret-key"
+  }'
+```
+
+## Refresh Access Token
+
+When your `access_token` expires, you can use your `refresh_token` to get a new one.
+
+```bash
+curl --request POST \
+  --url https://api.kobo.com/v1/auth/token/refresh \
+  --header 'Authorization: Bearer <expired_token>' \
+  --header 'Content-Type: application/json' \
+  --header 'accountId: <account_id>' \
+  --data '{
+    "grant_type": "refresh_token",
+    "refresh_token": "replace-with-your-refresh-token"
+  }'
+```
+
+## Revoke Access Token
+
+When a token is no longer needed or if you suspect it has been compromised, you should revoke it.
+
+```bash
+curl --request POST \
+  --url https://api.kobo.com/v1/auth/token/revoke \
+  --header 'Content-Type: application/json' \
+  --header 'accountId: <account_id>' \
+  --data '{
+    "clientId": "replace-with-your-public-key",
+    "access_token": "<access_token_to_revoke>"
+  }'
+```
+
+## Authentication Best Practices
+
+- **Keep credentials secure**: Never expose your `client_secret` or `refresh_token` in frontend code or public repositories.
+- **Secure storage**: Use secure storage for tokens in your backend (e.g., environment variables, encrypted storage).
+- **Proactive refresh**: Refresh tokens proactively (e.g., 5 minutes before expiry) instead of waiting until the last moment.
+- **Immediate revocation**: Revoke tokens immediately if you suspect they’ve been leaked or compromised.
+- **Credential rotation**: Rotate credentials periodically and remove unused API keys from the Kobo Console.

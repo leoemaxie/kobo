@@ -286,10 +286,9 @@
    ======================================================== */
 
 .theme-doc-toc-desktop {
-  position: sticky !important;
-  top: calc(var(--ifm-navbar-height) + 2rem) !important;
-  max-height: calc(100vh - var(--ifm-navbar-height) - 4rem) !important;
-  overflow-y: auto !important;
+  position: static !important;
+  max-height: none !important;
+  overflow-y: visible !important;
 }
 
 .table-of-contents {
@@ -327,6 +326,10 @@
 .custom-toc-container {
   display: flex;
   flex-direction: column;
+  position: sticky !important;
+  top: calc(var(--ifm-navbar-height) + 2rem) !important;
+  max-height: calc(100vh - var(--ifm-navbar-height) - 4rem) !important;
+  overflow-y: auto !important;
 }
 
 .toc-review-section {

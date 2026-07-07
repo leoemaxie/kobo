@@ -16,6 +16,16 @@ const sidebars: SidebarsConfig = {
   tutorialSidebar: [
     {
       type: 'category',
+      label: 'Getting Started',
+      collapsed: false,
+      items: [
+        'getting-started/get-api-keys',
+        'getting-started/acceptable-documents',
+        'getting-started/authentication',
+      ],
+    },
+    {
+      type: 'category',
       label: 'How to build with Kobo',
       collapsed: false,
       items: [
