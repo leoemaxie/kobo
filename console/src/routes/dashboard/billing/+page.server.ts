@@ -58,7 +58,7 @@ export const actions: Actions = {
 		const callbackUrl = new URL('/dashboard/billing/callback', url.origin).toString();
 
 		try {
-			const res = await fetch('http://localhost:8080/v1/admin/billing/checkout', {
+			const res = await fetch(`${url.origin}/v1/admin/billing/checkout`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

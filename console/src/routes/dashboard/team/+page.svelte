@@ -22,7 +22,7 @@
       <CodeBadge>{data.members.length} / 10</CodeBadge>
     {/snippet}
     {#snippet actions()}
-      <Button variant="primary" size="md" on:click={() => showInviteModal = true}>
+      <Button variant="primary" size="md" onclick={() => showInviteModal = true}>
         <Plus size={13} /> Invite Member
       </Button>
     {/snippet}

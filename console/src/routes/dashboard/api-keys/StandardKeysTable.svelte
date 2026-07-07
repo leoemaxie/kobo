@@ -18,7 +18,7 @@
 <div>
   <div class="flex items-center justify-between mb-2.5">
     <SectionLabel class="mb-0">Standard Keys</SectionLabel>
-    <Button variant="neutral" size="sm" on:click={() => dispatch('create')}>
+    <Button variant="neutral" size="sm" onclick={() => dispatch('create')}>
       <Plus size={12} /> Create secret key
     </Button>
   </div>

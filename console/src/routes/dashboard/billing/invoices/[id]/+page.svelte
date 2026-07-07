@@ -19,83 +19,70 @@
 				background: white !important;
 				color: black !important;
 			}
-			.no-print {
-				display: none !important;
-			}
-			.print-text {
-				color: black !important;
-			}
-			.print-border {
-				border-color: #ddd !important;
-			}
 		}
 	</style>
 </svelte:head>
 
-<div class="print-border" style="max-width: 800px; margin: 40px auto; padding: clamp(16px, 5vw, 40px); border: 1px solid var(--border-subtle); background: var(--bg-surface); border-radius: 8px; overflow-x: auto;">
-	<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+<div class="max-w-4xl my-10 mx-auto p-4 sm:p-10 border border-border-subtle bg-element rounded-lg overflow-x-auto print:border-[#ddd] print:m-0 print:p-0 print:border-none print:shadow-none">
+	<div class="flex justify-between items-start mb-10">
 		<div>
-			<h1 class="print-text" style="font-size: 24px; margin: 0; color: white;">KOBO INC.</h1>
-			<p class="print-text" style="color: var(--text-subtle); margin: 4px 0 0; font-size: 14px;">Receipt of Payment</p>
+			<h1 class="text-2xl font-bold m-0 text-main print:text-black">KOBO INC.</h1>
+			<p class="text-sm mt-1 text-subtle print:text-black">Receipt of Payment</p>
 		</div>
-		<div style="text-align: right;">
-			<h2 class="print-text" style="font-size: 20px; margin: 0; color: white;">INVOICE</h2>
-			<p class="print-text" style="font-family: monospace; color: var(--text-subtle); margin: 4px 0 0;">{invoice.id}</p>
+		<div class="text-right">
+			<h2 class="text-xl font-bold m-0 text-main print:text-black">INVOICE</h2>
+			<p class="font-mono text-sm mt-1 text-subtle print:text-black">{invoice.id}</p>
 		</div>
 	</div>
 
-	<div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
+	<div class="flex justify-between mb-10">
 		<div>
-			<p class="print-text" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-subtle); margin: 0 0 8px;">Billed To</p>
-			<p class="print-text" style="font-size: 16px; font-weight: 500; color: white; margin: 0;">{integrator}</p>
+			<p class="text-xs uppercase tracking-widest text-subtle mb-2 print:text-black">Billed To</p>
+			<p class="text-base font-medium text-main m-0 print:text-black">{integrator}</p>
 		</div>
-		<div style="text-align: right;">
-			<p class="print-text" style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-subtle); margin: 0 0 8px;">Date of Issue</p>
-			<p class="print-text" style="font-size: 16px; font-weight: 500; color: white; margin: 0;">{invoice.date}</p>
+		<div class="text-right">
+			<p class="text-xs uppercase tracking-widest text-subtle mb-2 print:text-black">Date of Issue</p>
+			<p class="text-base font-medium text-main m-0 print:text-black">{invoice.date}</p>
 		</div>
 	</div>
 
-	<table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+	<table class="w-full border-collapse mb-10">
 		<thead>
-			<tr class="print-border" style="border-bottom: 1px solid var(--border-subtle); text-align: left;">
-				<th class="print-text" style="padding: 12px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-subtle);">Description</th>
-				<th class="print-text" style="padding: 12px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-subtle); text-align: right;">Amount</th>
+			<tr class="border-b border-border-subtle text-left print:border-[#ddd]">
+				<th class="py-3 text-xs uppercase tracking-widest text-subtle print:text-black">Description</th>
+				<th class="py-3 text-xs uppercase tracking-widest text-subtle text-right print:text-black">Amount</th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr class="print-border" style="border-bottom: 1px solid var(--border-subtle);">
-				<td class="print-text" style="padding: 16px 0; color: white;">Platform Usage - {invoice.period}</td>
-				<td class="print-text" style="padding: 16px 0; font-family: monospace; text-align: right; color: white;">{invoice.amount}</td>
+			<tr class="border-b border-border-subtle print:border-[#ddd]">
+				<td class="py-4 text-main print:text-black">Platform Usage - {invoice.period}</td>
+				<td class="py-4 font-mono text-right text-main print:text-black">{invoice.amount}</td>
 			</tr>
 			{#if details}
-			<tr class="print-border" style="border-bottom: 1px solid var(--border-subtle);">
-				<td class="print-text" style="padding: 16px 0; color: var(--text-subtle); font-size: 13px;">
+			<tr class="border-b border-border-subtle print:border-[#ddd]">
+				<td class="py-4 text-[13px] text-subtle print:text-black">
 					Includes {details.accounts} virtual accounts, {details.transactions} transactions, {details.webhooks} webhooks.
 				</td>
-				<td class="print-text" style="padding: 16px 0;"></td>
+				<td class="py-4 print:text-black"></td>
 			</tr>
 			{/if}
 		</tbody>
 		<tfoot>
 			<tr>
-				<td class="print-text" style="padding: 24px 0 8px; font-weight: 700; color: white;">Total Due</td>
-				<td class="print-text" style="padding: 24px 0 8px; font-family: monospace; font-size: 18px; font-weight: 700; text-align: right; color: white;">{invoice.amount}</td>
+				<td class="pt-6 pb-2 font-bold text-main print:text-black">Total Due</td>
+				<td class="pt-6 pb-2 font-mono text-lg font-bold text-right text-main print:text-black">{invoice.amount}</td>
 			</tr>
 		</tfoot>
 	</table>
 
-	<div style="display: flex; justify-content: space-between; align-items: center;">
+	<div class="flex justify-between items-center">
 		<div>
-			<span style="font-size: 12px; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; background: {invoice.status === 'paid' ? 'rgba(0, 255, 0, 0.1)' : 'rgba(255, 0, 0, 0.1)'}; color: {invoice.status === 'paid' ? 'var(--accent)' : '#ff4444'};">
+			<span class="text-xs font-bold uppercase py-1 px-2 rounded {invoice.status === 'paid' ? 'bg-primary-transparent text-primary' : 'bg-error-bg text-error'}">
 				{invoice.status}
 			</span>
 		</div>
 		
-		<button class="no-print" on:click={() => window.print()} style="
-			border: 1px solid #2a2a2a; border-radius: 6px;
-			background: var(--bg-sidebar); padding: 8px 16px;
-			font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
-		">
+		<button class="print:hidden border border-border rounded-md bg-sidebar py-2 px-4 text-[13px] font-semibold text-muted cursor-pointer hover:bg-element-hover transition-colors" on:click={() => window.print()}>
 			Download PDF
 		</button>
 	</div>

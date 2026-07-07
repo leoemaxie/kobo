@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <Button variant="neutral" size="sm" class="shrink-0 whitespace-nowrap" on:click={() => dispatch('create')}>
+    <Button variant="neutral" size="sm" class="shrink-0 whitespace-nowrap" onclick              ={() => dispatch('create')}>
       <Plus size={12} /> Create restricted key
     </Button>
   </div>

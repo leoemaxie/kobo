@@ -1,21 +1,33 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url, locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
 	const user = locals.user;
 	if (!user) {
 		throw redirect(302, '/auth/login');
 	}
 
-	// Nomba redirects back to this URL after checkout with query parameters.
-	// For instance: ?orderRef=ref_12345
-	// We just redirect back to the billing dashboard with a success message.
-	
 	const orderRef = url.searchParams.get('orderRef');
 	if (orderRef) {
-		// You might want to verify the orderRef status from Nomba API via Kobo Core
-		// but for now we just assume success.
-		throw redirect(302, '/dashboard/billing?payment_success=true');
+		try {
+			const res = await fetch(`${import.meta.env.CORE_URL}/v1/admin/billing/verify`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					integrator_id: user.integratorId,
+					order_ref: orderRef
+				})
+			});
+
+			if (!res.ok) {
+				throw redirect(302, '/dashboard/billing?payment_error=verification_failed');
+			}
+			
+			throw redirect(302, '/dashboard/billing?payment_success=true');
+		} catch (e) {
+			if ((e as any).status === 302) throw e;
+			throw redirect(302, '/dashboard/billing?payment_error=verification_error');
+		}
 	}
 
 	throw redirect(302, '/dashboard/billing');
