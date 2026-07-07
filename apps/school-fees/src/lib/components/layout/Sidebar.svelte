@@ -5,9 +5,11 @@
   import { enhance } from '$app/forms';
   
   let navItems = $derived(
-    page.data.user?.isAdmin
-      ? [{ label: 'Admin Console', href: '/admin/students', icon: Users }]
-      : [{ label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }]
+    page.data.user?.role === 'superadmin'
+      ? [{ label: 'Superadmin Console', href: '/admin/super', icon: Users }]
+      : page.data.user?.role === 'admin'
+        ? [{ label: 'Admin Console', href: '/admin/students', icon: Users }]
+        : [{ label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }]
   );
 </script>
 

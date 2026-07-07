@@ -1,0 +1,16 @@
+{
+  "name": "Kobo School Fees",
+  "short_name": "Kobo Fees",
+  "description": "Manage your Kobo School Fees ",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#151515",
+  "theme_color": "#faff69",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

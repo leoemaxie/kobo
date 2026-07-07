@@ -6,8 +6,11 @@ import { koboFetch } from '$lib/server/kobo-client';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals }) => {
-    if (!locals.user || !locals.user.isAdmin) {
+    if (!locals.user || !['admin', 'superadmin'].includes(locals.user.role)) {
         throw redirect(302, '/dashboard');
+    }
+    if (locals.user.role === 'admin' && locals.user.status !== 'active') {
+        throw redirect(302, '/admin/pending');
     }
 
     const allStudents = await db.select().from(students).orderBy(students.createdAt);
@@ -25,8 +28,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
     register: async ({ request, locals }) => {
-        if (!locals.user || !locals.user.isAdmin) {
+        if (!locals.user || !['admin', 'superadmin'].includes(locals.user.role)) {
             return fail(403, { error: 'Unauthorized' });
+        }
+        if (locals.user.role === 'admin' && locals.user.status !== 'active') {
+            return fail(403, { error: 'Account pending approval' });
         }
 
         const data = await request.formData();
@@ -62,8 +68,11 @@ export const actions: Actions = {
         }
     },
     closeAccount: async ({ request, locals }) => {
-        if (!locals.user || !locals.user.isAdmin) {
+        if (!locals.user || !['admin', 'superadmin'].includes(locals.user.role)) {
             return fail(403, { error: 'Unauthorized' });
+        }
+        if (locals.user.role === 'admin' && locals.user.status !== 'active') {
+            return fail(403, { error: 'Account pending approval' });
         }
 
         const data = await request.formData();
