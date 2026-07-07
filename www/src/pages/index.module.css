@@ -1,6 +1,33 @@
 .mainCanvas {
-  background-color: var(--color-void-black, #151515);
+  --landing-bg: #ffffff;
+  --landing-text: #09090b;
+  --landing-muted: #475569;
+  --landing-card: #f8f9fa;
+  --landing-border: #e2e8f0;
+  
+  --landing-btn-ghost-text: #334155;
+  --landing-btn-ghost-bg: transparent;
+  --landing-btn-ghost-border: #cbd5e1;
+  --landing-btn-ghost-hover-text: #0f172a;
+  --landing-btn-ghost-hover-bg: #f1f5f9;
+
+  background-color: var(--landing-bg);
   min-height: 100vh;
+  transition: background-color 0.3s;
+}
+
+:global([data-theme='dark']) .mainCanvas {
+  --landing-bg: var(--color-void-black, #151515);
+  --landing-text: var(--color-pure-white, #ffffff);
+  --landing-muted: var(--color-bone, #dfdfdf);
+  --landing-card: var(--color-carbon, #1f1f1c);
+  --landing-border: var(--color-iron, #3a3a3a);
+  
+  --landing-btn-ghost-text: var(--color-paper, #e5e7eb);
+  --landing-btn-ghost-bg: transparent;
+  --landing-btn-ghost-border: var(--color-iron, #3a3a3a);
+  --landing-btn-ghost-hover-text: var(--color-pure-white, #ffffff);
+  --landing-btn-ghost-hover-bg: rgba(255, 255, 255, 0.05);
 }
 
 .heroBanner {
@@ -22,7 +49,7 @@
   font-weight: 900;
   font-size: 72px;
   line-height: 1;
-  color: var(--color-pure-white, #ffffff);
+  color: var(--landing-text);
   max-width: 900px;
   margin: 0 auto 24px;
 }
@@ -34,7 +61,7 @@
 }
 
 .heroSubtitle {
-  color: var(--color-bone, #dfdfdf);
+  color: var(--landing-muted);
   font-size: 18px;
   line-height: 1.5;
   max-width: 600px;
@@ -50,7 +77,7 @@
 
 .primaryButton {
   background-color: var(--ifm-color-primary, #FACC15);
-  color: var(--color-void-black, #151515);
+  color: #151515;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 16px;
@@ -63,25 +90,25 @@
 
 .primaryButton:hover {
   opacity: 0.9;
-  color: var(--color-void-black, #151515);
+  color: #151515;
 }
 
 .ghostButton {
-  background-color: transparent;
-  color: var(--color-paper, #e5e7eb);
+  background-color: var(--landing-btn-ghost-bg);
+  color: var(--landing-btn-ghost-text);
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   font-size: 16px;
   padding: 12px 24px;
   border-radius: 8px;
-  border: 1px solid var(--color-iron, #3a3a3a);
+  border: 1px solid var(--landing-btn-ghost-border);
   text-decoration: none !important;
   transition: all 0.2s;
 }
 
 .ghostButton:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: var(--color-pure-white, #ffffff);
+  background-color: var(--landing-btn-ghost-hover-bg);
+  color: var(--landing-btn-ghost-hover-text);
 }
 
 /* Code Block styling */
@@ -92,18 +119,22 @@
 }
 
 .codeBlock {
-  background-color: var(--color-carbon, #1f1f1c);
+  background-color: var(--landing-card, var(--color-carbon));
   border-radius: 8px;
-  border: 1px solid var(--color-iron, #3a3a3a);
+  border: 1px solid var(--landing-border, var(--color-iron));
   overflow: hidden;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 10px 30px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 30px;
 }
 
 .codeBlockHeader {
   display: flex;
   gap: 6px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--color-iron, #3a3a3a);
+  border-bottom: 1px solid var(--landing-border, var(--color-iron));
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:global([data-theme='dark']) .codeBlockHeader {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
@@ -121,19 +152,23 @@
   font-family: 'Inconsolata', monospace;
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-paper, #e5e7eb);
+  color: var(--landing-text, var(--color-paper));
   overflow-x: auto;
 }
 
 .codePrompt {
-  color: var(--ifm-color-primary, #FACC15);
+  color: var(--ifm-color-primary-darkest, #A16207);
   margin-right: 8px;
+}
+
+:global([data-theme='dark']) .codePrompt {
+  color: var(--ifm-color-primary, #FACC15);
 }
 
 /* How It Works Section */
 .howItWorksSection {
   padding: 80px 0;
-  background-color: var(--color-void-black, #151515);
+  background-color: var(--landing-bg);
   text-align: center;
 }
 
@@ -151,7 +186,7 @@
   font-family: 'Inter', sans-serif;
   font-size: 36px;
   font-weight: 600;
-  color: var(--color-pure-white, #ffffff);
+  color: var(--landing-text);
   margin-bottom: 64px;
 }
 
@@ -185,9 +220,9 @@
   width: 32px;
   height: 32px;
   border-radius: 9999px;
-  background-color: var(--color-carbon, #1f1f1c);
+  background-color: var(--landing-card);
   border: 1px solid var(--ifm-color-primary, #FACC15);
-  color: var(--ifm-color-primary, #FACC15);
+  color: var(--ifm-color-primary-darkest, #A16207);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,24 +231,28 @@
   margin-bottom: 16px;
 }
 
+:global([data-theme='dark']) .stepNumber {
+  color: var(--ifm-color-primary, #FACC15);
+}
+
 .stepTitle {
   font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 600;
-  color: var(--color-pure-white, #ffffff);
+  color: var(--landing-text);
   margin-bottom: 8px;
 }
 
 .stepDesc {
   font-size: 14px;
-  color: var(--color-smoke, #a0a0a0);
+  color: var(--landing-muted);
   line-height: 1.5;
 }
 
 .stepConnector {
   flex: 0 0 40px;
   height: 1px;
-  background-color: var(--color-iron, #3a3a3a);
+  background-color: var(--landing-border);
   margin-top: 16px;
 }
 
@@ -229,12 +268,12 @@
 /* Final CTA Section */
 .finalCtaSection {
   padding: 80px 0 120px;
-  background-color: var(--color-void-black, #151515);
+  background-color: var(--landing-bg);
 }
 
 .finalCtaCard {
   background-color: transparent;
-  border: 1px solid var(--color-iron, #3a3a3a);
+  border: 1px solid var(--landing-border);
   border-radius: 8px;
   padding: 64px 24px;
   text-align: center;
@@ -246,13 +285,13 @@
   font-family: 'Inter', sans-serif;
   font-size: 36px;
   font-weight: 600;
-  color: var(--color-pure-white, #ffffff);
+  color: var(--landing-text);
   margin: 0;
 }
 
 .inlineHighlight {
   background-color: var(--ifm-color-primary, #FACC15);
-  color: var(--color-void-black, #151515);
+  color: #151515;
   padding: 0 8px;
   border-radius: 4px;
   display: inline-block;
@@ -261,35 +300,35 @@
 /* Reference Implementation Section */
 .referenceSection {
   padding: 40px 0 80px;
-  background-color: var(--color-void-black, #151515);
+  background-color: var(--landing-bg);
 }
 
 .referenceContent {
   max-width: 600px;
   margin: 0 auto;
   text-align: center;
-  color: var(--color-smoke, #a0a0a0);
+  color: var(--landing-muted);
   font-size: 16px;
   line-height: 1.6;
   padding: 32px;
-  background-color: rgba(255, 255, 255, 0.02);
-  border: 1px dashed var(--color-iron, #3a3a3a);
+  background-color: var(--landing-card);
+  border: 1px dashed var(--landing-border);
   border-radius: 8px;
 }
 
 .referenceLink {
   display: inline-block;
   margin-top: 16px;
-  color: var(--color-bone, #dfdfdf);
+  color: var(--landing-text);
   font-weight: 500;
   text-decoration: none;
-  border-bottom: 1px solid var(--color-iron, #3a3a3a);
+  border-bottom: 1px solid var(--landing-border);
   padding-bottom: 2px;
   transition: all 0.2s;
 }
 
 .referenceLink:hover {
-  color: var(--color-pure-white, #ffffff);
-  border-bottom-color: var(--color-pure-white, #ffffff);
+  color: var(--ifm-color-primary, #FACC15);
+  border-bottom-color: var(--ifm-color-primary, #FACC15);
   text-decoration: none;
 }

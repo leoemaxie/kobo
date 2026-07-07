@@ -119,13 +119,19 @@ const config: Config = {
           position: 'right',
           value: `
             <a href="/docs/api/kobo-api" class="navbar-assistant-link" style="margin-left: 1rem;">
-              <span>API Reference</span>
+              <span>API</span>
             </a>
           `,
         },
         {
           href: 'https://github.com/leoemaxie/kobo',
           label: 'GitHub',
+          position: 'right',
+          className: 'navbar-simple-link',
+        },
+         {
+          href: 'https://school.fees.kobo.triumphsystems.tech',
+          label: 'Apps',
           position: 'right',
           className: 'navbar-simple-link',
         },
@@ -139,7 +145,7 @@ const config: Config = {
           `,
         },
         {
-          href: 'https://app.kobo.triumphsystems.tech',
+          href: 'https://console.kobo.triumphsystems.tech',
           position: 'right',
           className: 'button button--primary nav-login-btn',
           label: 'Log In' /* Using standard text, arrow can be styled */

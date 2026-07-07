@@ -103,7 +103,7 @@ function ReferenceImplementation() {
           <p>
             Built and demonstrated with a school-fee collection app as a reference integrator — proving a second product team could build against the same API with zero special access.
           </p>
-          <a href="https://fees.kobo.triumphsystems.tech" target="_blank" rel="noopener noreferrer" className={styles.referenceLink}>
+          <a href="https://school.fees.kobo.triumphsystems.tech" target="_blank" rel="noopener noreferrer" className={styles.referenceLink}>
             View reference application →
           </a>
         </div>

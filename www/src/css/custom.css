@@ -74,7 +74,8 @@
   --kobo-review-star: #64748B;
   --kobo-review-star-hover: rgba(250, 204, 21, 0.2);
 
-  --kobo-logo-blend: darken;
+  --kobo-logo-blend: multiply;
+  --kobo-logo-filter: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="kobo"%3E%3CfeColorMatrix type="matrix" values="0.023 0 -1.068 0 1.045 -0.176 0 -0.868 0 1.044 0 -1.208 0.174 0 1.034 0 0 0 1 0"/%3E%3C/filter%3E%3C/svg%3E#kobo');
 }
 
 [data-theme='dark'] {
@@ -122,6 +123,7 @@
   --kobo-review-star-hover: rgba(250, 204, 21, 0.2);
 
   --kobo-logo-blend: lighten;
+  --kobo-logo-filter: none;
 }
 
 .navbar__logo {
@@ -130,6 +132,7 @@
   margin-right: 1.5rem;
   object-fit: contain;
   mix-blend-mode: var(--kobo-logo-blend);
+  filter: var(--kobo-logo-filter, none);
   /* This seamlessly removes the dark #09090B background! */
 }
 
@@ -244,6 +247,7 @@
 .kobo-footer-brand img {
   height: 24px;
   mix-blend-mode: var(--kobo-logo-blend);
+  filter: var(--kobo-logo-filter, none);
 }
 
 .kobo-footer-title {
@@ -280,6 +284,13 @@
 /* ========================================================
    RIGHT TOC (TABLE OF CONTENTS) & REVIEW
    ======================================================== */
+
+.theme-doc-toc-desktop {
+  position: sticky !important;
+  top: calc(var(--ifm-navbar-height) + 2rem) !important;
+  max-height: calc(100vh - var(--ifm-navbar-height) - 4rem) !important;
+  overflow-y: auto !important;
+}
 
 .table-of-contents {
   border-left: 1px solid var(--kobo-toc-border);
@@ -502,6 +513,7 @@
   border: none !important;
   margin-left: 0.5rem;
   transition: all 0.2s ease !important;
+  order: 99;
 }
 
 .nav-login-btn:hover {
