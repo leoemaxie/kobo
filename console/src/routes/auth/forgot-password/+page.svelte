@@ -11,6 +11,11 @@
   let submitted = $state(false);
 </script>
 
+<svelte:head>
+  <title>Forgot Password | Kobo Console</title>
+</svelte:head>
+
+
 <div class="w-full">
   <AuthLogo heading="Reset password">
     Remembered it?

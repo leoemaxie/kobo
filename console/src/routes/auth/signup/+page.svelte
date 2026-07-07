@@ -12,6 +12,11 @@
   let loading = $state(false);
 </script>
 
+<svelte:head>
+  <title>Sign Up | Kobo Console</title>
+</svelte:head>
+
+
 <div class="w-full">
   <AuthLogo heading="Create your account">
     Already have an account?

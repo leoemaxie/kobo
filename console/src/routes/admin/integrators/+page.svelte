@@ -9,6 +9,11 @@
   const integrators = data.integrators;
 </script>
 
+<svelte:head>
+  <title>Integrators | Kobo Console</title>
+</svelte:head>
+
+
 <div class="space-y-6">
 
   <Card class="pt-1 overflow-hidden">

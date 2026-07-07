@@ -12,6 +12,11 @@
   let loading = $state(false);
 </script>
 
+<svelte:head>
+  <title>Login | Kobo Console</title>
+</svelte:head>
+
+
 <div class="w-full">
   <AuthLogo heading="Sign in to Console">
     <span>Enter your credentials to access the console</span>

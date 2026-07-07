@@ -15,6 +15,11 @@
   let mismatch = $derived(password.length > 0 && confirmPassword.length > 0 && password !== confirmPassword);
 </script>
 
+<svelte:head>
+  <title>Reset Password | Kobo Console</title>
+</svelte:head>
+
+
 <div class="w-full">
   <AuthLogo heading="Set new password">
     <span>Must be at least 8 characters long</span>

@@ -7,6 +7,11 @@
 
 </script>
 
+<svelte:head>
+  <title>Audit Log | Kobo Console</title>
+</svelte:head>
+
+
 <div class="space-y-6">
 
   <Card class="p-0 overflow-hidden">

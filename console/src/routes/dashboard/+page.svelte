@@ -5,6 +5,11 @@
   import QuickActions from '$lib/components/dashboard/QuickActions.svelte';
 </script>
 
+<svelte:head>
+  <title>Dashboard | Kobo Console</title>
+</svelte:head>
+
+
 <div class="space-y-6">
   <!-- Page header + project metadata -->
   <DashboardHeader />
