@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { Users, ShieldAlert, History } from '@lucide/svelte';
+  import { Users, ShieldAlert, History, LogOut } from '@lucide/svelte';
 
   let { children } = $props();
 </script>
@@ -31,6 +31,15 @@
       </a>
       
     </nav>
+
+    <div class="px-2.5 pb-4 mt-auto">
+      <form action="/auth/logout" method="POST" class="w-full m-0">
+        <button type="submit" class="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium transition-all hover:bg-[var(--error-color)]/10 text-muted hover:text-[var(--error-color)] bg-transparent border border-transparent text-left cursor-pointer appearance-none">
+          <LogOut size={15} />
+          Log out
+        </button>
+      </form>
+    </div>
   </aside>
 
   <div class="flex flex-col flex-1 min-w-0 overflow-hidden w-full">

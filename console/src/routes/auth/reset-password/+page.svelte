@@ -41,7 +41,8 @@
         await update();
       };
     }}>
-      
+      <input type="hidden" name="token" value={data.token} />
+
       <!-- New Password -->
       <IconInput id="password" label="New Password" type={showPassword ? 'text' : 'password'} name="password" placeholder="••••••••••••" bind:value={password} required>
         {#snippet icon()}<Lock size={15} class="text-subtle" />{/snippet}

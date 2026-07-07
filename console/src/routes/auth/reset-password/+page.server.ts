@@ -29,10 +29,10 @@ export const load: PageServerLoad = async ({ url }) => {
 };
 
 export const actions: Actions = {
-	default: async ({ request }) => {
+	default: async ({ request, url }) => {
 		try {
 			const data = await request.formData();
-			const token = data.get('token')?.toString();
+			const token = url.searchParams.get('token') || data.get('token')?.toString();
 			const password = data.get('password')?.toString();
 
 			if (!token || !password) {
