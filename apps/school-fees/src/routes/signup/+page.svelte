@@ -56,6 +56,19 @@
       </div>
 
       <div class="space-y-1.5">
+        <label for="role" class="block text-xs font-semibold text-smoke uppercase tracking-widest">Role</label>
+        <select
+          id="role"
+          name="role"
+          required
+          class="block w-full rounded-lg border border-iron bg-void-black px-4 py-3 text-sm text-paper placeholder-fog focus:border-electric-lime focus:outline-none focus:ring-1 focus:ring-electric-lime transition-colors appearance-none"
+        >
+          <option value="parent">Parent</option>
+          <option value="admin">Administrator</option>
+        </select>
+      </div>
+
+      <div class="space-y-1.5">
         <label for="password" class="block text-xs font-semibold text-smoke uppercase tracking-widest">Password</label>
         <input
           id="password"
@@ -72,7 +85,7 @@
         <button
           type="submit"
           disabled={isSubmitting}
-          class="w-full rounded-lg bg-pure-white text-void-black px-4 py-3 text-sm font-bold shadow-md hover:bg-paper transition-all disabled:opacity-50"
+          class="w-full rounded-lg bg-electric-lime text-void-black px-4 py-3 text-sm font-bold shadow-md hover:bg-lime-glow transition-all disabled:opacity-50"
         >
           {isSubmitting ? 'Registering...' : 'Register'}
         </button>

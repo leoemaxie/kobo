@@ -56,11 +56,11 @@
     
     <div class="flex items-center gap-3">
       <div class="w-8 h-8 rounded-full bg-carbon border border-iron flex items-center justify-center text-sm font-bold text-smoke flex-shrink-0">
-        JD
+        {page.data.user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
       </div>
       <div class="hidden md:block">
-        <p class="text-xs font-semibold text-pure-white leading-none">Jane Doe</p>
-        <p class="text-[10px] text-smoke mt-1 truncate max-w-[120px]">parent@example.com</p>
+        <p class="text-xs font-semibold text-pure-white leading-none">{page.data.user?.name || 'User'}</p>
+        <p class="text-[10px] text-smoke mt-1 truncate max-w-[120px]">{page.data.user?.email || ''}</p>
       </div>
     </div>
   </div>

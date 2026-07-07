@@ -28,7 +28,8 @@ export const actions: Actions = {
             const passwordHash = await argon2.hash(password);
             const id = globalThis.crypto.randomUUID();
 
-            const isAdmin = email.endsWith('@triumph.edu');
+            const roleInput = data.get('role') as string;
+            const isAdmin = roleInput === 'admin';
             const role = isAdmin ? 'admin' : 'parent';
             const status = isAdmin ? 'pending' : 'active';
 

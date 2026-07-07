@@ -1,7 +1,7 @@
 {
   "name": "Kobo School Fees",
   "short_name": "Kobo Fees",
-  "description": "Manage your Kobo School Fees ",
+  "description": "Manage your school fees payments, track student balances, and generate reports.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#151515",
