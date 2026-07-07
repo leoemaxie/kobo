@@ -26,13 +26,14 @@
       '/dashboard/onboarding'
     ].includes(page.url.pathname)
   );
+  let isAdminRoute = $derived(page.url.pathname.startsWith('/admin'));
   let isMobileMenuOpen = $state(false);
 </script>
 
 <svelte:head>
   <title>Kobo Console</title>
 </svelte:head>
-{#if !isAuthRoute}
+{#if !isAuthRoute && !isAdminRoute}
   <div class="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)]">
     <!-- Overlay for mobile sidebar -->
     {#if isMobileMenuOpen}
@@ -66,6 +67,10 @@
         {/if}
       </main>
     </div>
+  </div>
+{:else if isAdminRoute}
+  <div class="h-screen w-screen overflow-hidden bg-[var(--bg-app)] text-main">
+    {@render children()}
   </div>
 {:else}
   <div class="min-h-screen flex flex-col">

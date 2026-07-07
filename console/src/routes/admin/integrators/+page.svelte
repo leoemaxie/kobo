@@ -1,33 +1,17 @@
 <script lang="ts">
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  import { Search, Ban, CheckCircle, Play } from '@lucide/svelte';
+  import { Ban, CheckCircle, Play } from '@lucide/svelte';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/state/toast.svelte';
 
   export let data;
   const integrators = data.integrators;
-
-  let searchQuery = '';
 </script>
 
 <div class="space-y-6">
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-    <h1 class="text-2xl font-inter font-bold text-main tracking-tight">Integrators</h1>
-    <div class="relative w-full md:w-64">
-      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Search size={16} class="text-muted" />
-      </div>
-      <input
-        type="text"
-        bind:value={searchQuery}
-        class="block w-full rounded-radius-md border border-border bg-sidebar py-2 pl-10 pr-3 text-sm text-main placeholder-fog focus:border-border-focus focus:outline-none focus:ring-1 focus:ring-border-focus transition-colors"
-        placeholder="Search integrators..."
-      />
-    </div>
-  </div>
 
-  <Card class="p-0 overflow-hidden">
+  <Card class="pt-1 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-border">
         <thead class="bg-sidebar">

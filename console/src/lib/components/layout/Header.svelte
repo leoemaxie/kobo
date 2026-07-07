@@ -66,7 +66,7 @@
       <input
         type="text"
         placeholder="Search..."
-        class="bg-[var(--bg-element)] border border-[var(--border-color)] rounded-lg py-2 pl-16 pr-16 text-xs text-main w-48 lg:w-64 outline-none transition-colors focus:border-[var(--border-focus)] placeholder:text-subtle"
+        class="bg-[var(--bg-element)] border border-[var(--border-color)] rounded-lg py-2 pl-9 pr-12 text-sm text-main w-64 lg:w-96 outline-none transition-colors focus:border-[var(--border-focus)] placeholder:text-subtle"
       />
       <span class="absolute right-2 text-[10px] text-subtle border border-[var(--border-color)] rounded py-[1px] px-[5px] font-mono bg-[var(--bg-active)]">⌘K</span>
     </div>

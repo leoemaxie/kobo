@@ -1,38 +1,13 @@
 <script lang="ts">
   import Card from '$lib/components/ui/Card.svelte';
-  import { Search, Filter } from '@lucide/svelte';
   import { useConsoleState } from '$lib/state/console.svelte';
 
   const consoleState = useConsoleState();
   const logs = $derived(consoleState.adminAuditLogs);
 
-  let searchQuery = $state('');
 </script>
 
 <div class="space-y-6">
-  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-inter font-bold text-main tracking-tight">Audit Log</h1>
-      <p class="text-muted text-sm mt-1">Immutable record of all superadmin actions.</p>
-    </div>
-    
-    <div class="flex items-center gap-3">
-      <button class="flex items-center gap-2 px-3 py-2 rounded-radius-md border border-border bg-sidebar hover:bg-element-hover text-sm font-medium text-main transition-colors">
-        <Filter size={16} /> Filter
-      </button>
-      <div class="relative w-full md:w-64">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search size={16} class="text-muted" />
-        </div>
-        <input
-          type="text"
-          bind:value={searchQuery}
-          class="block w-full rounded-radius-md border border-border bg-sidebar py-2 pl-10 pr-3 text-sm text-main placeholder-fog focus:border-border-focus focus:outline-none focus:ring-1 focus:ring-border-focus transition-colors"
-          placeholder="Search logs..."
-        />
-      </div>
-    </div>
-  </div>
 
   <Card class="p-0 overflow-hidden">
     <div class="overflow-x-auto">
