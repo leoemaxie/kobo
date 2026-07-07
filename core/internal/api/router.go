@@ -13,6 +13,8 @@ import (
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 	"github.com/leoemaxie/kobo/internal/reconciliation"
 	"gopkg.in/yaml.v3"
+	"github.com/go-chi/httplog/v3"
+	"log/slog"
 )
 
 func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, adminBillingHandler *handlers.AdminBillingHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
@@ -54,7 +56,9 @@ func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityH
 		r.Group(func(r chi.Router) {
 			r.Use(chimiddleware.RequestID)
 			r.Use(chimiddleware.ClientIPFromXFF())
-			r.Use(middleware.RequestLogger)
+			r.Use(httplog.RequestLogger(slog.Default(), &httplog.Options{
+				Level: slog.LevelInfo,
+			}))
 			r.Use(middleware.Recoverer)
 			r.Use(middleware.AuthMiddleware(q))
 
