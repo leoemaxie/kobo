@@ -1,9 +1,17 @@
 import { env } from '$env/dynamic/private';
 
+let memoryApiKey: string | null = null;
+let memoryApiSecret: string | null = null;
+
+export function setKoboCredentials(key: string, secret: string) {
+    memoryApiKey = key;
+    memoryApiSecret = secret;
+}
+
 export async function koboFetch(endpoint: string, options: RequestInit = {}) {
     const KOBO_API_URL = env.KOBO_API_URL || 'https://api.kobo.dev/v1';
-    const apiKey = env.KOBO_API_KEY as string;
-    const apiSecret = env.KOBO_API_SECRET as string;
+    const apiKey = memoryApiKey || env.KOBO_API_KEY as string;
+    const apiSecret = memoryApiSecret || env.KOBO_API_SECRET as string;
 
     const timestamp = Math.floor(Date.now() / 1000).toString();
     const bodyString = options.body ? (typeof options.body === 'string' ? options.body : JSON.stringify(options.body)) : '';

@@ -1,14 +1,20 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { LayoutDashboard, Users, LogOut, GraduationCap, X } from '@lucide/svelte';
+  import { LayoutDashboard, Users, LogOut, GraduationCap, X, Settings } from '@lucide/svelte';
   import { ui } from '$lib/state.svelte';
   import { enhance } from '$app/forms';
   
   let navItems = $derived(
     page.data.user?.role === 'superadmin'
-      ? [{ label: 'Superadmin Console', href: '/admin/super', icon: Users }]
+      ? [
+          { label: 'Superadmin Console', href: '/admin/super', icon: Users },
+          { label: 'Settings', href: '/admin/settings', icon: Settings }
+        ]
       : page.data.user?.role === 'admin'
-        ? [{ label: 'Admin Console', href: '/admin/students', icon: Users }]
+        ? [
+            { label: 'Admin Console', href: '/admin/students', icon: Users },
+            { label: 'Settings', href: '/admin/settings', icon: Settings }
+          ]
         : [{ label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard }]
   );
 </script>
