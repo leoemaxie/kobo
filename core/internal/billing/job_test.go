@@ -11,20 +11,20 @@ import (
 // MockQuerier is a simple mock implementation of sqlc.Querier for testing
 type MockQuerier struct {
 	sqlc.Querier
-	WalletBalance     int64
-	UpdatedBalance    int64
-	InvoiceStatus     string
-	Suspended         bool
-	PendingInvoices   []sqlc.Invoice
-	DefaultPayment    sqlc.PaymentMethod
-	SuspendCalled     bool
-	BalanceUpdated    bool
-	StatusUpdated     bool
-	GenerateCalled    bool
-	GenerateError     error
-	PendingError      error
-	WalletError       error
-	PaymentError      error
+	WalletBalance   int64
+	UpdatedBalance  int64
+	InvoiceStatus   string
+	Suspended       bool
+	PendingInvoices []sqlc.Invoice
+	DefaultPayment  sqlc.PaymentMethod
+	SuspendCalled   bool
+	BalanceUpdated  bool
+	StatusUpdated   bool
+	GenerateCalled  bool
+	GenerateError   error
+	PendingError    error
+	WalletError     error
+	PaymentError    error
 }
 
 func (m *MockQuerier) GenerateMonthlyInvoices(ctx context.Context, period string) error {
@@ -136,12 +136,12 @@ func TestInvoiceJob_WalletDeduction_PartialCoverage(t *testing.T) {
 
 func TestInvoiceJob_RetrySuspension(t *testing.T) {
 	mockQ := &MockQuerier{
-		WalletBalance: 0, 
+		WalletBalance: 0,
 		PendingInvoices: []sqlc.Invoice{
 			{
 				ID:           uuid.New(),
 				IntegratorID: uuid.New(),
-				AmountKobo:   50000, 
+				AmountKobo:   50000,
 				Status:       "failed",
 				RetryCount:   2, // This will be the 3rd retry
 			},

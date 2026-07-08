@@ -117,7 +117,7 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 
 func (e *engine) handleCheckoutWebhook(ctx context.Context, payload *nomba.WebhookPayload) error {
 	// For top ups, we expect orderReference to be passed in some field, typically payload.Data.Order.OrderReference
-	// But since WebhookPayload is typed for virtual accounts, we might need a generic map parsing 
+	// But since WebhookPayload is typed for virtual accounts, we might need a generic map parsing
 	// However, we can just extract IntegratorID if we embedded it in the order reference, e.g. "topup_{integratorId}_{uuid}"
 	// This is a simplified handler.
 	return nil

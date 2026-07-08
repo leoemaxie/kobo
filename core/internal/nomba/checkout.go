@@ -58,14 +58,14 @@ type VerifyTransactionResponse struct {
 }
 
 type CheckoutOrderResponse struct {
-	CheckoutLink string `json:"checkoutLink"`
-	OrderReference     string `json:"orderReference"`
+	CheckoutLink   string `json:"checkoutLink"`
+	OrderReference string `json:"orderReference"`
 }
 
 // CreateCheckoutOrder creates a Nomba hosted checkout link.
 func (c *Client) CreateCheckoutOrder(ctx context.Context, req CheckoutOrderRequest) (CheckoutOrderResponse, error) {
 	var resp struct {
-		CheckoutLink string `json:"checkoutLink"`
+		CheckoutLink   string `json:"checkoutLink"`
 		OrderReference string `json:"orderReference"`
 	}
 
@@ -74,17 +74,17 @@ func (c *Client) CreateCheckoutOrder(ctx context.Context, req CheckoutOrderReque
 	}
 
 	return CheckoutOrderResponse{
-		CheckoutLink: resp.CheckoutLink,
-		OrderReference:     resp.OrderReference,
+		CheckoutLink:   resp.CheckoutLink,
+		OrderReference: resp.OrderReference,
 	}, nil
 }
 
 type ChargeTokenRequest struct {
-	TokenKey      string    `json:"tokenKey"`
-	Amount        string    `json:"amount"` // e.g. "10000.00"
-	Currency      string    `json:"currency"`
-	OrderReference string    `json:"orderReference"`
-	CustomerEmail string    `json:"customerEmail,omitempty"`
+	TokenKey       string `json:"tokenKey"`
+	Amount         string `json:"amount"` // e.g. "10000.00"
+	Currency       string `json:"currency"`
+	OrderReference string `json:"orderReference"`
+	CustomerEmail  string `json:"customerEmail,omitempty"`
 }
 
 type ChargeTokenResponse struct {
