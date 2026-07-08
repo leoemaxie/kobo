@@ -4,14 +4,13 @@
   --ifm-font-family-base: 'Inter', sans-serif;
   --ifm-heading-font-family: 'Inter', sans-serif;
 
-  --ifm-color-primary: #FACC15;
-  /* Electric Gold */
-  --ifm-color-primary-dark: #EAB308;
-  --ifm-color-primary-darker: #CA8A04;
-  --ifm-color-primary-darkest: #A16207;
-  --ifm-color-primary-light: #FDE047;
-  --ifm-color-primary-lighter: #FEF08A;
-  --ifm-color-primary-lightest: #FEF9C3;
+  --ifm-color-primary: #A16207; /* Darker gold for light mode contrast */
+  --ifm-color-primary-dark: #854D0E;
+  --ifm-color-primary-darker: #713F12;
+  --ifm-color-primary-darkest: #422006;
+  --ifm-color-primary-light: #CA8A04;
+  --ifm-color-primary-lighter: #EAB308;
+  --ifm-color-primary-lightest: #FACC15;
 
   /* ClickHouse / Resend Restrained Dark Theme */
   --color-void-black: #151515;
@@ -29,6 +28,7 @@
 
   --ifm-code-font-size: 95%;
   --ifm-navbar-height: 4rem;
+  --ifm-container-width-max: 1536px;
 
   /* Light Theme Variables */
   --ifm-background-color: #ffffff;
@@ -80,6 +80,12 @@
 
 [data-theme='dark'] {
   --ifm-color-primary: #FACC15;
+  --ifm-color-primary-dark: #EAB308;
+  --ifm-color-primary-darker: #CA8A04;
+  --ifm-color-primary-darkest: #A16207;
+  --ifm-color-primary-light: #FDE047;
+  --ifm-color-primary-lighter: #FEF08A;
+  --ifm-color-primary-lightest: #FEF9C3;
   --ifm-background-color: var(--color-void-black);
   --ifm-navbar-background-color: var(--color-void-black);
   --ifm-footer-background-color: #0F172A;
@@ -134,6 +140,49 @@
   mix-blend-mode: var(--kobo-logo-blend);
   filter: var(--kobo-logo-filter, none);
   /* This seamlessly removes the dark #09090B background! */
+}
+
+/* OpenAPI 3-Column Layout Tweaks */
+.theme-api-markdown .container {
+  max-width: 1536px !important;
+  padding: 0 2rem;
+}
+.openapi-tabs__heading {
+  margin-top: 2rem !important;
+}
+
+/* OpenAPI Schema & Request/Response Styling */
+.openapi-markdown__details {
+  background: var(--kobo-search-bg);
+  border: 1px solid var(--kobo-sidebar-border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.openapi-schema__list-item {
+  border-bottom: 1px solid var(--kobo-review-divider);
+  padding: 0.75rem 0;
+}
+.openapi-schema__list-item:last-child {
+  border-bottom: none;
+}
+
+/* Brand styling for inline code elements */
+.markdown code:not(pre code):not(.prism-code) {
+  background-color: var(--ifm-color-primary-lightest) !important;
+  color: var(--ifm-color-primary-darkest) !important;
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  font-weight: 600;
+  border: 1px solid var(--ifm-color-primary-light) !important;
+}
+
+[data-theme='dark'] .markdown code:not(pre code):not(.prism-code) {
+  background-color: rgba(250, 204, 21, 0.15) !important;
+  color: var(--ifm-color-primary-light) !important;
+  border: 1px solid rgba(250, 204, 21, 0.2) !important;
 }
 
 /* Sidebar Layout */
@@ -508,7 +557,7 @@
 
 /* Nav login button override */
 .nav-login-btn {
-  background-color: var(--ifm-color-primary) !important;
+  background-color: #FACC15 !important; /* Always use bright Electric Gold for the button */
   color: #000000 !important;
   border-radius: 20px !important;
   padding: 0.4rem 1.2rem !important;
@@ -520,7 +569,7 @@
 }
 
 .nav-login-btn:hover {
-  background-color: var(--ifm-color-primary-dark) !important;
+  background-color: #EAB308 !important; /* Slightly darker gold on hover */
   transform: translateY(-1px);
 }
 
