@@ -1,5 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { apiCredentials, webhooks, usageEvents, paymentMethods } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const user = locals.user;
@@ -8,6 +11,21 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// If the user hasn't created a workspace yet, send them to onboarding
 	if (!user.integratorId) throw redirect(302, '/dashboard/onboarding');
 
+	const hasKeys = !!(await db.query.apiCredentials.findFirst({
+		where: eq(apiCredentials.integratorId, user.integratorId)
+	}));
+
+	const hasWebhooks = !!(await db.query.webhooks.findFirst({
+		where: eq(webhooks.integratorId, user.integratorId)
+	}));
+
+	const hasUsage = !!(await db.query.usageEvents.findFirst({
+		where: eq(usageEvents.integratorId, user.integratorId)
+	}));
+
+	const hasBilling = !!(await db.query.paymentMethods.findFirst({
+		where: eq(paymentMethods.integratorId, user.integratorId)
+	}));
 
 	// This data will eventually come from the Kobo Core API (usage stats/metrics)
 	// For now, we provide the 1-to-1 mapping expected by the frontend components.
@@ -28,6 +46,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		metrics,
-		logs
+		logs,
+		setupStatus: {
+			hasKeys,
+			hasWebhooks,
+			hasUsage,
+			hasBilling,
+			isProduction: user.integrator?.productionAccessGranted || false
+		}
 	};
 };

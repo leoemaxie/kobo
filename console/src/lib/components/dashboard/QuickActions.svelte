@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import { Key, Webhook, Users, ArrowUpRight, CheckCircle2 } from '@lucide/svelte';
 
   const actions = [
@@ -22,15 +23,19 @@
     },
   ];
 
-  const checklist = [
-    { done: true,  label: 'Create API key' },
-    { done: true,  label: 'Provision a virtual account' },
-    { done: false, label: 'Send your first transaction' },
-    { done: false, label: 'Register a webhook endpoint' },
-    { done: false, label: 'Go live (KYC verification)' },
-  ];
+  let status = $derived(page.data.setupStatus || { 
+    hasKeys: false, hasWebhooks: false, hasUsage: false, hasBilling: false, isProduction: false 
+  });
 
-  const pct = Math.round((checklist.filter(c => c.done).length / checklist.length) * 100);
+  let checklist = $derived([
+    { done: status.hasKeys,  label: 'Create API key' },
+    { done: status.hasUsage, label: 'Make your first API request' },
+    { done: status.hasBilling, label: 'Add billing' },
+    { done: status.hasWebhooks, label: 'Register a webhook endpoint' },
+    { done: status.isProduction, label: 'Go live (KYC verification)' },
+  ]);
+
+  let pct = $derived(Math.round((checklist.filter(c => c.done).length / checklist.length) * 100));
 </script>
 
 <div class="space-y-6">

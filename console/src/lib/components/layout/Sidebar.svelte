@@ -3,7 +3,7 @@
   import { PUBLIC_DOCS_URL } from '$env/static/public';
   import {
     LayoutDashboard, Key, CreditCard, Settings, Users,
-    Webhook, BookOpen, LifeBuoy, ChevronDown
+    Webhook, BookOpen, LifeBuoy, ChevronDown, ShieldCheck
   } from '@lucide/svelte';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/state/toast.svelte';
@@ -20,6 +20,7 @@
 
   const bottomItems = [
     { name: 'Team', path: '/dashboard/team', icon: Users },
+    { name: 'Compliance', path: '/dashboard/kyc', icon: ShieldCheck },
     { name: 'Settings', path: '/dashboard/settings', icon: Settings },
   ];
 
@@ -94,15 +95,19 @@
       <LifeBuoy size={15} color="var(--text-subtle)" /> Support
     </a>
     <div class="h-[1px] bg-[var(--border-color)] mx-1.5 my-2"></div>
-    <form method="POST" action="/auth/logout" use:enhance={() => {
-      return async ({ result, update }) => {
-        if (result.type === 'failure' || result.type === 'error') {
-          toast.error('Logout failed.');
-        } else {
+    <form onsubmit={async (e) => {
+      e.preventDefault();
+      try {
+        const res = await fetch('/auth/logout', { method: 'POST', redirect: 'follow' });
+        if (res.ok || res.redirected) {
           toast.success('Successfully logged out.');
+          window.location.href = '/auth/login';
+        } else {
+          toast.error('Logout failed.');
         }
-        await update();
-      };
+      } catch (err) {
+        toast.error('Logout failed.');
+      }
     }}>
       <button type="submit" class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg no-underline text-[13px] w-full font-medium text-[var(--error-color)] border border-transparent bg-transparent cursor-pointer text-left transition-colors hover:bg-[var(--error-bg)]">
         <span class="flex items-center justify-center w-[15px] h-[15px] rounded-full border-[1.5px] border-[var(--error-color)] relative">

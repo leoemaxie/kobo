@@ -36,6 +36,7 @@
     if (p.includes('webhooks')) return 'Webhooks';
     if (p.includes('team')) return 'Team';
     if (p.includes('settings')) return 'Settings';
+    if (p.includes('kyc')) return 'Compliance';
     return 'Dashboard';
   });
 </script>
