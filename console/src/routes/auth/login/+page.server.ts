@@ -31,7 +31,7 @@ export const actions: Actions = {
 			}
 
 			const session = await createSession(user.id);
-			cookies.set('session', session.id, {
+			cookies.set('session', session.token, {
 				path: '/',
 				httpOnly: true,
 				sameSite: 'lax',

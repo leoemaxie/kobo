@@ -81,9 +81,9 @@
         </div>
       </CardSection>
 
-      <div class="flex justify-end gap-3 mt-4 pt-6">
-        <Button variant="ghost" type="button">Cancel</Button>
-        <Button variant="primary" type="submit">
+      <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-4 pt-6">
+        <Button variant="ghost" type="button" class="w-full sm:w-auto">Cancel</Button>
+        <Button variant="primary" type="submit" class="w-full sm:w-auto">
           <CheckCircle2 size={16} class="mr-2" /> Submit for Verification
         </Button>
       </div>

@@ -2,20 +2,22 @@ import { fail, redirect, isRedirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { users, passwordResetTokens } from '$lib/server/db/schema';
-import { eq, and, isNull, gt } from 'drizzle-orm';
+import { eq, and, gt } from 'drizzle-orm';
 import * as argon2 from 'argon2';
 import { revokeAllSessionsForUser } from '$lib/server/auth/session';
+import { hashToken } from '$lib/server/auth/token';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const token = url.searchParams.get('token');
 	if (!token) throw redirect(302, '/auth/login');
 
+	const tokenHash = hashToken(token);
+
 	const [tokenData] = await db.select()
 		.from(passwordResetTokens)
 		.where(
 			and(
-				eq(passwordResetTokens.id, token),
-				isNull(passwordResetTokens.usedAt),
+				eq(passwordResetTokens.id, tokenHash),
 				gt(passwordResetTokens.expiresAt, new Date())
 			)
 		)
@@ -39,12 +41,13 @@ export const actions: Actions = {
 				return fail(400, { error: 'Missing required fields' });
 			}
 
+			const tokenHash = hashToken(token);
+
 			const [tokenData] = await db.select()
 				.from(passwordResetTokens)
 				.where(
 					and(
-						eq(passwordResetTokens.id, token),
-						isNull(passwordResetTokens.usedAt),
+						eq(passwordResetTokens.id, tokenHash),
 						gt(passwordResetTokens.expiresAt, new Date())
 					)
 				)
@@ -60,9 +63,9 @@ export const actions: Actions = {
 				.set({ passwordHash, updatedAt: new Date() })
 				.where(eq(users.id, tokenData.userId));
 
-			await db.update(passwordResetTokens)
-				.set({ usedAt: new Date() })
-				.where(eq(passwordResetTokens.id, token));
+			// Delete the token instead of setting usedAt
+			await db.delete(passwordResetTokens)
+				.where(eq(passwordResetTokens.id, tokenHash));
 
 			// Revoke all existing sessions so old logins are terminated
 			await revokeAllSessionsForUser(tokenData.userId);

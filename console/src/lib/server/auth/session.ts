@@ -1,43 +1,38 @@
 import { db } from '$lib/server/db';
 import { sessions, users } from '$lib/server/db/schema';
-import { eq, and, isNull, gt } from 'drizzle-orm';
+import { eq, and, gt } from 'drizzle-orm';
+import { generateToken, hashToken } from './token';
 
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
-export function generateSessionId(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 export async function createSession(userId: string) {
-  const id = generateSessionId();
+  const token = generateToken();
+  const sessionId = hashToken(token);
   const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
-  await db.insert(sessions).values({ id, userId, expiresAt });
-  return { id, expiresAt };
+  await db.insert(sessions).values({ id: sessionId, userId, expiresAt });
+  return { token, expiresAt };
 }
 
-export async function validateSession(sessionId: string) {
+export async function validateSession(token: string) {
+  const sessionId = hashToken(token);
   const [sessionData] = await db
     .select()
     .from(sessions)
     .where(
-      and(eq(sessions.id, sessionId), isNull(sessions.revokedAt), gt(sessions.expiresAt, new Date()))
+      and(eq(sessions.id, sessionId), gt(sessions.expiresAt, new Date()))
     )
     .innerJoin(users, eq(users.id, sessions.userId))
     .limit(1);
 
-  return sessionData ?? null; // null means: invalid, expired, or revoked
+  return sessionData ?? null; // null means: invalid or expired
 }
 
-export async function revokeSession(sessionId: string) {
-  await db.update(sessions).set({ revokedAt: new Date() }).where(eq(sessions.id, sessionId));
+export async function revokeSession(token: string) {
+  const sessionId = hashToken(token);
+  await db.delete(sessions).where(eq(sessions.id, sessionId));
 }
 
 // Used by the superadmin "force logout" admin action
 export async function revokeAllSessionsForUser(userId: string) {
-  await db
-    .update(sessions)
-    .set({ revokedAt: new Date() })
-    .where(and(eq(sessions.userId, userId), isNull(sessions.revokedAt)));
+  await db.delete(sessions).where(eq(sessions.userId, userId));
 }
