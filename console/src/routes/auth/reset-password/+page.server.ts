@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail, redirect, isRedirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { users, passwordResetTokens } from '$lib/server/db/schema';
@@ -69,10 +69,9 @@ export const actions: Actions = {
 
 			throw redirect(303, '/auth/login?reset=success');
 		} catch (error) {
-			import('@sveltejs/kit').then(({ isRedirect }) => {
-				if (isRedirect(error)) throw error;
-			});
-			if ((error as any)?.status === 303 || (error as any)?.status === 302) throw error; // fallback
+			if (isRedirect(error)) {
+				throw error;
+			}
 
 			console.error('Password reset error:', error);
 			return fail(500, { error: 'An unexpected error occurred during password reset.' });

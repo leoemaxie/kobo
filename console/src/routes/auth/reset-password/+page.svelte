@@ -6,6 +6,8 @@
   import IconInput from '$lib/components/ui/IconInput.svelte';
   import Button from '$lib/components/ui/Button.svelte';
 
+  let { data } = $props();
+
   let password = $state('');
   let confirmPassword = $state('');
   let showPassword = $state(false);
