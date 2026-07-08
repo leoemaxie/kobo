@@ -43,6 +43,13 @@ func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityH
 	r.Get("/healthz", healthHandler.HealthCheck)
 
 	r.Route("/v1", func(r chi.Router) {
+		r.Use(chimiddleware.RequestID)
+		r.Use(chimiddleware.ClientIPFromXFF())
+		r.Use(httplog.RequestLogger(slog.Default(), &httplog.Options{
+			Level: slog.LevelInfo,
+		}))
+		r.Use(middleware.Recoverer)
+
 		r.Get("/", func(w http.ResponseWriter, req *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(openapiJSON)
@@ -54,12 +61,6 @@ func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityH
 
 		// Protected routes
 		r.Group(func(r chi.Router) {
-			r.Use(chimiddleware.RequestID)
-			r.Use(chimiddleware.ClientIPFromXFF())
-			r.Use(httplog.RequestLogger(slog.Default(), &httplog.Options{
-				Level: slog.LevelInfo,
-			}))
-			r.Use(middleware.Recoverer)
 			r.Use(middleware.AuthMiddleware(q))
 
 			r.Post("/identities", identityHandler.Create)

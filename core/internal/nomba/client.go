@@ -135,10 +135,11 @@ type Client struct {
 	tokenManager *TokenManager
 	baseURL      string
 	accountID    string
+	subAccountID string
 	httpClient   *http.Client
 }
 
-func NewClient(baseURL, clientID, clientSecret, accountID string, httpClient *http.Client) *Client {
+func NewClient(baseURL, clientID, clientSecret, accountID, subAccountID string, httpClient *http.Client) *Client {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
@@ -147,6 +148,7 @@ func NewClient(baseURL, clientID, clientSecret, accountID string, httpClient *ht
 		tokenManager: tm,
 		baseURL:      baseURL,
 		accountID:    accountID,
+		subAccountID: subAccountID,
 		httpClient:   httpClient,
 	}
 }
@@ -182,18 +184,23 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 	}
 	defer resp.Body.Close()
 
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
 	var baseResp struct {
 		Code        string          `json:"code"`
 		Description string          `json:"description"`
 		Data        json.RawMessage `json:"data"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&baseResp); err != nil {
-		return err
+	if err := json.Unmarshal(bodyBytes, &baseResp); err != nil {
+		return fmt.Errorf("failed to decode response: %v, body: %s", err, string(bodyBytes))
 	}
 
 	if baseResp.Code != "00" {
-		return fmt.Errorf("nomba API error %s: %s", baseResp.Code, baseResp.Description)
+		return fmt.Errorf("nomba API error %s: %s | RAW BODY: %s", baseResp.Code, baseResp.Description, string(bodyBytes))
 	}
 
 	if response != nil && len(baseResp.Data) > 0 {
@@ -230,4 +237,23 @@ func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountNa
 		BankName:        data.BankName,
 		BankAccountName: data.BankAccountName,
 	}, nil
+}
+
+func (c *Client) CreateCheckoutOrder(ctx context.Context, req CheckoutOrderRequest) (CheckoutOrderResponse, error) {
+	req.Order.AccountId = c.subAccountID
+	var resp CheckoutOrderResponse
+	if err := c.doRequest(ctx, http.MethodPost, "/checkout/order", req, &resp, req.Order.OrderReference); err != nil {
+		return CheckoutOrderResponse{}, err
+	}
+	return resp, nil
+}
+
+func (c *Client) VerifyTransaction(ctx context.Context, orderReference string) (VerifyTransactionResponse, error) {
+	var resp VerifyTransactionResponse
+	// The endpoint is GET /v1/checkout/transaction?idType=ORDER_REFERENCE&id=xxx
+	path := fmt.Sprintf("/checkout/transaction?idType=ORDER_REFERENCE&id=%s", orderReference)
+	if err := c.doRequest(ctx, http.MethodGet, path, nil, &resp, ""); err != nil {
+		return VerifyTransactionResponse{}, err
+	}
+	return resp, nil
 }

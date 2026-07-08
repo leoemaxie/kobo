@@ -6,17 +6,55 @@ import (
 )
 
 type CheckoutOrderRequest struct {
-	Order               OrderInfo `json:"order"`
-	CustomerEmail       string    `json:"customerEmail,omitempty"`
-	CallbackUrl         string    `json:"callbackUrl,omitempty"`
-	AllowedPaymentMethods []string  `json:"allowedPaymentMethods,omitempty"`
-	SaveCard            bool      `json:"saveCard,omitempty"`
+	Order        OrderInfo `json:"order"`
+	TokenizeCard string    `json:"tokenizeCard,omitempty"`
 }
 
 type OrderInfo struct {
-	OrderReference string `json:"orderReference"`
-	Amount         string `json:"amount"` // e.g. "10000.00"
-	Currency       string `json:"currency"`
+	OrderReference        string   `json:"orderReference"`
+	Amount                string   `json:"amount"` // e.g. "10000.00"
+	Currency              string   `json:"currency"`
+	CustomerEmail         string   `json:"customerEmail,omitempty"`
+	CustomerId            string   `json:"customerId,omitempty"`
+	AccountId             string   `json:"accountId,omitempty"`
+	CallbackUrl           string   `json:"callbackUrl,omitempty"`
+	AllowedPaymentMethods []string `json:"allowedPaymentMethods,omitempty"`
+}
+
+// Transaction verification structs
+type TransactionDetails struct {
+	TransactionDate        string `json:"transactionDate"`
+	PaymentReference       string `json:"paymentReference"`
+	PaymentVendorReference string `json:"paymentVendorReference"`
+	TokenizedCardPayment   string `json:"tokenizedCardPayment"`
+	StatusCode             string `json:"statusCode"`
+}
+
+type TransferDetails struct {
+	SessionId                  string `json:"sessionId"`
+	BeneficiaryAccountName     string `json:"beneficiaryAccountName"`
+	BeneficiaryAccountNumber   string `json:"beneficiaryAccountNumber"`
+	OriginatorAccountName      string `json:"originatorAccountName"`
+	OriginatorAccountNumber    string `json:"originatorAccountNumber"`
+	Narration                  string `json:"narration"`
+	DestinationInstitutionCode string `json:"destinationInstitutionCode"`
+	PaymentReference           string `json:"paymentReference"`
+}
+
+type CardDetails struct {
+	CardPan      string `json:"cardPan"`
+	CardType     string `json:"cardType"`
+	CardCurrency string `json:"cardCurrency"`
+	CardBank     string `json:"cardBank"`
+}
+
+type VerifyTransactionResponse struct {
+	Success            string             `json:"success"`
+	Message            string             `json:"message"`
+	Order              OrderInfo          `json:"order"`
+	TransactionDetails TransactionDetails `json:"transactionDetails"`
+	TransferDetails    TransferDetails    `json:"transferDetails"`
+	CardDetails        CardDetails        `json:"cardDetails"`
 }
 
 type CheckoutOrderResponse struct {

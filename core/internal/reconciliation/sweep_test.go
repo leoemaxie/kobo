@@ -52,7 +52,7 @@ func TestRunSweep_Success(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	client := nomba.NewClient(server.URL, "client", "secret", "account", server.Client())
+	client := nomba.NewClient(server.URL, "client", "secret", "account", "subaccount", server.Client())
 
 	accID := uuid.New()
 

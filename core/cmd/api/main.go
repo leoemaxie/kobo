@@ -40,7 +40,7 @@ func main() {
 	identitySvc := identity.NewService(identityRepo)
 
 	accountRepo := account.NewRepository(q)
-	nombaClient := nomba.NewClient(cfg.NombaBaseURL, cfg.NombaClientID, cfg.NombaClientSecret, cfg.NombaAccountID, nil)
+	nombaClient := nomba.NewClient(cfg.NombaBaseURL, cfg.NombaClientID, cfg.NombaClientSecret, cfg.NombaAccountID, cfg.NombaSubAccountID, nil)
 	accountSvc := account.NewService(accountRepo, nombaClient)
 
 	ledgerRepo := ledger.NewRepository(q)

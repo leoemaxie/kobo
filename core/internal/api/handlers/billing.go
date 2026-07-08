@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -46,22 +47,30 @@ func (h *AdminBillingHandler) CreateCheckout(w http.ResponseWriter, r *http.Requ
 
 	orderRef := "ref_" + uuid.New().String()
 
-	amount := "100.00" // Default for save card (authorization hold)
+	amount := "1000.00" // Default for save card (authorization hold)
 	if req.Type == "topup" && req.Amount != "" {
 		amount = req.Amount
 	}
 
+	tokenizeCard := ""
+	if req.Type == "save_card" {
+		tokenizeCard = "true"
+	}
+
 	checkoutReq := nomba.CheckoutOrderRequest{
 		Order: nomba.OrderInfo{
-			OrderReference: orderRef,
-			Amount:         amount,
-			Currency:       "NGN",
+			OrderReference:        orderRef,
+			Amount:                amount,
+			Currency:              "NGN",
+			CustomerEmail:         req.Email,
+			CustomerId:            req.IntegratorID,
+			CallbackUrl:           req.CallbackUrl,
 		},
-		CallbackUrl: req.CallbackUrl,
-		CustomerEmail: req.Email,
-		AllowedPaymentMethods: []string{"card"},
-		SaveCard: req.Type == "save_card",
+		TokenizeCard: tokenizeCard,
 	}
+
+	b, _ := json.Marshal(checkoutReq)
+	slog.Info("Sending to Nomba", "payload", string(b))
 
 	resp, err := h.nombaClient.CreateCheckoutOrder(r.Context(), checkoutReq)
 	if err != nil {

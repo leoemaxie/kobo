@@ -34,6 +34,7 @@ func main() {
 		cfg.NombaClientID,
 		cfg.NombaClientSecret,
 		cfg.NombaAccountID,
+		cfg.NombaSubAccountID,
 		nil,
 	)
 

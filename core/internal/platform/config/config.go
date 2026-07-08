@@ -14,6 +14,7 @@ type Config struct {
 	NombaClientID      string
 	NombaClientSecret  string
 	NombaAccountID     string
+	NombaSubAccountID  string
 	NombaWebhookSecret string
 	KYCMaxCeiling      int64 // Stored in kobo
 }
@@ -49,6 +50,7 @@ func Load() (*Config, error) {
 		NombaClientID:      clientID,
 		NombaClientSecret:  clientSecret,
 		NombaAccountID:     accountID,
+		NombaSubAccountID:  getEnvOrDefault("NOMBA_SUB_ACCOUNT_ID", accountID),
 		NombaWebhookSecret: webhookSecret,
 		KYCMaxCeiling:      1000000 * 100, // 1 million Naira in kobo as default
 	}
