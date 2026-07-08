@@ -239,15 +239,6 @@ func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountNa
 	}, nil
 }
 
-func (c *Client) CreateCheckoutOrder(ctx context.Context, req CheckoutOrderRequest) (CheckoutOrderResponse, error) {
-	req.Order.AccountId = c.subAccountID
-	var resp CheckoutOrderResponse
-	if err := c.doRequest(ctx, http.MethodPost, "/checkout/order", req, &resp, req.Order.OrderReference); err != nil {
-		return CheckoutOrderResponse{}, err
-	}
-	return resp, nil
-}
-
 func (c *Client) VerifyTransaction(ctx context.Context, orderReference string) (VerifyTransactionResponse, error) {
 	var resp VerifyTransactionResponse
 	// The endpoint is GET /v1/checkout/transaction?idType=ORDER_REFERENCE&id=xxx

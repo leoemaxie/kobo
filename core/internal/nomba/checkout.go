@@ -21,7 +21,6 @@ type OrderInfo struct {
 	AllowedPaymentMethods []string `json:"allowedPaymentMethods,omitempty"`
 }
 
-// Transaction verification structs
 type TransactionDetails struct {
 	TransactionDate        string `json:"transactionDate"`
 	PaymentReference       string `json:"paymentReference"`
@@ -62,7 +61,6 @@ type CheckoutOrderResponse struct {
 	OrderReference string `json:"orderReference"`
 }
 
-// CreateCheckoutOrder creates a Nomba hosted checkout link.
 func (c *Client) CreateCheckoutOrder(ctx context.Context, req CheckoutOrderRequest) (CheckoutOrderResponse, error) {
 	var resp struct {
 		CheckoutLink   string `json:"checkoutLink"`
