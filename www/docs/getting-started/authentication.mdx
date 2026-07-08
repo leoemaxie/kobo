@@ -7,64 +7,41 @@ Learn how to ensure secure access to Kobo API Resources.
 
 ## Overview
 
-The Kobo API uses OAuth 2.0 and API keys for authentication. You will use your `client_id` (Public Key) and `client_secret` (Secret Key) obtained from the [API Keys](/docs/getting-started/get-api-keys) page to retrieve an `access_token`.
+The Kobo API uses standard **HTTP Basic Authentication** to authenticate requests. You do not need to manage access tokens or refresh tokens. Instead, you authenticate each request directly using your API credentials obtained from the [API Keys](/docs/getting-started/get-api-keys) page.
 
-The general workflow is:
-1. Obtain an `access_token` and `refresh_token`.
-2. Refresh the token when it expires.
-3. Revoke the token when no longer needed.
+- **Username**: Your Public Key (e.g., `kobo_live_pk_...` or `kobo_test_pk_...`)
+- **Password**: Your Secret Key (e.g., `kobo_live_sk_...` or `kobo_test_sk_...`)
 
-## Obtain Access Token
+## Making Authenticated Requests
 
-Use the `client_credentials` grant type to obtain an access token.
+To authenticate, provide your API credentials in the `Authorization` header of your HTTP requests using the Basic auth scheme. 
 
-```bash
-curl --request POST \
-  --url https://api.kobo.com/v1/auth/token/issue \
-  --header 'Content-Type: application/json' \
-  --header 'accountId: <account_id>' \
-  --data '{
-    "grant_type": "client_credentials",
-    "client_id": "replace-with-your-public-key",
-    "client_secret": "replace-with-your-secret-key"
-  }'
-```
-
-## Refresh Access Token
-
-When your `access_token` expires, you can use your `refresh_token` to get a new one.
+If you are using tools like `curl`, you can simply pass the `-u` flag with your Public Key and Secret Key separated by a colon:
 
 ```bash
 curl --request POST \
-  --url https://api.kobo.com/v1/auth/token/refresh \
-  --header 'Authorization: Bearer <expired_token>' \
+  --url https://api.kobo.com/v1/identities \
+  --user 'kobo_test_pk_12345:kobo_test_sk_67890' \
   --header 'Content-Type: application/json' \
-  --header 'accountId: <account_id>' \
   --data '{
-    "grant_type": "refresh_token",
-    "refresh_token": "replace-with-your-refresh-token"
+    "external_reference": "user_123",
+    "display_name": "John Doe"
   }'
 ```
 
-## Revoke Access Token
+Behind the scenes, this creates an `Authorization: Basic <base64-encoded-credentials>` header.
 
-When a token is no longer needed or if you suspect it has been compromised, you should revoke it.
+## Environments (Test vs Live)
 
-```bash
-curl --request POST \
-  --url https://api.kobo.com/v1/auth/token/revoke \
-  --header 'Content-Type: application/json' \
-  --header 'accountId: <account_id>' \
-  --data '{
-    "clientId": "replace-with-your-public-key",
-    "access_token": "<access_token_to_revoke>"
-  }'
-```
+The Kobo API environment you are interacting with is strictly determined by the prefix of the keys you use:
 
-## Authentication Best Practices
+- **Live Keys (`kobo_live_`)**: Will hit the production database and process real data and billing.
+- **Test Keys (`kobo_test_`)**: Will process requests in a sandbox environment and simulate behavior without affecting live data.
 
-- **Keep credentials secure**: Never expose your `client_secret` or `refresh_token` in frontend code or public repositories.
-- **Secure storage**: Use secure storage for tokens in your backend (e.g., environment variables, encrypted storage).
-- **Proactive refresh**: Refresh tokens proactively (e.g., 5 minutes before expiry) instead of waiting until the last moment.
-- **Immediate revocation**: Revoke tokens immediately if you suspect they’ve been leaked or compromised.
-- **Credential rotation**: Rotate credentials periodically and remove unused API keys from the Kobo Console.
+**Important:** You must use matching keys for the environment. Sending a `kobo_live_` public key with a `kobo_test_` secret key will result in an immediate `401 Unauthorized` error.
+
+## Security Best Practices
+
+- **Never expose your Secret Key**: Your Secret Key can bypass all application security and perform sensitive operations. It must never be embedded in client-side code (browsers, mobile apps) or committed to public repositories.
+- **Rotate compromised keys immediately**: If you suspect a key has been compromised, generate new credentials immediately in the Kobo Console and replace the old ones in your application.
+- **Public Key visibility**: The Public Key (`pk_`) acts as your identifier. While it is generally safe to use as an identifier, it should still be treated with care.
