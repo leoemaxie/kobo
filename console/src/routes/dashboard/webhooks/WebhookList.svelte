@@ -54,41 +54,35 @@
               <span style="font-size: 13px; color: {ep.status === 'active' ? 'var(--text-main)' : 'var(--text-subtle)'}; text-transform: capitalize;">{ep.status}</span>
             </div>
           </td>
-          <td style="padding: 16px 20px; text-align: right; position: relative;">
-            <button onclick={() => openDropdownId = openDropdownId === ep.id ? null : ep.id} style="background: transparent; border: none; color: var(--text-subtle); cursor: pointer; padding: 4px;"><MoreVertical size={16} /></button>
-            
-            {#if openDropdownId === ep.id}
-              <div role="menu" tabindex="-1" class="absolute right-6 top-10 w-36 bg-element border border-border rounded-md shadow-lg py-1 z-10" onmouseleave={() => openDropdownId = null}>
-                <form method="POST" action="?/toggleEndpoint" use:enhance={() => {
-                  return async ({ result, update }) => {
-                    if (result.type === 'success') toast.success('Status updated');
-                    else toast.error((result as any).data?.error || 'Failed to update');
-                    openDropdownId = null;
-                    await update();
-                  };
-                }}>
-                  <input type="hidden" name="id" value={ep.id} />
-                  <input type="hidden" name="currentStatus" value={ep.status} />
-                  <button type="submit" class="w-full text-left px-4 py-2 text-sm text-main hover:bg-element-hover transition-colors">
-                    {ep.status === 'active' ? 'Disable' : 'Enable'}
-                  </button>
-                </form>
-                
-                <form method="POST" action="?/deleteEndpoint" use:enhance={() => {
-                  return async ({ result, update }) => {
-                    if (result.type === 'success') toast.success('Webhook deleted');
-                    else toast.error((result as any).data?.error || 'Failed to delete');
-                    openDropdownId = null;
-                    await update();
-                  };
-                }}>
-                  <input type="hidden" name="id" value={ep.id} />
-                  <button type="submit" onclick={(e) => { if(!confirm('Are you sure?')) e.preventDefault(); }} class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors">
-                    Delete
-                  </button>
-                </form>
-              </div>
-            {/if}
+          <td style="padding: 16px 20px;">
+            <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+              <form method="POST" action="?/toggleEndpoint" use:enhance={() => {
+                return async ({ result, update }) => {
+                  if (result.type === 'success') toast.success('Status updated');
+                  else toast.error((result as any).data?.error || 'Failed to update');
+                  await update();
+                };
+              }}>
+                <input type="hidden" name="id" value={ep.id} />
+                <input type="hidden" name="currentStatus" value={ep.status} />
+                <button type="submit" class="hover:bg-[var(--bg-active)] transition-colors" style="font-size: 12px; font-weight: 500; color: var(--text-main); background: transparent; border: 1px solid var(--border-color); border-radius: 6px; padding: 5px 10px; cursor: pointer;">
+                  {ep.status === 'active' ? 'Disable' : 'Enable'}
+                </button>
+              </form>
+              
+              <form method="POST" action="?/deleteEndpoint" use:enhance={() => {
+                return async ({ result, update }) => {
+                  if (result.type === 'success') toast.success('Webhook deleted');
+                  else toast.error((result as any).data?.error || 'Failed to delete');
+                  await update();
+                };
+              }}>
+                <input type="hidden" name="id" value={ep.id} />
+                <button type="submit" onclick={(e) => { if(!confirm('Are you sure you want to delete this webhook?')) e.preventDefault(); }} class="hover:bg-red-500/10 transition-colors" style="font-size: 12px; font-weight: 500; color: #ef4444; background: transparent; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 6px; padding: 5px 10px; cursor: pointer;">
+                  Delete
+                </button>
+              </form>
+            </div>
           </td>
         </tr>
       {/each}

@@ -91,3 +91,26 @@ export function passwordResetTemplate(token: string, baseUrl: string = 'https://
 	`;
 }
 
+export function invitationEmailTemplate(role: string, workspaceName: string, token: string, baseUrl: string = 'https://console.kobo.dev'): string {
+	const inviteUrl = `${baseUrl}/auth/signup?token=${token}`;
+	return `
+		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
+			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">
+				<div style="margin-bottom: 24px;">
+					<span style="font-size: 28px; font-weight: 800; color: #c6f135; letter-spacing: -1px;">k.</span>
+				</div>
+				<h1 style="font-size: 20px; font-weight: 700; color: #f5f5f5; margin: 0 0 16px 0; letter-spacing: -0.5px;">You're invited!</h1>
+				<p style="font-size: 15px; color: #888; line-height: 1.6; margin: 0 0 32px 0;">
+					You have been invited to join the <strong style="color: #f5f5f5;">${workspaceName}</strong> workspace on Kobo as a <strong style="color: #f5f5f5; text-transform: capitalize;">${role}</strong>.
+				</p>
+				<a href="${inviteUrl}" style="display: inline-block; padding: 14px 28px; background-color: #c6f135; color: #080808; text-decoration: none; font-weight: 700; border-radius: 6px; font-size: 14px; letter-spacing: -0.2px;">
+					Accept Invitation
+				</a>
+				<p style="font-size: 13px; color: #555; margin-top: 40px; padding-top: 24px; border-top: 1px solid #222;">
+					If you did not expect this invitation, you can ignore this email. This link expires in 7 days.
+				</p>
+			</div>
+		</div>
+	`;
+}
+

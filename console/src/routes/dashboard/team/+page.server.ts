@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { db } from '$lib/server/db';
-import { users } from '$lib/server/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { users, invitations } from '$lib/server/db/schema';
+import { eq, desc, and, isNull, gt } from 'drizzle-orm';
 import { redirect, fail } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -15,13 +15,31 @@ export const load: PageServerLoad = async ({ locals }) => {
 		orderBy: [desc(users.createdAt)]
 	});
 
-	const members = dbUsers.map((u) => ({
-		id: u.id,
-		email: u.email,
-		role: u.role,
-		status: u.emailVerifiedAt ? 'Active' : 'Pending',
-		mfa: false
-	}));
+	const pendingInvites = await db.query.invitations.findMany({
+		where: and(
+			eq(invitations.integratorId, user.integratorId),
+			isNull(invitations.acceptedAt),
+			gt(invitations.expiresAt, new Date())
+		),
+		orderBy: [desc(invitations.createdAt)]
+	});
+
+	const members = [
+		...dbUsers.map((u) => ({
+			id: u.id,
+			email: u.email,
+			role: u.role,
+			status: u.emailVerifiedAt ? 'Active' : 'Pending',
+			mfa: false
+		})),
+		...pendingInvites.map((inv) => ({
+			id: inv.id,
+			email: inv.email,
+			role: inv.role,
+			status: 'Invited',
+			mfa: false
+		}))
+	];
 
 	return { members };
 };
@@ -60,7 +78,14 @@ export const actions: Actions = {
 
 		if (targetUserId === user.id) return fail(400, { error: 'Cannot remove yourself' });
 
-		await db.delete(users).where(eq(users.id, targetUserId));
+		const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId);
+		if (isUUID) {
+			// Unlink the user from the workspace instead of hard deleting.
+			// This preserves their account, audit logs, and API credential attribution.
+			await db.update(users).set({ integratorId: null, role: 'owner' }).where(eq(users.id, targetUserId));
+		} else {
+			await db.delete(invitations).where(eq(invitations.id, targetUserId));
+		}
 
 		return { success: true };
 	},
@@ -76,7 +101,12 @@ export const actions: Actions = {
 
 		if (targetUserId === user.id) return fail(400, { error: 'Cannot change your own role here' });
 
-		await db.update(users).set({ role: newRole }).where(eq(users.id, targetUserId));
+		const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId);
+		if (isUUID) {
+			await db.update(users).set({ role: newRole }).where(eq(users.id, targetUserId));
+		} else {
+			await db.update(invitations).set({ role: newRole }).where(eq(invitations.id, targetUserId));
+		}
 
 		return { success: true };
 	}

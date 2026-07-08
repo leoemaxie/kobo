@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Mail, Lock, Eye, EyeOff, UserPlus } from '@lucide/svelte';
   import { enhance } from '$app/forms';
+  import { page } from '$app/stores';
   import { toast } from '$lib/state/toast.svelte';
   import AuthLogo from '$lib/components/ui/AuthLogo.svelte';
   import IconInput from '$lib/components/ui/IconInput.svelte';
@@ -43,7 +44,6 @@
         {#snippet icon()}<Mail size={15} class="text-subtle" />{/snippet}
       </IconInput>
 
-      <!-- Password field -->
       <IconInput id="password" label="Password" type={showPassword ? 'text' : 'password'} name="password" placeholder="••••••••••••" bind:value={password} required>
         {#snippet icon()}<Lock size={15} class="text-subtle" />{/snippet}
         {#snippet trailing()}
@@ -57,6 +57,10 @@
           </button>
         {/snippet}
       </IconInput>
+
+      {#if $page.url.searchParams.has('token')}
+        <input type="hidden" name="token" value={$page.url.searchParams.get('token')} />
+      {/if}
 
       <div class="pt-1">
         <Button type="submit" variant="primary" size="lg" class="w-full" disabled={loading}>

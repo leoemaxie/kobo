@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private';
 import { sendEmail } from './unsend';
-import { verificationEmailTemplate, keyRotationAlertTemplate, billingNoticeTemplate, passwordResetTemplate } from './templates';
+import { verificationEmailTemplate, keyRotationAlertTemplate, billingNoticeTemplate, passwordResetTemplate, invitationEmailTemplate } from './templates';
 
 const getDomain = () => env.KOBO_DOMAIN || 'kobo.dev';
 
@@ -38,6 +38,15 @@ export const EmailService = {
 			from: `Kobo Billing <billing@${getDomain()}>`,
 			subject: `[Kobo] New Invoice Available - ${period}`,
 			html: billingNoticeTemplate(period, amount, invoiceUrl)
+		});
+	},
+
+	async sendInvitationEmail(to: string, role: string, workspaceName: string, token: string, baseUrl?: string) {
+		return sendEmail({
+			to,
+			from: `Kobo Invitations <invites@${getDomain()}>`,
+			subject: `You have been invited to join ${workspaceName} on Kobo`,
+			html: invitationEmailTemplate(role, workspaceName, token, baseUrl)
 		});
 	}
 };
