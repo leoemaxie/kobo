@@ -6,6 +6,20 @@ This repository is a monorepo containing the entire Kobo infrastructure, includi
 
 ---
 
+## Table of Contents
+- [🏗️ Ecosystem Overview](#️-ecosystem-overview)
+- [🔑 Demo Credentials](#-demo-credentials)
+- [🚀 Getting Started](#-getting-started)
+  - [1. Start the Core API](#1-start-the-core-api)
+  - [2. Start the Developer Console](#2-start-the-developer-console)
+  - [3. Explore the Documentation](#3-explore-the-documentation)
+- [💻 Integrating with Kobo](#-integrating-with-kobo)
+  - [Available SDKs](#available-sdks)
+  - [Reference Application](#reference-application)
+- [🛠️ Contributing](#️-contributing)
+
+---
+
 ## 🏗️ Ecosystem Overview
 
 The Kobo platform is composed of several isolated, specialized components, each located in its own directory:
@@ -17,6 +31,12 @@ The Kobo platform is composed of several isolated, specialized components, each 
 | **Documentation Portal** | [`/www`](./www) | The official documentation site featuring guides, API references, and OpenAPI models. | Docusaurus, React |
 | **Official SDKs** | [`/sdks`](./sdks) | Zero-dependency, type-safe client libraries for integrating with the Kobo API. | Go, Java, TypeScript |
 | **Reference Apps** | [`/apps`](./apps) | Example applications, such as a "School Fees" app, demonstrating how to integrate Kobo into real-world products. | SvelteKit, Tailwind v4 |
+
+---
+
+## 🔑 Demo Credentials
+
+To make exploring the platform as easy as possible, we have provided a set of pre-configured accounts and access keys. You can find the complete list of [Demo Credentials here](https://docs.google.com/document/d/1TGdU9InmpFJVxtCkCXqXaHRgiJ1z3VNTqSfS8jvnf6Y/edit?usp=sharing).
 
 ---
 
@@ -57,7 +77,7 @@ To read the full API spec and architectural guides:
 
 If you are an external developer looking to build on top of Kobo, you don't need to run this entire monorepo. Instead, you can integrate with Kobo using our official SDKs!
 
-### Available SDKs:
+### Available SDKs
 - **TypeScript**: `npm install @kobo/typescript-sdk` *(Check the SDK docs for the exact package name)*
 - **Go**: `go get github.com/leoemaxie/kobo/sdks/go`
 - **Java**: Maven/Gradle integration available.
