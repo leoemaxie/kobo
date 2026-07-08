@@ -92,7 +92,7 @@ export function passwordResetTemplate(token: string, baseUrl: string = 'https://
 }
 
 export function invitationEmailTemplate(role: string, workspaceName: string, token: string, baseUrl: string = 'https://console.kobo.dev'): string {
-	const inviteUrl = `${baseUrl}/auth/signup?token=${token}`;
+	const inviteUrl = `${baseUrl}/auth/accept-invite?token=${token}`;
 	return `
 		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
 			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">

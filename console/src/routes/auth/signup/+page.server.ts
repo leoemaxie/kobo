@@ -1,8 +1,8 @@
 import { fail, redirect, isRedirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { db } from '$lib/server/db';
-import { users, emailVerificationTokens, invitations } from '$lib/server/db/schema';
-import { eq, and, gt, isNull } from 'drizzle-orm';
+import { users, emailVerificationTokens } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 import * as argon2 from 'argon2';
 import { createSession } from '$lib/server/auth/session';
 import { EmailService } from '$lib/server/email';
@@ -13,7 +13,6 @@ export const actions: Actions = {
 			const data = await request.formData();
 			const email = data.get('email')?.toString();
 			const password = data.get('password')?.toString();
-			const tokenParam = data.get('token')?.toString();
 
 			if (!email || !password) {
 				return fail(400, { error: 'Missing required fields' });
@@ -29,41 +28,14 @@ export const actions: Actions = {
 
 			const passwordHash = await argon2.hash(password);
 
-			let integratorId: string | null = null;
-			let role: 'owner' | 'member' | 'superadmin' = 'owner';
-
-			if (tokenParam) {
-				const [invite] = await db.select().from(invitations).where(
-					and(
-						eq(invitations.id, tokenParam),
-						gt(invitations.expiresAt, new Date()),
-						isNull(invitations.acceptedAt)
-					)
-				).limit(1);
-
-				if (!invite) {
-					return fail(400, { error: 'Invalid or expired invitation token' });
-				}
-
-				if (invite.email.toLowerCase() !== email.toLowerCase()) {
-					return fail(400, { error: 'This invitation is for a different email address' });
-				}
-
-				integratorId = invite.integratorId;
-				role = invite.role as 'owner' | 'member' | 'superadmin';
-
-				await db.update(invitations).set({ acceptedAt: new Date() }).where(eq(invitations.id, tokenParam));
-			}
-
-			// Create the user
-			// If integratorId is null, the workspace (integrator + api credentials) is created after
-			// email verification during the onboarding flow. If set, they skip onboarding.
+			// Create the user only — no integrator yet.
+			// The workspace (integrator + api credentials) is created after
+			// email verification during the onboarding flow.
 			const [user] = await db.insert(users)
 				.values({
 					email,
 					passwordHash,
-					role,
-					integratorId
+					role: 'owner'
 				})
 				.returning();
 

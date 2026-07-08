@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad, PageServerLoadEvent } from './$types';
 import { db } from '$lib/server/db';
 import { apiIntegrators, users, apiCredentials, billingRecords, webhooks, sessions, emailVerificationTokens, passwordResetTokens, adminAuditLog } from '$lib/server/db/schema';
-import { eq, inArray, or } from 'drizzle-orm';
+import { eq, inArray, or, and } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals }: PageServerLoadEvent) => {
 	const user = locals.user;
@@ -13,7 +13,8 @@ export const load: PageServerLoad = async ({ locals }: PageServerLoadEvent) => {
 	});
 
 	return {
-		integrator
+		integrator,
+		user
 	};
 };
 
@@ -40,6 +41,35 @@ export const actions: Actions = {
 		} catch (error) {
 			console.error('Update workspace error:', error);
 			return fail(500, { error: 'An unexpected error occurred.' });
+		}
+	},
+
+	leaveWorkspace: async ({ locals }) => {
+		try {
+			const user = locals.user;
+			if (!user || !user.integratorId) return fail(400, { error: 'You are not in a workspace' });
+
+			if (user.role === 'owner') {
+				const owners = await db.select().from(users).where(
+					and(
+						eq(users.integratorId, user.integratorId),
+						eq(users.role, 'owner')
+					)
+				);
+				if (owners.length <= 1) {
+					return fail(400, { error: 'You are the only owner of this workspace. Please transfer ownership or delete the workspace instead.' });
+				}
+			}
+
+			await db.update(users).set({ integratorId: null, role: 'owner' }).where(eq(users.id, user.id));
+
+			throw redirect(303, '/dashboard/onboarding');
+		} catch (error) {
+			import('@sveltejs/kit').then(({ isRedirect }) => {
+				if (isRedirect(error)) throw error;
+			});
+			if ((error as any)?.status === 303) throw error;
+			return fail(500, { error: 'Failed to leave workspace' });
 		}
 	},
 

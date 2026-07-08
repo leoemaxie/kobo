@@ -58,9 +58,6 @@
         {/snippet}
       </IconInput>
 
-      {#if $page.url.searchParams.has('token')}
-        <input type="hidden" name="token" value={$page.url.searchParams.get('token')} />
-      {/if}
 
       <div class="pt-1">
         <Button type="submit" variant="primary" size="lg" class="w-full" disabled={loading}>
