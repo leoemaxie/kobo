@@ -9,7 +9,7 @@ export function setKoboCredentials(key: string, secret: string) {
 }
 
 export async function koboFetch(endpoint: string, options: RequestInit = {}) {
-    const KOBO_API_URL = env.KOBO_API_URL || 'https://api.kobo.dev/v1';
+    const KOBO_API_URL = env.KOBO_API_URL || 'https://api.kobo.triumphsystems.tech/v1';
     const apiKey = memoryApiKey || env.KOBO_API_KEY as string;
     const apiSecret = memoryApiSecret || env.KOBO_API_SECRET as string;
 

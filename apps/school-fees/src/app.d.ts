@@ -7,6 +7,7 @@ declare global {
 				email: string;
 				name: string;
 				role: string;
+				status: string;
 			} | null;
 			session: any | null;
 		}
