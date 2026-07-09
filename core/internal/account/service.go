@@ -10,7 +10,8 @@ import (
 )
 
 type NombaClient interface {
-	CreateVirtualAccount(ctx context.Context, accountRef, accountName, bvn, kycTier string) (NombaAccountResponse, error)
+	CreateVirtualAccount(ctx context.Context, accountRef, accountName, bvn string) (NombaAccountResponse, error)
+	ExpireVirtualAccount(ctx context.Context, identifier string) (bool, error)
 }
 
 type NombaAccountResponse struct {
@@ -63,7 +64,7 @@ func (s *Service) Provision(ctx context.Context, identityID, integratorID uuid.U
 	}
 
 	// 6. Call Nomba API
-	resp, nombaErr := s.nombaClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "", ident.KycTier)
+	resp, nombaErr := s.nombaClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "")
 
 	if nombaErr != nil {
 		// PENDING -> FAILED
@@ -170,7 +171,7 @@ func (s *Service) Reopen(ctx context.Context, identityID, integratorID uuid.UUID
 		return fmt.Errorf("failed to create virtual account record: %w", err)
 	}
 
-	resp, nombaErr := s.nombaClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "", ident.KycTier)
+	resp, nombaErr := s.nombaClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "")
 	if nombaErr != nil {
 		return fmt.Errorf("nomba provisioning failed on reopen: %w", nombaErr)
 	}
@@ -242,6 +243,12 @@ func (s *Service) Close(ctx context.Context, identityID, integratorID uuid.UUID,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to update identity state: %w", err)
+	}
+
+	// Fetch active virtual account and expire it
+	va, vaErr := s.repo.GetActiveVirtualAccountByIdentityID(ctx, identityID)
+	if vaErr == nil && va.NombaAccountRef != "" {
+		_, _ = s.nombaClient.ExpireVirtualAccount(ctx, va.NombaAccountRef)
 	}
 
 	if len(sweepDestination) == 0 {

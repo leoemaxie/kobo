@@ -52,7 +52,7 @@ func main() {
 
 	idemRepo := reconciliation.NewIdempotencyRepository(q)
 	usageRecorder := billing.NewUsageRecorder(q)
-	reconEngine := reconciliation.NewEngine(q, idemRepo, usageRecorder)
+	reconEngine := reconciliation.NewEngine(q, idemRepo, usageRecorder, nombaClient)
 
 	healthHandler := handlers.NewHealthHandler(pool)
 	identityHandler := handlers.NewIdentityHandler(identitySvc, accountSvc, usageRecorder)

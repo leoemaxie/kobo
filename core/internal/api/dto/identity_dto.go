@@ -6,7 +6,6 @@ import "encoding/json"
 type CreateIdentityRequest struct {
 	ExternalReference string          `json:"external_reference" validate:"required"`
 	DisplayName       string          `json:"display_name" validate:"required"`
-	KYCTier           string          `json:"kyc_tier" validate:"required"`
 	Metadata          json.RawMessage `json:"metadata"`
 }
 

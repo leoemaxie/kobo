@@ -72,13 +72,17 @@ func (j *InvoiceJob) Run(ctx context.Context) error {
 		}
 
 		resp, err := j.nombaClient.ChargeToken(ctx, nomba.ChargeTokenRequest{
-			TokenKey:       pm.NombaTokenKey,
-			Amount:         "100.00", // Would be derived from inv.AmountKobo in a real implementation
-			Currency:       "NGN",
-			OrderReference: "inv_" + inv.ID.String(),
+			TokenKey: pm.NombaTokenKey,
+			Order: nomba.OrderInfo{
+				Amount:         float64(inv.AmountKobo) / 100.0,
+				Currency:       "NGN",
+				OrderReference: "inv_" + inv.ID.String(),
+				CustomerEmail:  "billing@yourdomain.com", // Required by Nomba API
+				CallbackUrl:    "https://api.yourdomain.com/webhooks/nomba", // Required by Nomba API
+			},
 		})
 
-		if err != nil || resp.Status != "successful" {
+		if err != nil || !resp.Status {
 			log.Printf("failed to charge invoice %s: %v", inv.ID, err)
 			j.failInvoice(ctx, inv)
 			continue

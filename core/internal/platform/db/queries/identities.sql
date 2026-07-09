@@ -1,6 +1,6 @@
 -- name: CreateIdentity :one
-INSERT INTO identities (id, integrator_id, external_reference, display_name, kyc_tier, state, metadata)
-VALUES ($1, $2, $3, $4, $5, 'pending', $6)
+INSERT INTO identities (id, integrator_id, external_reference, display_name, state, metadata)
+VALUES ($1, $2, $3, $4, 'pending', $5)
 RETURNING *;
 
 -- name: GetIdentityByID :one

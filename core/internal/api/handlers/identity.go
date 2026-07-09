@@ -34,12 +34,12 @@ func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.ExternalReference == "" || req.DisplayName == "" || req.KYCTier == "" {
-		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", "external_reference, display_name, and kyc_tier are required")
+	if req.ExternalReference == "" || req.DisplayName == "" {
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_request", "external_reference and display_name are required")
 		return
 	}
 
-	ident, err := h.svc.Register(r.Context(), integratorID, req.ExternalReference, req.DisplayName, req.KYCTier, req.Metadata)
+	ident, err := h.svc.Register(r.Context(), integratorID, req.ExternalReference, req.DisplayName, req.Metadata)
 	if err != nil {
 		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to create identity", err)
 		return

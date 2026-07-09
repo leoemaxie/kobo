@@ -17,7 +17,6 @@ type Identity struct {
 	IntegratorID      uuid.UUID
 	ExternalReference string
 	Profile           DisplayProfile
-	KYCTier           string
 	State             string
 	FailureReason     *string
 	CreatedAt         time.Time

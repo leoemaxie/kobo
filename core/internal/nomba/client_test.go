@@ -42,7 +42,7 @@ func TestCreateVirtualAccount(t *testing.T) {
 
 	client := NewClient(server.URL, "client-id", "client-secret", "account-id", "", server.Client())
 
-	resp, err := client.CreateVirtualAccount(context.Background(), "ref-123", "Test User", "", "tier_1")
+	resp, err := client.CreateVirtualAccount(context.Background(), "ref-123", "Test User", "")
 	assert.NoError(t, err)
 	assert.Equal(t, "1234567890", resp.AccountNumber)
 	assert.Equal(t, "Nomba MFB", resp.BankName)

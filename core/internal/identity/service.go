@@ -18,7 +18,7 @@ func NewService(repo Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) Register(ctx context.Context, integratorID uuid.UUID, externalRef, displayName, kycTier string, metadata json.RawMessage) (*Identity, error) {
+func (s *Service) Register(ctx context.Context, integratorID uuid.UUID, externalRef, displayName string, metadata json.RawMessage) (*Identity, error) {
 	id := uuid.New()
 
 	metaBytes, err := json.Marshal(metadata)
@@ -31,7 +31,6 @@ func (s *Service) Register(ctx context.Context, integratorID uuid.UUID, external
 		IntegratorID:      integratorID,
 		ExternalReference: externalRef,
 		DisplayName:       displayName,
-		KycTier:           kycTier,
 		Metadata:          metaBytes,
 	}
 
@@ -116,7 +115,6 @@ func (s *Service) mapSQLCToIdentity(row sqlc.Identity) *Identity {
 			DisplayName: row.DisplayName,
 			Metadata:    row.Metadata,
 		},
-		KYCTier:       row.KycTier,
 		State:         row.State,
 		FailureReason: failureReason,
 		CreatedAt:     row.CreatedAt,

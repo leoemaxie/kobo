@@ -7,12 +7,12 @@ import (
 
 type CheckoutOrderRequest struct {
 	Order        OrderInfo `json:"order"`
-	TokenizeCard string    `json:"tokenizeCard,omitempty"`
+	TokenizeCard bool      `json:"tokenizeCard,omitempty"`
 }
 
 type OrderInfo struct {
 	OrderReference        string   `json:"orderReference"`
-	Amount                string   `json:"amount"` // e.g. "10000.00"
+	Amount                float64  `json:"amount"` // e.g. 10000.00
 	Currency              string   `json:"currency"`
 	CustomerEmail         string   `json:"customerEmail,omitempty"`
 	CustomerId            string   `json:"customerId,omitempty"`
@@ -25,7 +25,7 @@ type TransactionDetails struct {
 	TransactionDate        string `json:"transactionDate"`
 	PaymentReference       string `json:"paymentReference"`
 	PaymentVendorReference string `json:"paymentVendorReference"`
-	TokenizedCardPayment   string `json:"tokenizedCardPayment"`
+	TokenizedCardPayment   bool   `json:"tokenizedCardPayment"`
 	StatusCode             string `json:"statusCode"`
 }
 
@@ -48,7 +48,7 @@ type CardDetails struct {
 }
 
 type VerifyTransactionResponse struct {
-	Success            string             `json:"success"`
+	Success            bool               `json:"success"`
 	Message            string             `json:"message"`
 	Order              OrderInfo          `json:"order"`
 	TransactionDetails TransactionDetails `json:"transactionDetails"`
@@ -78,34 +78,28 @@ func (c *Client) CreateCheckoutOrder(ctx context.Context, req CheckoutOrderReque
 }
 
 type ChargeTokenRequest struct {
-	TokenKey       string `json:"tokenKey"`
-	Amount         string `json:"amount"` // e.g. "10000.00"
-	Currency       string `json:"currency"`
-	OrderReference string `json:"orderReference"`
-	CustomerEmail  string `json:"customerEmail,omitempty"`
+	TokenKey string    `json:"tokenKey"`
+	Order    OrderInfo `json:"order"`
 }
 
 type ChargeTokenResponse struct {
-	TransactionID  string `json:"transactionId"`
-	Status         string `json:"status"`
-	OrderReference string `json:"orderReference"`
+	Status  bool   `json:"status"`
+	Message string `json:"message"`
 }
 
 // ChargeToken charges a previously saved card tokenKey.
 func (c *Client) ChargeToken(ctx context.Context, req ChargeTokenRequest) (ChargeTokenResponse, error) {
 	var resp struct {
-		TransactionID  string `json:"transactionId"`
-		Status         string `json:"status"`
-		OrderReference string `json:"orderReference"`
+		Status  bool   `json:"status"`
+		Message string `json:"message"`
 	}
 
-	if err := c.doRequest(ctx, http.MethodPost, "/payments/token", req, &resp, req.OrderReference); err != nil {
+	if err := c.doRequest(ctx, http.MethodPost, "/checkout/tokenized-card-payment", req, &resp, req.Order.OrderReference); err != nil {
 		return ChargeTokenResponse{}, err
 	}
 
 	return ChargeTokenResponse{
-		TransactionID:  resp.TransactionID,
-		Status:         resp.Status,
-		OrderReference: resp.OrderReference,
+		Status:  resp.Status,
+		Message: resp.Message,
 	}, nil
 }

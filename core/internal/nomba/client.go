@@ -217,7 +217,7 @@ type createVAData struct {
 	BankAccountName   string `json:"bankAccountName"`
 }
 
-func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountName, bvn, kycTier string) (account.NombaAccountResponse, error) {
+func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountName, bvn string) (account.NombaAccountResponse, error) {
 	reqBody := map[string]interface{}{
 		"accountRef":  accountRef,
 		"accountName": accountName,
@@ -228,8 +228,13 @@ func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountNa
 
 	idempotencyKey := accountRef
 
+	path := "/accounts/virtual"
+	if c.subAccountID != "" {
+		path = fmt.Sprintf("/accounts/virtual/%s", c.subAccountID)
+	}
+
 	var data createVAData
-	if err := c.doRequest(ctx, http.MethodPost, "/accounts/virtual", reqBody, &data, idempotencyKey); err != nil {
+	if err := c.doRequest(ctx, http.MethodPost, path, reqBody, &data, idempotencyKey); err != nil {
 		return account.NombaAccountResponse{}, err
 	}
 
@@ -248,4 +253,55 @@ func (c *Client) VerifyTransaction(ctx context.Context, orderReference string) (
 		return VerifyTransactionResponse{}, err
 	}
 	return resp, nil
+}
+
+type FetchVirtualAccountResponse struct {
+	CreatedAt         string `json:"createdAt"`
+	AccountHolderID   string `json:"accountHolderId"`
+	AccountRef        string `json:"accountRef"`
+	BVN               string `json:"bvn"`
+	AccountName       string `json:"accountName"`
+	BankName          string `json:"bankName"`
+	BankAccountNumber string `json:"bankAccountNumber"`
+	BankAccountName   string `json:"bankAccountName"`
+	Currency          string `json:"currency"`
+	CallbackURL       string `json:"callbackUrl"`
+	Expired           bool   `json:"expired"`
+}
+
+func (c *Client) FetchVirtualAccount(ctx context.Context, identifier string) (FetchVirtualAccountResponse, error) {
+	var data FetchVirtualAccountResponse
+	path := fmt.Sprintf("/accounts/virtual/%s", identifier)
+	if err := c.doRequest(ctx, http.MethodGet, path, nil, &data, ""); err != nil {
+		return FetchVirtualAccountResponse{}, err
+	}
+	return data, nil
+}
+
+type UpdateVirtualAccountRequest struct {
+	NewAccountRef  string `json:"newAccountRef,omitempty"`
+	AccountName    string `json:"accountName,omitempty"`
+	ExpectedAmount string `json:"expectedAmount,omitempty"`
+}
+
+func (c *Client) UpdateVirtualAccount(ctx context.Context, identifier string, req UpdateVirtualAccountRequest) (bool, error) {
+	var resp struct {
+		Updated bool `json:"updated"`
+	}
+	path := fmt.Sprintf("/accounts/virtual/%s", identifier)
+	if err := c.doRequest(ctx, http.MethodPut, path, req, &resp, ""); err != nil {
+		return false, err
+	}
+	return resp.Updated, nil
+}
+
+func (c *Client) ExpireVirtualAccount(ctx context.Context, identifier string) (bool, error) {
+	var resp struct {
+		Expired bool `json:"expired"`
+	}
+	path := fmt.Sprintf("/accounts/virtual/%s", identifier)
+	if err := c.doRequest(ctx, http.MethodDelete, path, nil, &resp, ""); err != nil {
+		return false, err
+	}
+	return resp.Expired, nil
 }

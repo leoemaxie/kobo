@@ -11,10 +11,10 @@ import (
 // UsageRecorder writes usage_events to the DB.
 // All writes are fire-and-forget (non-blocking) to avoid adding latency to API calls.
 type UsageRecorder struct {
-	q *sqlc.Queries
+	q sqlc.Querier
 }
 
-func NewUsageRecorder(q *sqlc.Queries) *UsageRecorder {
+func NewUsageRecorder(q sqlc.Querier) *UsageRecorder {
 	return &UsageRecorder{q: q}
 }
 

@@ -64,13 +64,11 @@ func TestService_Register(t *testing.T) {
 		CreateIdentityFunc: func(ctx context.Context, arg sqlc.CreateIdentityParams) (sqlc.Identity, error) {
 			assert.Equal(t, "ext-123", arg.ExternalReference)
 			assert.Equal(t, "John Doe", arg.DisplayName)
-			assert.Equal(t, "tier1", arg.KycTier)
 			return sqlc.Identity{
 				ID:                arg.ID,
 				IntegratorID:      arg.IntegratorID,
 				ExternalReference: arg.ExternalReference,
 				DisplayName:       arg.DisplayName,
-				KycTier:           arg.KycTier,
 				Metadata:          arg.Metadata,
 				State:             "pending",
 			}, nil
@@ -84,7 +82,7 @@ func TestService_Register(t *testing.T) {
 	svc := NewService(repo)
 
 	integratorID := uuid.New()
-	ident, err := svc.Register(context.Background(), integratorID, "ext-123", "John Doe", "tier1", json.RawMessage(`{"age": 30}`))
+	ident, err := svc.Register(context.Background(), integratorID, "ext-123", "John Doe", json.RawMessage(`{"age": 30}`))
 	assert.NoError(t, err)
 	assert.NotNil(t, ident)
 	assert.Equal(t, "pending", ident.State)

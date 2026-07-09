@@ -17,14 +17,19 @@ type Engine interface {
 	ProcessWebhook(ctx context.Context, payload *nomba.WebhookPayload) error
 }
 
-type engine struct {
-	q        sqlc.Querier
-	idemRepo IdempotencyRepository
-	recorder *billing.UsageRecorder
+type NombaTransactionFetcher interface {
+	FetchSingleTransaction(ctx context.Context, transactionRef string) (*nomba.TransactionResult, error)
 }
 
-func NewEngine(q sqlc.Querier, idemRepo IdempotencyRepository, recorder *billing.UsageRecorder) Engine {
-	return &engine{q: q, idemRepo: idemRepo, recorder: recorder}
+type engine struct {
+	q           sqlc.Querier
+	idemRepo    IdempotencyRepository
+	recorder    *billing.UsageRecorder
+	nombaClient NombaTransactionFetcher
+}
+
+func NewEngine(q sqlc.Querier, idemRepo IdempotencyRepository, recorder *billing.UsageRecorder, nombaClient NombaTransactionFetcher) Engine {
+	return &engine{q: q, idemRepo: idemRepo, recorder: recorder, nombaClient: nombaClient}
 }
 
 func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPayload) error {
@@ -55,6 +60,17 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 	}
 
 	transactionID := payload.Data.Transaction.TransactionID
+
+	// Server-side verification
+	if e.nombaClient != nil {
+		txn, err := e.nombaClient.FetchSingleTransaction(ctx, transactionID)
+		if err != nil {
+			return fmt.Errorf("failed to verify transaction %s with Nomba: %w", transactionID, err)
+		}
+		if txn.Status != "SUCCESS" && txn.Status != "PAYMENT_SUCCESSFUL" {
+			return fmt.Errorf("transaction %s is not successful according to Nomba, status: %s", transactionID, txn.Status)
+		}
+	}
 
 	// Idempotency check and insert
 	isDuplicate, err := e.idemRepo.CheckOrSetIdempotency(ctx, transactionID, "webhook", func() (uuid.UUID, error) {

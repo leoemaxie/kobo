@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/leoemaxie/kobo/internal/nomba"
@@ -47,14 +48,19 @@ func (h *AdminBillingHandler) CreateCheckout(w http.ResponseWriter, r *http.Requ
 
 	orderRef := "ref_" + uuid.New().String()
 
-	amount := "100.00" // Default for save card (authorization hold)
+	var amount float64 = 100.00 // Default for save card (authorization hold)
 	if req.Type == "topup" && req.Amount != "" {
-		amount = req.Amount
+		parsedAmount, err := strconv.ParseFloat(req.Amount, 64)
+		if err != nil {
+			http.Error(w, "invalid amount format", http.StatusBadRequest)
+			return
+		}
+		amount = parsedAmount
 	}
 
-	tokenizeCard := ""
+	tokenizeCard := false
 	if req.Type == "save_card" {
-		tokenizeCard = "true"
+		tokenizeCard = true
 	}
 
 	checkoutReq := nomba.CheckoutOrderRequest{
