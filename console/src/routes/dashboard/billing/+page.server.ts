@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db';
-import { billingRecords, invoices } from '$lib/server/db/schema';
+import { billingRecords, invoices, apiIntegrators } from '$lib/server/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
@@ -30,15 +30,39 @@ export const load: PageServerLoad = async ({ locals }) => {
 		status: inv.status
 	}));
 
+	const integrator = await db.query.apiIntegrators.findFirst({
+		where: eq(apiIntegrators.id, user.integratorId)
+	});
+	const plan = integrator?.plan || 'pay_as_you_go';
+
+	const currentRecord = dbBilling[0] || {
+		period: new Date().toISOString().slice(0, 7), // e.g. "2026-10"
+		accountsProvisioned: 0,
+		transactionsProcessed: 0,
+		webhookDeliveries: 0,
+		amountDueKobo: 0
+	};
+
+	const accountsCost = currentRecord.accountsProvisioned * 50;
+	const transactionsCost = currentRecord.transactionsProcessed * 2;
+	const webhooksCost = currentRecord.webhookDeliveries * 0.5;
+	const totalCost = accountsCost + transactionsCost + webhooksCost;
+
+	const getPct = (cost: number) => totalCost === 0 ? 0 : Math.round((cost / totalCost) * 100);
+
+	const nextInvoiceDate = new Date();
+	nextInvoiceDate.setMonth(nextInvoiceDate.getMonth() + 1);
+	nextInvoiceDate.setDate(1);
+
 	const billingOverview = {
-		plan: 'pay_as_you_go',
-		nextInvoiceDate: '2026-11-01',
-		period: 'Oct 1 – Oct 31, 2026',
-		accrued: '₦16,355',
+		plan: plan,
+		nextInvoiceDate: nextInvoiceDate.toISOString().split('T')[0],
+		period: currentRecord.period,
+		accrued: `₦${(currentRecord.amountDueKobo / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
 		usageItems: [
-			{ key: 'accounts_provisioned', label: 'Virtual Accounts',  calc: '152 × ₦50',    amount: '₦7,600',  pct: 45 },
-			{ key: 'transaction_fees',     label: 'Transaction Fees',  calc: '3,325 × ₦2',   amount: '₦6,650',  pct: 35 },
-			{ key: 'webhook_calls',        label: 'Webhook Deliveries', calc: '8,210 × ₦0.5', amount: '₦4,105',  pct: 20 },
+			{ key: 'accounts_provisioned', label: 'Virtual Accounts',  calc: `${currentRecord.accountsProvisioned.toLocaleString()} × ₦50`,    amount: `₦${accountsCost.toLocaleString()}`,  pct: getPct(accountsCost) },
+			{ key: 'transaction_fees',     label: 'Transaction Fees',  calc: `${currentRecord.transactionsProcessed.toLocaleString()} × ₦2`,   amount: `₦${transactionsCost.toLocaleString()}`,  pct: getPct(transactionsCost) },
+			{ key: 'webhook_calls',        label: 'Webhook Deliveries', calc: `${currentRecord.webhookDeliveries.toLocaleString()} × ₦0.5`, amount: `₦${webhooksCost.toLocaleString()}`,  pct: getPct(webhooksCost) },
 		],
 		planDetails: [
 			{ key: 'Provisioning Fee', value: '₦50 / account' },

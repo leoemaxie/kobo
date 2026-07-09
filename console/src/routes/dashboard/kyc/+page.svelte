@@ -10,20 +10,13 @@
   const state = useConsoleState();
 </script>
 
-<div class="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10">
+<div class="flex flex-col gap-7">
   <div class="mb-8">
-    <div class="flex items-center gap-3 mb-2">
-      <div class="p-2 bg-[var(--accent)]/10 rounded-lg">
-        <ShieldCheck class="w-6 h-6 text-[var(--accent)]" />
-      </div>
-      <h1 class="text-2xl font-bold text-main">Production KYC Verification</h1>
-    </div>
-    <p class="text-muted">Complete your compliance verification to unlock production access and start processing live transactions.</p>
-  </div>
-
-  <div class="p-4 mb-6 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center gap-3 text-main">
+    <div class="p-4 mt-4 mb-2 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center gap-3 text-main">
     <AlertTriangle class="w-5 h-5 text-[var(--accent)] shrink-0" />
     <p class="text-sm font-medium"><strong>Notice:</strong> The KYC verification module is currently in development. Submissions are temporarily disabled.</p>
+  </div>
+    <p class="text-muted">Complete your compliance verification to unlock production access and start processing live transactions.</p>
   </div>
 
   <form
