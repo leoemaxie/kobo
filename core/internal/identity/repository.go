@@ -16,6 +16,7 @@ type Repository interface {
 	ListIdentitiesByState(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error)
 	InsertIdentityEvent(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error)
 	ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error)
+	GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error)
 }
 
 type sqlcRepository struct {
@@ -56,4 +57,8 @@ func (r *sqlcRepository) InsertIdentityEvent(ctx context.Context, arg sqlc.Inser
 
 func (r *sqlcRepository) ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error) {
 	return r.q.ListIdentityEvents(ctx, identityID)
+}
+
+func (r *sqlcRepository) GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error) {
+	return r.q.GetActiveVirtualAccountByIdentityID(ctx, identityID)
 }

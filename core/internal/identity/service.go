@@ -59,7 +59,9 @@ func (s *Service) Register(ctx context.Context, integratorID uuid.UUID, external
 		// Just logging would go here in a real app
 	}
 
-	return s.mapSQLCToIdentity(row), nil
+	ident := s.mapSQLCToIdentity(row)
+	s.populateVirtualAccount(ctx, ident)
+	return ident, nil
 }
 
 func (s *Service) Get(ctx context.Context, id, integratorID uuid.UUID) (*Identity, error) {
@@ -70,7 +72,10 @@ func (s *Service) Get(ctx context.Context, id, integratorID uuid.UUID) (*Identit
 	if err != nil {
 		return nil, fmt.Errorf("failed to get identity: %w", err)
 	}
-	return s.mapSQLCToIdentity(row), nil
+	
+	ident := s.mapSQLCToIdentity(row)
+	s.populateVirtualAccount(ctx, ident)
+	return ident, nil
 }
 
 func (s *Service) UpdateProfile(ctx context.Context, id, integratorID uuid.UUID, displayName *string, metadata json.RawMessage) (*Identity, error) {
@@ -107,7 +112,38 @@ func (s *Service) UpdateProfile(ctx context.Context, id, integratorID uuid.UUID,
 		Detail:        []byte("{}"), // Ideally would store diff here
 	})
 
-	return s.mapSQLCToIdentity(row), nil
+	ident := s.mapSQLCToIdentity(row)
+	s.populateVirtualAccount(ctx, ident)
+	return ident, nil
+}
+
+func (s *Service) populateVirtualAccount(ctx context.Context, ident *Identity) {
+	if ident.State == "pending" || ident.State == "failed" {
+		return
+	}
+
+	va, err := s.repo.GetActiveVirtualAccountByIdentityID(ctx, ident.ID)
+	if err != nil {
+		// Log error if needed, but return normally
+		return
+	}
+
+	if !va.AccountNumber.Valid || !va.BankName.Valid || !va.AccountName.Valid {
+		return
+	}
+
+	var expectedAmountKobo *int64
+	if va.ExpectedAmountKobo.Valid {
+		expectedAmountKobo = &va.ExpectedAmountKobo.Int64
+	}
+
+	ident.VirtualAccount = &VirtualAccountSummary{
+		AccountNumber:      va.AccountNumber.String,
+		BankName:           va.BankName.String,
+		AccountName:        va.AccountName.String,
+		ExpectedAmountKobo: expectedAmountKobo,
+		IsExpired:          va.IsExpired,
+	}
 }
 
 func (s *Service) mapSQLCToIdentity(row sqlc.Identity) *Identity {
@@ -119,13 +155,11 @@ func (s *Service) mapSQLCToIdentity(row sqlc.Identity) *Identity {
 		ID:                row.ID,
 		IntegratorID:      row.IntegratorID,
 		ExternalReference: row.ExternalReference,
-		Profile: DisplayProfile{
-			DisplayName: row.DisplayName,
-			Metadata:    row.Metadata,
-		},
-		State:         row.State,
-		FailureReason: failureReason,
-		CreatedAt:     row.CreatedAt,
-		UpdatedAt:     row.UpdatedAt,
+		DisplayName:       row.DisplayName,
+		Metadata:          row.Metadata,
+		State:             row.State,
+		FailureReason:     failureReason,
+		CreatedAt:         row.CreatedAt,
+		UpdatedAt:         row.UpdatedAt,
 	}
 }

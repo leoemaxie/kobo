@@ -57,8 +57,8 @@ type VerifyTransactionResponse struct {
 }
 
 type CheckoutOrderResponse struct {
-	CheckoutLink   string `json:"checkoutLink"`
-	OrderReference string `json:"orderReference"`
+	CheckoutLink   string `json:"checkout_link"`
+	OrderReference string `json:"order_reference"`
 }
 
 func (c *Client) CreateCheckoutOrder(ctx context.Context, req CheckoutOrderRequest) (CheckoutOrderResponse, error) {

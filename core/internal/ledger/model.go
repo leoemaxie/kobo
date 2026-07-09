@@ -7,16 +7,16 @@ import (
 )
 
 type LedgerEntry struct {
-	ID               uuid.UUID
-	VirtualAccountID uuid.UUID
-	IdentityID       uuid.UUID
-	AmountKobo       int64
-	Direction        string
-	Status           string
-	NombaReference   string
-	Source           string
-	Narration        string
-	SenderName       string
-	OccurredAt       time.Time
-	CreatedAt        time.Time
+	ID               uuid.UUID `json:"id"`
+	VirtualAccountID uuid.UUID `json:"virtual_account_id"`
+	IdentityID       uuid.UUID `json:"identity_id"`
+	AmountKobo       int64     `json:"amount_kobo"`
+	Direction        string    `json:"direction"`
+	Status           string    `json:"status"`
+	NombaReference   string    `json:"nomba_reference"`
+	Source           string    `json:"source"`
+	Narration        string    `json:"narration,omitempty"`
+	SenderName       string    `json:"sender_name,omitempty"`
+	OccurredAt       time.Time `json:"occurred_at"`
+	CreatedAt        time.Time `json:"created_at"`
 }

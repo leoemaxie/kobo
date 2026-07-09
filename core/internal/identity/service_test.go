@@ -87,7 +87,7 @@ func TestService_Register(t *testing.T) {
 	assert.NotNil(t, ident)
 	assert.Equal(t, "pending", ident.State)
 	assert.Equal(t, "ext-123", ident.ExternalReference)
-	assert.Equal(t, "John Doe", ident.Profile.DisplayName)
+	assert.Equal(t, "John Doe", ident.DisplayName)
 }
 
 func TestService_Get(t *testing.T) {
@@ -146,5 +146,5 @@ func TestService_UpdateProfile(t *testing.T) {
 	ident, err := svc.UpdateProfile(context.Background(), identID, integratorID, &newName, json.RawMessage(`{"foo": "bar"}`))
 	assert.NoError(t, err)
 	assert.NotNil(t, ident)
-	assert.Equal(t, "Jane Doe", ident.Profile.DisplayName)
+	assert.Equal(t, "Jane Doe", ident.DisplayName)
 }
