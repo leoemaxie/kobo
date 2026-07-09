@@ -13,7 +13,7 @@ export type IdentityState =
   | "closed"
   | "failed";
 
-export type KycTier = "tier_1" | "tier_2" | "tier_3";
+
 
 export type TransactionDirection = "inbound";
 
@@ -42,6 +42,8 @@ export interface VirtualAccountSummary {
   account_number: string;
   bank_name: string;
   account_name: string;
+  expected_amount_kobo?: number | null;
+  is_expired: boolean;
 }
 
 export interface Identity {
@@ -49,7 +51,6 @@ export interface Identity {
   external_reference: string;
   display_name: string;
   state: IdentityState;
-  kyc_tier?: KycTier;
   virtual_account?: VirtualAccountSummary | null;
   metadata?: Record<string, unknown>;
   failure_reason?: string | null;
@@ -99,7 +100,6 @@ export interface Exception {
 export interface CreateIdentityRequest {
   external_reference: string;
   display_name: string;
-  kyc_tier_hint?: KycTier;
   metadata?: Record<string, unknown>;
 }
 

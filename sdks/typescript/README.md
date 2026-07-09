@@ -58,7 +58,7 @@ async function run() {
     const identity = await kobo.identities.create({
       external_reference: "customer_12345",
       display_name: "Jane Doe",
-      kyc_tier_hint: "tier_1",
+
       metadata: { source: "web_signup" }
     });
     

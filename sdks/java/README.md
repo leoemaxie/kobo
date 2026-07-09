@@ -39,7 +39,7 @@ To use the SDK locally without fetching from Maven Central or using a build tool
 import tech.triumphsystems.kobo.KoboClient;
 import tech.triumphsystems.kobo.KoboException;
 import tech.triumphsystems.kobo.model.Identity;
-import tech.triumphsystems.kobo.model.KycTier;
+
 import tech.triumphsystems.kobo.model.TransactionPage;
 import tech.triumphsystems.kobo.request.CreateIdentityRequest;
 
@@ -61,7 +61,7 @@ public class App {
             CreateIdentityRequest req = CreateIdentityRequest.builder()
                 .externalReference("customer_12345")
                 .displayName("Jane Doe")
-                .kycTierHint(KycTier.TIER_1)
+
                 .metadata(Map.of("source", "web_signup"))
                 .build();
 

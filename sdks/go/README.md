@@ -57,7 +57,7 @@ func main() {
 	req := kobo.CreateIdentityRequest{
 		ExternalReference: "customer_12345",
 		DisplayName:       "Jane Doe",
-		KYCTierHint:       kobo.Ptr(kobo.KYCTier1),
+
 		Metadata: map[string]interface{}{
 			"source": "web_signup",
 		},

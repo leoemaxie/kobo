@@ -2,7 +2,7 @@ package tech.triumphsystems.kobo;
 
 import tech.triumphsystems.kobo.model.*;
 import tech.triumphsystems.kobo.model.IdentityState;
-import tech.triumphsystems.kobo.model.KycTier;
+
 import tech.triumphsystems.kobo.model.TransactionStatus;
 import tech.triumphsystems.kobo.model.ExceptionType;
 import tech.triumphsystems.kobo.model.ExceptionStatus;
@@ -42,7 +42,7 @@ final class JsonMapper {
             str(m, "external_reference"),
             str(m, "display_name"),
             IdentityState.of(str(m, "state")),
-            m.containsKey("kyc_tier") && m.get("kyc_tier") != null ? KycTier.of(str(m, "kyc_tier")) : null,
+
             va,
             m.containsKey("metadata") ? (Map<String, Object>) m.get("metadata") : null,
             str(m, "failure_reason"),
@@ -52,7 +52,10 @@ final class JsonMapper {
     }
 
     static VirtualAccountSummary toVirtualAccount(Map<String, Object> m) {
-        return new VirtualAccountSummary(str(m, "account_number"), str(m, "bank_name"), str(m, "account_name"));
+        Long expectedAmountKobo = m.containsKey("expected_amount_kobo") && m.get("expected_amount_kobo") != null 
+                ? longVal(m, "expected_amount_kobo") : null;
+        boolean isExpired = m.containsKey("is_expired") && Boolean.TRUE.equals(m.get("is_expired"));
+        return new VirtualAccountSummary(str(m, "account_number"), str(m, "bank_name"), str(m, "account_name"), expectedAmountKobo, isExpired);
     }
 
     // ─── Transaction ──────────────────────────────────────────────────────────

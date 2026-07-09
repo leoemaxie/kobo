@@ -21,14 +21,7 @@ const (
 	IdentityStateFailed  IdentityState = "failed"
 )
 
-// KYCTier is the KYC tier associated with an identity.
-type KYCTier string
 
-const (
-	KYCTier1 KYCTier = "tier_1"
-	KYCTier2 KYCTier = "tier_2"
-	KYCTier3 KYCTier = "tier_3"
-)
 
 // TransactionDirection is the direction of a transaction (v1 only supports inbound).
 type TransactionDirection string
@@ -83,9 +76,11 @@ const (
 
 // VirtualAccountSummary contains the bank details for an identity's virtual account.
 type VirtualAccountSummary struct {
-	AccountNumber string `json:"account_number"`
-	BankName      string `json:"bank_name"`
-	AccountName   string `json:"account_name"`
+	AccountNumber      string `json:"account_number"`
+	BankName           string `json:"bank_name"`
+	AccountName        string `json:"account_name"`
+	ExpectedAmountKobo *int64 `json:"expected_amount_kobo,omitempty"`
+	IsExpired          bool   `json:"is_expired"`
 }
 
 // Identity is the root resource in Kobo.
@@ -94,7 +89,6 @@ type Identity struct {
 	ExternalReference string                 `json:"external_reference"`
 	DisplayName       string                 `json:"display_name"`
 	State             IdentityState          `json:"state"`
-	KYCTier           *KYCTier               `json:"kyc_tier,omitempty"`
 	VirtualAccount    *VirtualAccountSummary `json:"virtual_account,omitempty"`
 	Metadata          map[string]interface{} `json:"metadata,omitempty"`
 	FailureReason     *string                `json:"failure_reason,omitempty"`
@@ -149,7 +143,6 @@ type Exception struct {
 type CreateIdentityRequest struct {
 	ExternalReference string                 `json:"external_reference"`
 	DisplayName       string                 `json:"display_name"`
-	KYCTierHint       *KYCTier               `json:"kyc_tier_hint,omitempty"`
 	Metadata          map[string]interface{} `json:"metadata,omitempty"`
 }
 

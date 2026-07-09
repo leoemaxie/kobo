@@ -13,7 +13,6 @@ public final class Identity {
     private final String externalReference;
     private final String displayName;
     private final IdentityState state;
-    private final KycTier kycTier;
     private final VirtualAccountSummary virtualAccount;
     private final Map<String, Object> metadata;
     private final String failureReason;
@@ -25,7 +24,6 @@ public final class Identity {
             String externalReference,
             String displayName,
             IdentityState state,
-            KycTier kycTier,
             VirtualAccountSummary virtualAccount,
             Map<String, Object> metadata,
             String failureReason,
@@ -35,7 +33,6 @@ public final class Identity {
         this.externalReference = externalReference;
         this.displayName = displayName;
         this.state = state;
-        this.kycTier = kycTier;
         this.virtualAccount = virtualAccount;
         this.metadata = metadata;
         this.failureReason = failureReason;
@@ -52,9 +49,6 @@ public final class Identity {
     public String getDisplayName() { return displayName; }
 
     public IdentityState getState() { return state; }
-
-    /** May be null if KYC tier has not yet been confirmed by Nomba. */
-    public KycTier getKycTier() { return kycTier; }
 
     /** Null while in {@code pending} or {@code failed} state. */
     public VirtualAccountSummary getVirtualAccount() { return virtualAccount; }

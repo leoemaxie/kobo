@@ -4,7 +4,7 @@ export { KoboError } from "./errors.js";
 export type {
   // Enums / string unions
   IdentityState,
-  KycTier,
+
   TransactionDirection,
   TransactionStatus,
   ExceptionType,
