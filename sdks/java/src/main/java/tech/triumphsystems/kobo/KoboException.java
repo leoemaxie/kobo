@@ -14,7 +14,7 @@ import java.util.Map;
  * try {
  *     kobo.identities().get("unknown-id");
  * } catch (KoboException e) {
- *     if ("identity_not_found".equals(e.getCode())) {
+ *     if (ErrorCode.IDENTITY_NOT_FOUND.equals(e.getCode())) {
  *         // handle 404
  *     }
  *     throw e;
@@ -31,8 +31,8 @@ public final class KoboException extends RuntimeException {
 
     /**
      * Stable machine-readable error code.
-     * Examples: {@code "identity_not_found"}, {@code "invalid_transition"},
-     * {@code "duplicate_external_reference"}.
+     * Examples: {@link ErrorCode#IDENTITY_NOT_FOUND}, {@link ErrorCode#INVALID_TRANSITION},
+     * {@link ErrorCode#DUPLICATE_EXTERNAL_REFERENCE}.
      */
     private final String code;
 

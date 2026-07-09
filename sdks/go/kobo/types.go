@@ -231,6 +231,7 @@ type HealthResponse struct {
 
 // APIError represents a structured error returned by the Kobo API.
 // Branch on Code, not Message, as Message is not stable.
+// See ErrorCode constants (e.g., ErrorCodeIdentityNotFound) for stable codes.
 type APIError struct {
 	// HTTPStatus is the HTTP status code.
 	HTTPStatus int
