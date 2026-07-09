@@ -11,12 +11,19 @@
 </script>
 
 <div class="flex flex-col gap-7">
-  <div class="mb-8">
-    <div class="p-4 mt-4 mb-2 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center gap-3 text-main">
-    <AlertTriangle class="w-5 h-5 text-[var(--accent)] shrink-0" />
-    <p class="text-sm font-medium"><strong>Notice:</strong> The KYC verification module is currently in development. Submissions are temporarily disabled.</p>
-  </div>
-    <p class="text-muted">Complete your compliance verification to unlock production access and start processing live transactions.</p>
+  <div class="mb-6 sm:mb-8">
+    <div class="p-3 sm:p-4 mt-4 mb-3 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-start sm:items-center gap-3 text-main">
+      <AlertTriangle class="w-4 h-4 sm:w-5 sm:h-5 text-[var(--accent)] shrink-0 mt-0.5 sm:mt-0" />
+      <p class="text-[12px] sm:text-sm font-medium leading-snug">
+        <strong>Notice:</strong> 
+        <span class="sm:hidden">Submissions are temporarily disabled.</span>
+        <span class="hidden sm:inline">KYC verification is currently in development. Submissions are temporarily disabled.</span>
+      </p>
+    </div>
+    <p class="text-[13px] sm:text-[14px] text-muted leading-relaxed">
+      <span class="sm:hidden">Complete compliance verification to unlock live transactions.</span>
+      <span class="hidden sm:inline">Complete your compliance verification to unlock production access and start processing live transactions.</span>
+    </p>
   </div>
 
   <form

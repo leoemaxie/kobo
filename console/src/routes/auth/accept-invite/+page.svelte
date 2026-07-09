@@ -17,7 +17,7 @@
 <div class="w-full">
   <AuthLogo heading="Workspace Invitation" />
 
-  <div class="bg-element border border-border rounded-[10px] px-12 py-8 shadow-sm">
+  <div class="bg-element border border-border rounded-[10px] px-6 sm:px-12 py-8 shadow-sm">
     {#if data.error}
       <div class="flex flex-col items-center text-center">
         <div class="h-12 w-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4 text-red-500">

@@ -21,7 +21,7 @@
   </div>
 
   <!-- Main Card -->
-  <div class="bg-element border border-border rounded-[10px] px-12 py-10 shadow-sm flex flex-col items-center max-w-[420px] mx-auto">
+  <div class="bg-element border border-border rounded-[10px] px-6 sm:px-12 py-10 shadow-sm flex flex-col items-center max-w-[420px] mx-auto">
     
     <!-- Icon -->
     <div class="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">

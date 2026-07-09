@@ -23,7 +23,7 @@
   </AuthLogo>
 
   <!-- Card -->
-  <div class="bg-element border border-border rounded-[10px] px-16 py-8 shadow-sm">
+  <div class="bg-element border border-border rounded-[10px] px-6 sm:px-16 py-8 shadow-sm">
     {#if !submitted}
       <form class="space-y-6" method="POST" use:enhance={() => {
         loading = true;

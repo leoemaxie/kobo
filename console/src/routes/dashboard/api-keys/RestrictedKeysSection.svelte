@@ -11,7 +11,7 @@
 <div>
   <SectionLabel>Restricted Keys</SectionLabel>
 
-  <div class="border border-dashed border-border rounded-lg px-5 py-7 flex items-center justify-between gap-6">
+  <div class="border border-dashed border-border rounded-lg px-5 py-7 flex flex-col sm:flex-row sm:items-center justify-between items-start gap-4 sm:gap-6">
     <div class="flex items-start gap-3.5">
       <ShieldAlert size={16} class="text-subtle mt-0.5 shrink-0" />
       <div>
@@ -36,7 +36,7 @@
   {#if keys.length > 0}
     <div class="mt-2.5 flex flex-col gap-2">
       {#each keys as k}
-        <div class="border border-border rounded-[6px] px-4 py-3 flex items-center justify-between">
+        <div class="border border-border rounded-[6px] px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between items-start gap-2 sm:gap-0">
           <div>
             <p class="text-[13px] font-medium text-main mb-1">{k.name}</p>
             <code class="font-mono text-[11px] text-muted">{k.id}</code>

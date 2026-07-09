@@ -1,12 +1,31 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { Users, ShieldAlert, History, LogOut } from '@lucide/svelte';
+  import { Users, ShieldAlert, History, LogOut, Menu } from '@lucide/svelte';
 
   let { children } = $props();
+  
+  let isMobileMenuOpen = $state(false);
 </script>
 
-<div class="flex h-full w-full">
-  <aside class="w-64 min-w-[256px] bg-[var(--bg-sidebar)] border-r border-[var(--border-color)] flex flex-col h-full overflow-hidden transition-colors duration-200">
+<div class="flex h-full w-full relative">
+  <!-- Overlay for mobile sidebar -->
+  {#if isMobileMenuOpen}
+    <div 
+      class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+      onclick={() => isMobileMenuOpen = false}
+      role="button"
+      tabindex="0"
+      aria-label="Close menu"
+      onkeydown={(e) => e.key === 'Escape' && (isMobileMenuOpen = false)}
+    ></div>
+  {/if}
+
+  <aside class="
+    fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-in-out
+    lg:relative lg:translate-x-0
+    {isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+    w-64 min-w-[256px] bg-[var(--bg-sidebar)] border-r border-[var(--border-color)] flex flex-col h-full overflow-hidden
+  ">
     <div class="h-18 flex items-center px-4 border-b border-[var(--border-color)] shrink-0 gap-2.5 text-main">
       <div class="h-9 w-9 rounded-md bg-[var(--error-color)]/10 flex items-center justify-center font-black text-sm text-[var(--error-color)] border border-[var(--error-color)]/20 shrink-0">
         <ShieldAlert size={16} />
@@ -43,7 +62,15 @@
   </aside>
 
   <div class="flex flex-col flex-1 min-w-0 overflow-hidden w-full">
-    <header class="h-18 border-b border-[var(--border-color)] bg-[var(--bg-header)]/80 backdrop-blur-md flex items-center justify-between px-4 sm:px-7 shrink-0 sticky top-0 z-40 w-full">
+    <header class="h-18 border-b border-[var(--border-color)] bg-[var(--bg-header)]/80 backdrop-blur-md flex items-center px-4 sm:px-7 shrink-0 sticky top-0 z-40 w-full gap-3">
+      <button 
+        class="lg:hidden p-2 -ml-2 text-muted hover:text-main rounded-md transition-colors"
+        onclick={() => isMobileMenuOpen = true}
+        aria-label="Open menu"
+      >
+        <Menu size={20} />
+      </button>
+      
       <div class="flex items-center gap-2 sm:gap-3 text-[13px] text-muted truncate">
         <span class="text-main font-semibold px-2 py-0.5 bg-[var(--bg-active)] rounded-md border border-[var(--border-color)] truncate max-w-[200px]">
           {page.url.pathname.includes('audit-log') ? 'System Audit Log' : 'Integrator Management'}
@@ -51,7 +78,7 @@
       </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:px-12 lg:py-8 pb-16">
+    <main class="flex-1 overflow-y-auto px-5 py-6 sm:p-6 lg:px-12 lg:py-8 pb-16">
       {@render children()}
     </main>
   </div>

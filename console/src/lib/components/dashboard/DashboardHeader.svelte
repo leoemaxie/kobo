@@ -6,7 +6,7 @@
   const state = useConsoleState();
 </script>
 
-<div class="flex items-start justify-between gap-6 pb-8 border-b" style="border-color: var(--border-color);">
+<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 pb-8 border-b" style="border-color: var(--border-color);">
   <div class="space-y-3">
     <div class="flex items-center gap-3">
       <h1 style="
@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div style="display: flex; align-items: center; gap: 8px;">
+  <div class="flex flex-wrap items-center gap-2 sm:gap-2 pt-2 sm:pt-0">
     <a
       href={PUBLIC_DOCS_URL}
       style="

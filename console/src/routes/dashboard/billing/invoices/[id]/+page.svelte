@@ -24,23 +24,23 @@
 </svelte:head>
 
 <div class="max-w-4xl my-10 mx-auto p-4 sm:p-10 border border-border-subtle bg-element rounded-lg overflow-x-auto print:border-[#ddd] print:m-0 print:p-0 print:border-none print:shadow-none">
-	<div class="flex justify-between items-start mb-10">
+	<div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-10 gap-4 sm:gap-0">
 		<div>
 			<h1 class="text-2xl font-bold m-0 text-main print:text-black">KOBO INC.</h1>
 			<p class="text-sm mt-1 text-subtle print:text-black">Receipt of Payment</p>
 		</div>
-		<div class="text-right">
+		<div class="text-left sm:text-right">
 			<h2 class="text-xl font-bold m-0 text-main print:text-black">INVOICE</h2>
 			<p class="font-mono text-sm mt-1 text-subtle print:text-black">{invoice.id}</p>
 		</div>
 	</div>
 
-	<div class="flex justify-between mb-10">
+	<div class="flex flex-col sm:flex-row sm:justify-between mb-10 gap-4 sm:gap-0">
 		<div>
 			<p class="text-xs uppercase tracking-widest text-subtle mb-2 print:text-black">Billed To</p>
 			<p class="text-base font-medium text-main m-0 print:text-black">{integrator}</p>
 		</div>
-		<div class="text-right">
+		<div class="text-left sm:text-right">
 			<p class="text-xs uppercase tracking-widest text-subtle mb-2 print:text-black">Date of Issue</p>
 			<p class="text-base font-medium text-main m-0 print:text-black">{invoice.date}</p>
 		</div>
@@ -75,7 +75,7 @@
 		</tfoot>
 	</table>
 
-	<div class="flex justify-between items-center">
+	<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0">
 		<div>
 			<span class="text-xs font-bold uppercase py-1 px-2 rounded {invoice.status === 'paid' ? 'bg-primary-transparent text-primary' : 'bg-error-bg text-error'}">
 				{invoice.status}
