@@ -103,8 +103,8 @@ export const actions: Actions = {
 			}
 
 			const data = await res.json();
-			if (data.checkoutLink) {
-				throw redirect(303, data.checkoutLink);
+			if (data.checkout_link) {
+				throw redirect(303, data.checkout_link);
 			}
 
 			return fail(500, { error: 'Invalid response from payment gateway' });
