@@ -1,10 +1,13 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad, PageServerLoadEvent } from './$types';
+import { withCache } from '$lib/utils/cache';
 import { db } from '$lib/server/db';
 import { apiIntegrators, users, apiCredentials, billingRecords, webhooks, sessions, emailVerificationTokens, passwordResetTokens, adminAuditLog } from '$lib/server/db/schema';
 import { eq, inArray, or, and } from 'drizzle-orm';
 
-export const load: PageServerLoad = async ({ locals }: PageServerLoadEvent) => {
+export const load: PageServerLoad = async ({ locals, setHeaders }: PageServerLoadEvent) => {
+	withCache(setHeaders);
+
 	const user = locals.user;
 	if (!user) throw redirect(302, '/auth/login');
 

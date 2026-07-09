@@ -3,8 +3,11 @@ import { db } from '$lib/server/db';
 import { users, invitations } from '$lib/server/db/schema';
 import { eq, desc, and, isNull, gt } from 'drizzle-orm';
 import { redirect, fail } from '@sveltejs/kit';
+import { withCache } from '$lib/utils/cache';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, setHeaders }) => {
+	withCache(setHeaders);
+
 	const user = locals.user;
 	if (!user || !user.integratorId) {
 		throw redirect(302, '/auth/login');

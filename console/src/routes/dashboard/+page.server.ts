@@ -1,10 +1,13 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
+import { withCache } from '$lib/utils/cache';
 import { db } from '$lib/server/db';
 import { apiCredentials, webhooks, usageEvents, paymentMethods } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, setHeaders }) => {
+	withCache(setHeaders);
+
 	const user = locals.user;
 	if (!user) throw redirect(302, '/auth/login');
 
