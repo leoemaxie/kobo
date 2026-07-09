@@ -52,6 +52,7 @@ const config: Config = {
           kobo: {
             specPath: "../core/openapi.yaml",
             outputDir: "docs/api",
+            tagTemplate: "./src/templates/tag.mdx",
             sidebarOptions: {
               groupPathsBy: "tag",
               categoryLinkSource: "tag",

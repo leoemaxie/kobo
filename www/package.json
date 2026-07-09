@@ -13,7 +13,7 @@
     "write:translations": "docusaurus write-translations",
     "write:heading": "docusaurus write-heading-ids",
     "typecheck": "tsc",
-    "gen:docs": "docusaurus gen-api-docs all && node -e \"const fs = require('fs'); const path = require('path'); const dir = 'docs/api'; fs.readdirSync(dir).filter(f => f.endsWith('.tag.mdx')).forEach(f => { const p = path.join(dir, f); fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace('@docusaurus/theme-common', '@docusaurus/theme-common/internal')); });\"",
+    "gen:docs": "docusaurus gen-api-docs all",
     "clean:docs": "docusaurus clean-api-docs all"
   },
   "dependencies": {
