@@ -19,7 +19,8 @@ type mockRepository struct {
 	UpdateIdentityStateFunc            func(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error)
 	ListIdentitiesByStateFunc          func(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error)
 	InsertIdentityEventFunc            func(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error)
-	ListIdentityEventsFunc             func(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error)
+	ListIdentityEventsFunc                 func(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error)
+	GetActiveVirtualAccountByIdentityIDFunc func(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error)
 }
 
 func (m *mockRepository) CreateIdentity(ctx context.Context, arg sqlc.CreateIdentityParams) (sqlc.Identity, error) {
@@ -57,6 +58,12 @@ func (m *mockRepository) InsertIdentityEvent(ctx context.Context, arg sqlc.Inser
 }
 func (m *mockRepository) ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error) {
 	return nil, errors.New("unimplemented")
+}
+func (m *mockRepository) GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error) {
+	if m.GetActiveVirtualAccountByIdentityIDFunc != nil {
+		return m.GetActiveVirtualAccountByIdentityIDFunc(ctx, identityID)
+	}
+	return sqlc.VirtualAccount{}, errors.New("unimplemented")
 }
 
 func TestService_Register(t *testing.T) {
