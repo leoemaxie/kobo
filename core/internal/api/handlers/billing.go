@@ -47,7 +47,7 @@ func (h *AdminBillingHandler) CreateCheckout(w http.ResponseWriter, r *http.Requ
 
 	orderRef := "ref_" + uuid.New().String()
 
-	amount := "1000.00" // Default for save card (authorization hold)
+	amount := "100.00" // Default for save card (authorization hold)
 	if req.Type == "topup" && req.Amount != "" {
 		amount = req.Amount
 	}
