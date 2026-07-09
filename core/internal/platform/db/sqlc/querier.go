@@ -20,27 +20,28 @@ type Querier interface {
 	DeactivateVirtualAccount(ctx context.Context, identityID uuid.UUID) error
 	GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (VirtualAccount, error)
 	GetApiIntegratorByKey(ctx context.Context, keyID string) (GetApiIntegratorByKeyRow, error)
+	GetBillingRecords(ctx context.Context, integratorID uuid.UUID) ([]ConsoleBillingRecord, error)
+	GetDefaultPaymentMethod(ctx context.Context, integratorID uuid.UUID) (ConsolePaymentMethod, error)
 	GetExceptionByID(ctx context.Context, arg GetExceptionByIDParams) (Exception, error)
 	GetIdempotencyKey(ctx context.Context, nombaReference string) (IdempotencyKey, error)
 	GetIdentityByExternalReference(ctx context.Context, arg GetIdentityByExternalReferenceParams) (Identity, error)
 	GetIdentityByID(ctx context.Context, arg GetIdentityByIDParams) (Identity, error)
 	GetIdentityByVirtualAccountID(ctx context.Context, id uuid.UUID) (GetIdentityByVirtualAccountIDRow, error)
-	InsertUsageEvent(ctx context.Context, arg InsertUsageEventParams) error
-	GetDefaultPaymentMethod(ctx context.Context, integratorID uuid.UUID) (PaymentMethod, error)
-	GetPendingInvoices(ctx context.Context) ([]Invoice, error)
-	UpdateInvoiceStatus(ctx context.Context, arg UpdateInvoiceStatusParams) error
-	SuspendIntegrator(ctx context.Context, integratorID uuid.UUID) error
+	GetIntegratorInvoices(ctx context.Context, integratorID uuid.UUID) ([]ConsoleInvoice, error)
+	GetIntegratorUsageEvents(ctx context.Context, arg GetIntegratorUsageEventsParams) ([]ConsoleUsageEvent, error)
 	GetIntegratorWalletBalance(ctx context.Context, id uuid.UUID) (int64, error)
-	UpdateIntegratorWalletBalance(ctx context.Context, arg UpdateIntegratorWalletBalanceParams) error
-	GenerateMonthlyInvoices(ctx context.Context, period string) error
 	// Calculates the sum of all 'inbound' matched transactions before the given time
 	GetLedgerOpeningBalance(ctx context.Context, arg GetLedgerOpeningBalanceParams) (int64, error)
+	GetPendingInvoices(ctx context.Context) ([]ConsoleInvoice, error)
 	GetVirtualAccountByAccountNumber(ctx context.Context, accountNumber pgtype.Text) (VirtualAccount, error)
 	GetVirtualAccountByID(ctx context.Context, id uuid.UUID) (VirtualAccount, error)
 	InsertException(ctx context.Context, arg InsertExceptionParams) (Exception, error)
 	InsertIdempotencyKey(ctx context.Context, arg InsertIdempotencyKeyParams) (IdempotencyKey, error)
 	InsertIdentityEvent(ctx context.Context, arg InsertIdentityEventParams) (IdentityEvent, error)
+	InsertInvoice(ctx context.Context, arg InsertInvoiceParams) (ConsoleInvoice, error)
 	InsertLedgerEntry(ctx context.Context, arg InsertLedgerEntryParams) (LedgerEntry, error)
+	InsertPaymentMethod(ctx context.Context, arg InsertPaymentMethodParams) (ConsolePaymentMethod, error)
+	InsertUsageEvent(ctx context.Context, arg InsertUsageEventParams) error
 	ListActiveVirtualAccounts(ctx context.Context) ([]VirtualAccount, error)
 	ListAllIdentitiesByState(ctx context.Context, state string) ([]Identity, error)
 	ListExceptionsByStatus(ctx context.Context, arg ListExceptionsByStatusParams) ([]Exception, error)
@@ -56,8 +57,13 @@ type Querier interface {
 	// account/lifecycle.go's Transition() function, never directly from a handler
 	// or service method, per the package boundary rules in ARCHITECTURE.md.
 	UpdateIdentityState(ctx context.Context, arg UpdateIdentityStateParams) (Identity, error)
+	UpdateIntegratorWalletBalance(ctx context.Context, arg UpdateIntegratorWalletBalanceParams) error
+	UpdateInvoiceStatus(ctx context.Context, arg UpdateInvoiceStatusParams) error
 	// Called after a successful provisioning to set the account number and bank info
 	UpdateVirtualAccountProvisioning(ctx context.Context, arg UpdateVirtualAccountProvisioningParams) (VirtualAccount, error)
+	UpsertBillingRecord(ctx context.Context, arg UpsertBillingRecordParams) error
+	SuspendIntegrator(ctx context.Context, integratorID uuid.UUID) error
+	GenerateMonthlyInvoices(ctx context.Context, period string) error
 }
 
 var _ Querier = (*Queries)(nil)

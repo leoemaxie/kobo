@@ -15,7 +15,7 @@ import (
 const createVirtualAccount = `-- name: CreateVirtualAccount :one
 INSERT INTO virtual_accounts (id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at
+RETURNING id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired
 `
 
 type CreateVirtualAccountParams struct {
@@ -49,6 +49,8 @@ func (q *Queries) CreateVirtualAccount(ctx context.Context, arg CreateVirtualAcc
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ExpectedAmountKobo,
+		&i.IsExpired,
 	)
 	return i, err
 }
@@ -67,7 +69,7 @@ func (q *Queries) DeactivateVirtualAccount(ctx context.Context, identityID uuid.
 }
 
 const getActiveVirtualAccountByIdentityID = `-- name: GetActiveVirtualAccountByIdentityID :one
-SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at FROM virtual_accounts
+SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
 WHERE identity_id = $1 AND is_active = true
 `
 
@@ -84,12 +86,14 @@ func (q *Queries) GetActiveVirtualAccountByIdentityID(ctx context.Context, ident
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ExpectedAmountKobo,
+		&i.IsExpired,
 	)
 	return i, err
 }
 
 const getVirtualAccountByAccountNumber = `-- name: GetVirtualAccountByAccountNumber :one
-SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at FROM virtual_accounts
+SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
 WHERE account_number = $1
 `
 
@@ -106,12 +110,14 @@ func (q *Queries) GetVirtualAccountByAccountNumber(ctx context.Context, accountN
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ExpectedAmountKobo,
+		&i.IsExpired,
 	)
 	return i, err
 }
 
 const getVirtualAccountByID = `-- name: GetVirtualAccountByID :one
-SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at FROM virtual_accounts
+SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
 WHERE id = $1
 `
 
@@ -128,12 +134,14 @@ func (q *Queries) GetVirtualAccountByID(ctx context.Context, id uuid.UUID) (Virt
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ExpectedAmountKobo,
+		&i.IsExpired,
 	)
 	return i, err
 }
 
 const listActiveVirtualAccounts = `-- name: ListActiveVirtualAccounts :many
-SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at FROM virtual_accounts
+SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
 WHERE is_active = true
 ORDER BY id ASC
 `
@@ -157,6 +165,8 @@ func (q *Queries) ListActiveVirtualAccounts(ctx context.Context) ([]VirtualAccou
 			&i.IsActive,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ExpectedAmountKobo,
+			&i.IsExpired,
 		); err != nil {
 			return nil, err
 		}
@@ -175,7 +185,7 @@ SET account_number = $2,
     account_name = $4,
     updated_at = now()
 WHERE id = $1
-RETURNING id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at
+RETURNING id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired
 `
 
 type UpdateVirtualAccountProvisioningParams struct {
@@ -204,6 +214,8 @@ func (q *Queries) UpdateVirtualAccountProvisioning(ctx context.Context, arg Upda
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ExpectedAmountKobo,
+		&i.IsExpired,
 	)
 	return i, err
 }

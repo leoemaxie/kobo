@@ -15,16 +15,16 @@ import (
 const createApiCredential = `-- name: CreateApiCredential :one
 INSERT INTO api_credentials (id, integrator_id, environment, key_id, secret_hash, created_by)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, integrator_id, environment, key_id, secret_hash, label, created_at, created_by, rotated_at, revoked_at, revoked_by, revoked_reason
+RETURNING id, integrator_id, environment, key_id, secret_hash, label, created_at, created_by, rotated_at, revoked_at, revoked_by, revoked_reason, allowed_ips, scopes
 `
 
 type CreateApiCredentialParams struct {
-	ID           uuid.UUID          `json:"id"`
-	IntegratorID uuid.UUID          `json:"integrator_id"`
-	Environment  ConsoleEnvironment `json:"environment"`
-	KeyID        string             `json:"key_id"`
-	SecretHash   string             `json:"secret_hash"`
-	CreatedBy    pgtype.UUID        `json:"created_by"`
+	ID           uuid.UUID   `json:"id"`
+	IntegratorID uuid.UUID   `json:"integrator_id"`
+	Environment  interface{} `json:"environment"`
+	KeyID        string      `json:"key_id"`
+	SecretHash   string      `json:"secret_hash"`
+	CreatedBy    pgtype.UUID `json:"created_by"`
 }
 
 func (q *Queries) CreateApiCredential(ctx context.Context, arg CreateApiCredentialParams) (ApiCredential, error) {
@@ -50,6 +50,8 @@ func (q *Queries) CreateApiCredential(ctx context.Context, arg CreateApiCredenti
 		&i.RevokedAt,
 		&i.RevokedBy,
 		&i.RevokedReason,
+		&i.AllowedIps,
+		&i.Scopes,
 	)
 	return i, err
 }
@@ -57,7 +59,7 @@ func (q *Queries) CreateApiCredential(ctx context.Context, arg CreateApiCredenti
 const createApiIntegrator = `-- name: CreateApiIntegrator :one
 INSERT INTO api_integrators (id, name, plan, status, production_access_granted)
 VALUES ($1, $2, 'pay_as_you_go', 'active', false)
-RETURNING id, name, created_at, updated_at, plan, status, production_access_granted, production_access_granted_at, production_access_granted_by
+RETURNING id, name, created_at, updated_at, plan, status, production_access_granted, production_access_granted_at, production_access_granted_by, wallet_balance_kobo
 `
 
 type CreateApiIntegratorParams struct {
@@ -78,6 +80,7 @@ func (q *Queries) CreateApiIntegrator(ctx context.Context, arg CreateApiIntegrat
 		&i.ProductionAccessGranted,
 		&i.ProductionAccessGrantedAt,
 		&i.ProductionAccessGrantedBy,
+		&i.WalletBalanceKobo,
 	)
 	return i, err
 }

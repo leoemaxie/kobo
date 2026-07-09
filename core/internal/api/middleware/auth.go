@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/auth"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
@@ -26,30 +27,30 @@ func AuthMiddleware(q sqlc.Querier) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			apiKey, apiSecret, ok := r.BasicAuth()
 			if !ok {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				apierrors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Unauthorized")
 				return
 			}
 
 			// Fast fail on mismatched prefixes
 			if strings.HasPrefix(apiKey, "kobo_live_") && !strings.HasPrefix(apiSecret, "kobo_live_") {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				apierrors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Unauthorized")
 				return
 			}
 			if strings.HasPrefix(apiKey, "kobo_test_") && !strings.HasPrefix(apiSecret, "kobo_test_") {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				apierrors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Unauthorized")
 				return
 			}
 
 			integrator, err := q.GetApiIntegratorByKey(r.Context(), apiKey)
 			if err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				apierrors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Unauthorized")
 				return
 			}
 
 			hashedProvidedSecret := auth.HashSecret(apiSecret)
 
 			if subtle.ConstantTimeCompare([]byte(integrator.ApiSecretHash), []byte(hashedProvidedSecret)) != 1 {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				apierrors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Unauthorized")
 				return
 			}
 

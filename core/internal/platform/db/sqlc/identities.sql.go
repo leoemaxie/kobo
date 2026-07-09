@@ -14,9 +14,9 @@ import (
 )
 
 const createIdentity = `-- name: CreateIdentity :one
-INSERT INTO identities (id, integrator_id, external_reference, display_name, kyc_tier, state, metadata)
-VALUES ($1, $2, $3, $4, $5, 'pending', $6)
-RETURNING id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at
+INSERT INTO identities (id, integrator_id, external_reference, display_name, state, metadata)
+VALUES ($1, $2, $3, $4, 'pending', $5)
+RETURNING id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at
 `
 
 type CreateIdentityParams struct {
@@ -24,7 +24,6 @@ type CreateIdentityParams struct {
 	IntegratorID      uuid.UUID       `json:"integrator_id"`
 	ExternalReference string          `json:"external_reference"`
 	DisplayName       string          `json:"display_name"`
-	KycTier           string          `json:"kyc_tier"`
 	Metadata          json.RawMessage `json:"metadata"`
 }
 
@@ -34,7 +33,6 @@ func (q *Queries) CreateIdentity(ctx context.Context, arg CreateIdentityParams) 
 		arg.IntegratorID,
 		arg.ExternalReference,
 		arg.DisplayName,
-		arg.KycTier,
 		arg.Metadata,
 	)
 	var i Identity
@@ -43,7 +41,6 @@ func (q *Queries) CreateIdentity(ctx context.Context, arg CreateIdentityParams) 
 		&i.IntegratorID,
 		&i.ExternalReference,
 		&i.DisplayName,
-		&i.KycTier,
 		&i.State,
 		&i.FailureReason,
 		&i.Metadata,
@@ -54,7 +51,7 @@ func (q *Queries) CreateIdentity(ctx context.Context, arg CreateIdentityParams) 
 }
 
 const getIdentityByExternalReference = `-- name: GetIdentityByExternalReference :one
-SELECT id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at FROM identities
+SELECT id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at FROM identities
 WHERE integrator_id = $1 AND external_reference = $2
 `
 
@@ -71,7 +68,6 @@ func (q *Queries) GetIdentityByExternalReference(ctx context.Context, arg GetIde
 		&i.IntegratorID,
 		&i.ExternalReference,
 		&i.DisplayName,
-		&i.KycTier,
 		&i.State,
 		&i.FailureReason,
 		&i.Metadata,
@@ -82,7 +78,7 @@ func (q *Queries) GetIdentityByExternalReference(ctx context.Context, arg GetIde
 }
 
 const getIdentityByID = `-- name: GetIdentityByID :one
-SELECT id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at FROM identities
+SELECT id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at FROM identities
 WHERE id = $1 AND integrator_id = $2
 `
 
@@ -99,7 +95,6 @@ func (q *Queries) GetIdentityByID(ctx context.Context, arg GetIdentityByIDParams
 		&i.IntegratorID,
 		&i.ExternalReference,
 		&i.DisplayName,
-		&i.KycTier,
 		&i.State,
 		&i.FailureReason,
 		&i.Metadata,
@@ -147,7 +142,7 @@ func (q *Queries) InsertIdentityEvent(ctx context.Context, arg InsertIdentityEve
 }
 
 const listAllIdentitiesByState = `-- name: ListAllIdentitiesByState :many
-SELECT id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at FROM identities
+SELECT id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at FROM identities
 WHERE state = $1
 ORDER BY created_at ASC
 `
@@ -166,7 +161,6 @@ func (q *Queries) ListAllIdentitiesByState(ctx context.Context, state string) ([
 			&i.IntegratorID,
 			&i.ExternalReference,
 			&i.DisplayName,
-			&i.KycTier,
 			&i.State,
 			&i.FailureReason,
 			&i.Metadata,
@@ -184,7 +178,7 @@ func (q *Queries) ListAllIdentitiesByState(ctx context.Context, state string) ([
 }
 
 const listIdentitiesByState = `-- name: ListIdentitiesByState :many
-SELECT id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at FROM identities
+SELECT id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at FROM identities
 WHERE integrator_id = $1 AND state = $2
 ORDER BY created_at DESC
 LIMIT $3 OFFSET $4
@@ -216,7 +210,6 @@ func (q *Queries) ListIdentitiesByState(ctx context.Context, arg ListIdentitiesB
 			&i.IntegratorID,
 			&i.ExternalReference,
 			&i.DisplayName,
-			&i.KycTier,
 			&i.State,
 			&i.FailureReason,
 			&i.Metadata,
@@ -273,7 +266,7 @@ SET display_name = COALESCE($3, display_name),
     metadata = COALESCE($4, metadata),
     updated_at = now()
 WHERE id = $1 AND integrator_id = $2
-RETURNING id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at
+RETURNING id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at
 `
 
 type UpdateIdentityProfileParams struct {
@@ -297,7 +290,6 @@ func (q *Queries) UpdateIdentityProfile(ctx context.Context, arg UpdateIdentityP
 		&i.IntegratorID,
 		&i.ExternalReference,
 		&i.DisplayName,
-		&i.KycTier,
 		&i.State,
 		&i.FailureReason,
 		&i.Metadata,
@@ -313,7 +305,7 @@ SET state = $3,
     failure_reason = $4,
     updated_at = now()
 WHERE id = $1 AND integrator_id = $2
-RETURNING id, integrator_id, external_reference, display_name, kyc_tier, state, failure_reason, metadata, created_at, updated_at
+RETURNING id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at
 `
 
 type UpdateIdentityStateParams struct {
@@ -339,7 +331,6 @@ func (q *Queries) UpdateIdentityState(ctx context.Context, arg UpdateIdentitySta
 		&i.IntegratorID,
 		&i.ExternalReference,
 		&i.DisplayName,
-		&i.KycTier,
 		&i.State,
 		&i.FailureReason,
 		&i.Metadata,

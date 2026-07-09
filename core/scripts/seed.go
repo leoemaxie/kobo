@@ -37,7 +37,6 @@ func main() {
 	_, err = q.CreateApiCredential(ctx, sqlc.CreateApiCredentialParams{
 		ID:           uuid.New(),
 		IntegratorID: integratorID,
-		Environment:  sqlc.ConsoleEnvironmentSandbox,
 		KeyID:        "kobo_test_seeded_api_key",
 		SecretHash:   "seeded_secret_hash_not_real",
 	})
