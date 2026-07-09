@@ -404,6 +404,17 @@ func (q *Queries) SuspendIntegrator(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const unsetDefaultPaymentMethods = `-- name: UnsetDefaultPaymentMethods :exec
+UPDATE console.payment_methods
+SET is_default = FALSE
+WHERE integrator_id = $1
+`
+
+func (q *Queries) UnsetDefaultPaymentMethods(ctx context.Context, integratorID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, unsetDefaultPaymentMethods, integratorID)
+	return err
+}
+
 const updateIntegratorWalletBalance = `-- name: UpdateIntegratorWalletBalance :exec
 UPDATE public.api_integrators
 SET wallet_balance_kobo = wallet_balance_kobo + $2

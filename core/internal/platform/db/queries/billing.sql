@@ -25,6 +25,11 @@ INSERT INTO console.payment_methods (
     $1, $2, $3, $4, $5
 ) RETURNING *;
 
+-- name: UnsetDefaultPaymentMethods :exec
+UPDATE console.payment_methods
+SET is_default = FALSE
+WHERE integrator_id = $1;
+
 -- name: GetDefaultPaymentMethod :one
 SELECT * FROM console.payment_methods
 WHERE integrator_id = $1 AND is_default = TRUE

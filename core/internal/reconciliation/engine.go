@@ -130,9 +130,34 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 }
 
 func (e *engine) handleCheckoutWebhook(ctx context.Context, payload *nomba.WebhookPayload) error {
-	// For top ups, we expect orderReference to be passed in some field, typically payload.Data.Order.OrderReference
-	// But since WebhookPayload is typed for virtual accounts, we might need a generic map parsing
-	// However, we can just extract IntegratorID if we embedded it in the order reference, e.g. "topup_{integratorId}_{uuid}"
-	// This is a simplified handler.
+	if payload.Data.TokenizedCardData != nil && payload.Data.TokenizedCardData.TokenKey != "" && payload.Data.TokenizedCardData.TokenKey != "N/A" {
+		integratorID, err := uuid.Parse(payload.Data.Order.CustomerId)
+		if err != nil {
+			return fmt.Errorf("invalid customer ID (integrator ID) in webhook: %w", err)
+		}
+
+		// 1. Unset any existing default payment methods for this integrator
+		if err := e.q.UnsetDefaultPaymentMethods(ctx, integratorID); err != nil {
+			return fmt.Errorf("failed to unset default payment methods: %w", err)
+		}
+
+		cardLast4 := ""
+		if len(payload.Data.TokenizedCardData.CardPan) >= 4 {
+			pan := payload.Data.TokenizedCardData.CardPan
+			cardLast4 = pan[len(pan)-4:]
+		}
+
+		// 2. Insert the new payment method
+		_, err = e.q.InsertPaymentMethod(ctx, sqlc.InsertPaymentMethodParams{
+			IntegratorID:  integratorID,
+			NombaTokenKey: payload.Data.TokenizedCardData.TokenKey,
+			CardLast4:     pgtype.Text{String: cardLast4, Valid: cardLast4 != ""},
+			CardBrand:     pgtype.Text{String: payload.Data.TokenizedCardData.CardType, Valid: payload.Data.TokenizedCardData.CardType != ""},
+			IsDefault:     true,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to save payment method: %w", err)
+		}
+	}
 	return nil
 }

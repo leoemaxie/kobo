@@ -28,6 +28,16 @@ type WebhookPayload struct {
 			Amount         float64 `json:"amount"`
 			OrderReference string  `json:"orderReference"`
 			PaymentMethod  string  `json:"paymentMethod"`
+			CustomerId     string  `json:"customerId"`
 		} `json:"order"`
+		TokenizedCardData *TokenizedCardData `json:"tokenizedCardData,omitempty"`
 	} `json:"data"`
+}
+
+type TokenizedCardData struct {
+	TokenKey         string `json:"tokenKey"`
+	CardType         string `json:"cardType"`
+	TokenExpiryYear  string `json:"tokenExpiryYear"`
+	TokenExpiryMonth string `json:"tokenExpiryMonth"`
+	CardPan          string `json:"cardPan"`
 }

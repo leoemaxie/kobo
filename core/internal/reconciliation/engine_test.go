@@ -22,6 +22,8 @@ type mockQuerier struct {
 	ListActiveVirtualAccountsFunc        func(ctx context.Context) ([]sqlc.VirtualAccount, error)
 	GetIdentityByVirtualAccountIDFunc    func(ctx context.Context, id uuid.UUID) (sqlc.GetIdentityByVirtualAccountIDRow, error)
 	InsertUsageEventFunc                 func(ctx context.Context, arg sqlc.InsertUsageEventParams) error
+	UnsetDefaultPaymentMethodsFunc       func(ctx context.Context, integratorID uuid.UUID) error
+	InsertPaymentMethodFunc              func(ctx context.Context, arg sqlc.InsertPaymentMethodParams) (sqlc.ConsolePaymentMethod, error)
 }
 
 func (m *mockQuerier) GetVirtualAccountByAccountNumber(ctx context.Context, accountNumber pgtype.Text) (sqlc.VirtualAccount, error) {
@@ -57,6 +59,20 @@ func (m *mockQuerier) InsertUsageEvent(ctx context.Context, arg sqlc.InsertUsage
 		return m.InsertUsageEventFunc(ctx, arg)
 	}
 	return nil // Allow it to pass if not explicitly mocked
+}
+
+func (m *mockQuerier) UnsetDefaultPaymentMethods(ctx context.Context, integratorID uuid.UUID) error {
+	if m.UnsetDefaultPaymentMethodsFunc != nil {
+		return m.UnsetDefaultPaymentMethodsFunc(ctx, integratorID)
+	}
+	return nil
+}
+
+func (m *mockQuerier) InsertPaymentMethod(ctx context.Context, arg sqlc.InsertPaymentMethodParams) (sqlc.ConsolePaymentMethod, error) {
+	if m.InsertPaymentMethodFunc != nil {
+		return m.InsertPaymentMethodFunc(ctx, arg)
+	}
+	return sqlc.ConsolePaymentMethod{}, nil
 }
 
 // mockIdempotencyRepo
@@ -170,4 +186,44 @@ func TestProcessWebhook_Success(t *testing.T) {
 
 	err := eng.ProcessWebhook(context.Background(), payload)
 	assert.NoError(t, err)
+}
+
+func TestProcessWebhook_CheckoutSuccess(t *testing.T) {
+	integratorID := uuid.New()
+	unsetCalled := false
+	insertCalled := false
+
+	mq := &mockQuerier{
+		UnsetDefaultPaymentMethodsFunc: func(ctx context.Context, id uuid.UUID) error {
+			assert.Equal(t, integratorID, id)
+			unsetCalled = true
+			return nil
+		},
+		InsertPaymentMethodFunc: func(ctx context.Context, arg sqlc.InsertPaymentMethodParams) (sqlc.ConsolePaymentMethod, error) {
+			assert.Equal(t, integratorID, arg.IntegratorID)
+			assert.Equal(t, "token_123", arg.NombaTokenKey)
+			assert.Equal(t, "1111", arg.CardLast4.String)
+			assert.Equal(t, "Visa", arg.CardBrand.String)
+			assert.True(t, arg.IsDefault)
+			insertCalled = true
+			return sqlc.ConsolePaymentMethod{}, nil
+		},
+	}
+
+	recorder := billing.NewUsageRecorder(mq)
+	eng := NewEngine(mq, nil, recorder, nil)
+
+	payload := &nomba.WebhookPayload{EventType: "payment_success"}
+	payload.Data.Transaction.Type = "online_checkout"
+	payload.Data.Order.CustomerId = integratorID.String()
+	payload.Data.TokenizedCardData = &nomba.TokenizedCardData{
+		TokenKey: "token_123",
+		CardType: "Visa",
+		CardPan:  "4***45**** ****1111",
+	}
+
+	err := eng.ProcessWebhook(context.Background(), payload)
+	assert.NoError(t, err)
+	assert.True(t, unsetCalled)
+	assert.True(t, insertCalled)
 }

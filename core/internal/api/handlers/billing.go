@@ -2,20 +2,23 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
 type AdminBillingHandler struct {
 	nombaClient *nomba.Client
+	q           sqlc.Querier
 }
 
-func NewAdminBillingHandler(nombaClient *nomba.Client) *AdminBillingHandler {
-	return &AdminBillingHandler{nombaClient: nombaClient}
+func NewAdminBillingHandler(nombaClient *nomba.Client, q sqlc.Querier) *AdminBillingHandler {
+	return &AdminBillingHandler{nombaClient: nombaClient, q: q}
 }
 
 type CreateCheckoutRequest struct {
@@ -88,5 +91,41 @@ func (h *AdminBillingHandler) CreateCheckout(w http.ResponseWriter, r *http.Requ
 	json.NewEncoder(w).Encode(resp)
 }
 
-// Additional handlers like GetUsage, GetInvoices, etc., can be queried directly via Drizzle in Console
-// Since Console has direct DB access, we only expose the Nomba proxy endpoints here.
+type VerifyCheckoutRequest struct {
+	IntegratorID string `json:"integrator_id"`
+	OrderRef     string `json:"order_ref"`
+}
+
+func (h *AdminBillingHandler) VerifyCheckout(w http.ResponseWriter, r *http.Request) {
+	var req VerifyCheckoutRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if req.IntegratorID == "" || req.OrderRef == "" {
+		http.Error(w, "integrator_id and order_ref are required", http.StatusBadRequest)
+		return
+	}
+
+	_, err := uuid.Parse(req.IntegratorID)
+	if err != nil {
+		http.Error(w, "invalid integrator_id format", http.StatusBadRequest)
+		return
+	}
+
+	resp, err := h.nombaClient.VerifyTransaction(r.Context(), req.OrderRef)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to verify transaction with Nomba: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	if !resp.Success {
+		http.Error(w, fmt.Sprintf("transaction not successful: %s", resp.Message), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"status":"success"}`))
+}

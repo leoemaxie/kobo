@@ -54,6 +54,7 @@ type Querier interface {
 	ResolveException(ctx context.Context, arg ResolveExceptionParams) (Exception, error)
 	RollupUsageEvents(ctx context.Context, period string) error
 	SuspendIntegrator(ctx context.Context, id uuid.UUID) error
+	UnsetDefaultPaymentMethods(ctx context.Context, integratorID uuid.UUID) error
 	// Used for renames and metadata updates only. Never changes state or id.
 	UpdateIdentityProfile(ctx context.Context, arg UpdateIdentityProfileParams) (Identity, error)
 	// The only query allowed to mutate `state`. Called exclusively from

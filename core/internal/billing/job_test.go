@@ -27,7 +27,11 @@ type MockQuerier struct {
 	PaymentError    error
 }
 
-func (m *MockQuerier) GenerateMonthlyInvoices(ctx context.Context, period string) error {
+func (m *MockQuerier) RollupUsageEvents(ctx context.Context, period string) error {
+	return nil
+}
+
+func (m *MockQuerier) GenerateInvoicesForPeriod(ctx context.Context, period string) error {
 	m.GenerateCalled = true
 	return m.GenerateError
 }

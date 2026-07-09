@@ -59,7 +59,7 @@ func main() {
 	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc)
 	exceptionsHandler := handlers.NewExceptionsHandler(exceptionsSvc)
 	adminHandler := handlers.NewAdminHandler(integratorSvc)
-	adminBillingHandler := handlers.NewAdminBillingHandler(nombaClient)
+	adminBillingHandler := handlers.NewAdminBillingHandler(nombaClient, q)
 
 	router := api.NewRouter(q, healthHandler, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, adminBillingHandler, reconEngine, cfg.NombaWebhookSecret)
 

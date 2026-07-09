@@ -58,6 +58,7 @@ func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityH
 		// Admin routes
 		r.Post("/admin/integrators", adminHandler.ProvisionIntegrator)
 		r.Post("/admin/billing/checkout", adminBillingHandler.CreateCheckout)
+		r.Post("/admin/billing/verify", adminBillingHandler.VerifyCheckout)
 
 		// Protected routes
 		r.Group(func(r chi.Router) {
