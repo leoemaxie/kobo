@@ -13,7 +13,8 @@ Inbound endpoint Nomba calls; documented for completeness, not called by integra
 
 ```mdx-code-block
 import DocCardList from '@theme/DocCardList';
+import {useCurrentSidebarCategory} from '@docusaurus/theme-common/internal';
 
-<DocCardList />
+<DocCardList items={useCurrentSidebarCategory().items}/>
 ```
       
