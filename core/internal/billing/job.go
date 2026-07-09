@@ -24,7 +24,10 @@ func (j *InvoiceJob) Run(ctx context.Context) error {
 
 	// 1. Generate new invoices for the current period
 	currentPeriod := time.Now().Format("2006-01") // e.g. "2026-07"
-	err := j.q.GenerateMonthlyInvoices(ctx, currentPeriod)
+	err := j.q.RollupUsageEvents(ctx, currentPeriod)
+	if err == nil {
+		err = j.q.GenerateInvoicesForPeriod(ctx, currentPeriod)
+	}
 	if err != nil {
 		log.Printf("failed to generate monthly invoices: %v", err)
 	}

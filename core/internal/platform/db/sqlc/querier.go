@@ -18,6 +18,7 @@ type Querier interface {
 	CreateVirtualAccount(ctx context.Context, arg CreateVirtualAccountParams) (VirtualAccount, error)
 	// Sets is_active to false when a new account is provisioned for the identity
 	DeactivateVirtualAccount(ctx context.Context, identityID uuid.UUID) error
+	GenerateInvoicesForPeriod(ctx context.Context, period string) error
 	GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (VirtualAccount, error)
 	GetApiIntegratorByKey(ctx context.Context, keyID string) (GetApiIntegratorByKeyRow, error)
 	GetBillingRecords(ctx context.Context, integratorID uuid.UUID) ([]ConsoleBillingRecord, error)
@@ -51,6 +52,8 @@ type Querier interface {
 	ListLedgerEntriesByIdentityAndPeriod(ctx context.Context, arg ListLedgerEntriesByIdentityAndPeriodParams) ([]LedgerEntry, error)
 	ListOpenExceptions(ctx context.Context, arg ListOpenExceptionsParams) ([]Exception, error)
 	ResolveException(ctx context.Context, arg ResolveExceptionParams) (Exception, error)
+	RollupUsageEvents(ctx context.Context, period string) error
+	SuspendIntegrator(ctx context.Context, id uuid.UUID) error
 	// Used for renames and metadata updates only. Never changes state or id.
 	UpdateIdentityProfile(ctx context.Context, arg UpdateIdentityProfileParams) (Identity, error)
 	// The only query allowed to mutate `state`. Called exclusively from
@@ -62,8 +65,6 @@ type Querier interface {
 	// Called after a successful provisioning to set the account number and bank info
 	UpdateVirtualAccountProvisioning(ctx context.Context, arg UpdateVirtualAccountProvisioningParams) (VirtualAccount, error)
 	UpsertBillingRecord(ctx context.Context, arg UpsertBillingRecordParams) error
-	SuspendIntegrator(ctx context.Context, integratorID uuid.UUID) error
-	GenerateMonthlyInvoices(ctx context.Context, period string) error
 }
 
 var _ Querier = (*Queries)(nil)

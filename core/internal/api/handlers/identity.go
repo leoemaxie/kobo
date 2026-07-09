@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -41,8 +43,24 @@ func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	ident, err := h.svc.Register(r.Context(), integratorID, req.ExternalReference, req.DisplayName, req.Metadata)
 	if err != nil {
+		if errors.Is(err, identity.ErrIdentityConflict) {
+			apierrors.LogAndWriteError(w, http.StatusConflict, "duplicate_external_reference", "identity with external reference already exists", err)
+			return
+		}
 		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to create identity", err)
 		return
+	}
+
+	// Synchronously provision the account (Serverless Option 1)
+	if err := h.accountSvc.Provision(r.Context(), ident.ID, integratorID); err != nil {
+		log.Printf("failed to provision account synchronously for identity %s: %v", ident.ID, err)
+		// We don't return an error response here because the identity was successfully created.
+		// The client can inspect the state (which will be 'failed' or 'pending').
+	}
+
+	// Re-fetch the identity to return the updated state and virtual account details to the client
+	if updatedIdent, err := h.svc.Get(r.Context(), ident.ID, integratorID); err == nil {
+		ident = updatedIdent
 	}
 
 	env := sqlc.ConsoleEnvironmentProduction

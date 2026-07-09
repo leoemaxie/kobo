@@ -15,7 +15,7 @@ import (
 type ApiCredential struct {
 	ID            uuid.UUID          `json:"id"`
 	IntegratorID  uuid.UUID          `json:"integrator_id"`
-	Environment   interface{}        `json:"environment"`
+	Environment   string             `json:"environment"`
 	KeyID         string             `json:"key_id"`
 	SecretHash    string             `json:"secret_hash"`
 	Label         pgtype.Text        `json:"label"`
@@ -56,7 +56,7 @@ type ConsoleAdminAuditLog struct {
 type ConsoleBillingRecord struct {
 	ID                    uuid.UUID   `json:"id"`
 	IntegratorID          uuid.UUID   `json:"integrator_id"`
-	Environment           interface{} `json:"environment"`
+	Environment           string      `json:"environment"`
 	Period                string      `json:"period"`
 	AccountsProvisioned   int64       `json:"accounts_provisioned"`
 	TransactionsProcessed int64       `json:"transactions_processed"`
@@ -127,13 +127,13 @@ type ConsoleSession struct {
 }
 
 type ConsoleUsageEvent struct {
-	ID           uuid.UUID   `json:"id"`
-	IntegratorID uuid.UUID   `json:"integrator_id"`
-	Environment  interface{} `json:"environment"`
-	EventType    string      `json:"event_type"`
-	ReferenceID  string      `json:"reference_id"`
-	AmountKobo   int64       `json:"amount_kobo"`
-	OccurredAt   time.Time   `json:"occurred_at"`
+	ID           uuid.UUID `json:"id"`
+	IntegratorID uuid.UUID `json:"integrator_id"`
+	Environment  string    `json:"environment"`
+	EventType    string    `json:"event_type"`
+	ReferenceID  string    `json:"reference_id"`
+	AmountKobo   int64     `json:"amount_kobo"`
+	OccurredAt   time.Time `json:"occurred_at"`
 }
 
 type ConsoleUser struct {
@@ -150,7 +150,7 @@ type ConsoleUser struct {
 type ConsoleWebhook struct {
 	ID           uuid.UUID       `json:"id"`
 	IntegratorID uuid.UUID       `json:"integrator_id"`
-	Environment  interface{}     `json:"environment"`
+	Environment  string          `json:"environment"`
 	Url          string          `json:"url"`
 	Secret       string          `json:"secret"`
 	Status       interface{}     `json:"status"`

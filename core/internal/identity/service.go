@@ -3,12 +3,16 @@ package identity
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
+
+var ErrIdentityConflict = errors.New("identity with external reference already exists")
 
 type Service struct {
 	repo Repository
@@ -36,6 +40,10 @@ func (s *Service) Register(ctx context.Context, integratorID uuid.UUID, external
 
 	row, err := s.repo.CreateIdentity(ctx, arg)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return nil, ErrIdentityConflict
+		}
 		return nil, fmt.Errorf("failed to create identity: %w", err)
 	}
 

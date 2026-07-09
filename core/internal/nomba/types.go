@@ -24,5 +24,10 @@ type WebhookPayload struct {
 			AccountNumber string `json:"accountNumber"`
 			BankName      string `json:"bankName"`
 		} `json:"customer"`
+		Order struct {
+			Amount         float64 `json:"amount"`
+			OrderReference string  `json:"orderReference"`
+			PaymentMethod  string  `json:"paymentMethod"`
+		} `json:"order"`
 	} `json:"data"`
 }

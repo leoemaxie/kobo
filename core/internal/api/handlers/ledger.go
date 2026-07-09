@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -59,10 +61,33 @@ func (h *LedgerHandler) GetStatement(w http.ResponseWriter, r *http.Request) {
 
 	entries, err := h.svc.GetStatements(r.Context(), id, limit, offset)
 	if err != nil {
+		if strings.Contains(err.Error(), "no rows in result set") {
+			apierrors.WriteError(w, http.StatusNotFound, "not_found", "account not found")
+			return
+		}
 		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to get statements", err)
 		return
 	}
 
+	period := r.URL.Query().Get("period")
+	if period == "" {
+		period = time.Now().Format("2006-01")
+	}
+
+	var inflow int64
+	for _, entry := range entries {
+		inflow += entry.AmountKobo
+	}
+
+	statement := map[string]interface{}{
+		"account_id":           id,
+		"period":               period,
+		"opening_balance_kobo": 0,
+		"closing_balance_kobo": inflow, // Simplified for now
+		"total_inflow_kobo":    inflow,
+		"transactions":         entries,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(entries)
+	json.NewEncoder(w).Encode(statement)
 }

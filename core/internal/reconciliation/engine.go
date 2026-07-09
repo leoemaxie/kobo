@@ -33,12 +33,12 @@ func NewEngine(q sqlc.Querier, idemRepo IdempotencyRepository, recorder *billing
 }
 
 func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPayload) error {
-	if payload.EventType == "checkout.success" {
-		return e.handleCheckoutWebhook(ctx, payload)
-	}
-
 	if payload.EventType != "payment_success" {
 		return nil // Ignore other events
+	}
+
+	if payload.Data.Transaction.Type == "online_checkout" {
+		return e.handleCheckoutWebhook(ctx, payload)
 	}
 
 	if payload.Data.Transaction.AliasAccountType != "VIRTUAL" {
@@ -55,13 +55,11 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 
 	account, err := e.q.GetVirtualAccountByAccountNumber(ctx, pgAccountNum)
 	if err != nil {
-		// Log error, account not found
 		return fmt.Errorf("virtual account not found: %s", accountNumStr)
 	}
 
 	transactionID := payload.Data.Transaction.TransactionID
 
-	// Server-side verification
 	if e.nombaClient != nil {
 		txn, err := e.nombaClient.FetchSingleTransaction(ctx, transactionID)
 		if err != nil {

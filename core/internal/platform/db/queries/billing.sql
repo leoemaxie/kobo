@@ -76,3 +76,39 @@ JOIN public.virtual_accounts v ON i.id = v.identity_id
 JOIN public.api_credentials c ON i.integrator_id = c.integrator_id
 WHERE v.id = $1
 LIMIT 1;
+
+-- name: SuspendIntegrator :exec
+UPDATE public.api_integrators
+SET status = 'suspended'
+WHERE id = $1;
+
+-- name: RollupUsageEvents :exec
+INSERT INTO console.billing_records (
+	integrator_id, environment, period,
+	accounts_provisioned, transactions_processed, webhook_deliveries, amount_due_kobo
+)
+SELECT 
+	integrator_id, environment, $1 as period,
+	COUNT(CASE WHEN event_type = 'account_provisioned' THEN 1 END) as accounts_provisioned,
+	COUNT(CASE WHEN event_type = 'transaction_processed' THEN 1 END) as transactions_processed,
+	COUNT(CASE WHEN event_type = 'webhook_delivery' THEN 1 END) as webhook_deliveries,
+	SUM(amount_kobo) as amount_due_kobo
+FROM console.usage_events
+WHERE to_char(occurred_at, 'YYYY-MM') = $1 AND environment = 'production'
+GROUP BY integrator_id, environment
+ON CONFLICT (integrator_id, period, environment) DO UPDATE SET
+	accounts_provisioned = EXCLUDED.accounts_provisioned,
+	transactions_processed = EXCLUDED.transactions_processed,
+	webhook_deliveries = EXCLUDED.webhook_deliveries,
+	amount_due_kobo = EXCLUDED.amount_due_kobo,
+	synced_at = now();
+
+-- name: GenerateInvoicesForPeriod :exec
+INSERT INTO console.invoices (
+	integrator_id, billing_record_id, period, amount_kobo, status
+)
+SELECT 
+	integrator_id, id, console.billing_records.period, amount_due_kobo, 'open'
+FROM console.billing_records
+WHERE console.billing_records.period = $1 AND console.billing_records.environment = 'production' AND amount_due_kobo > 0
+ON CONFLICT DO NOTHING;

@@ -46,12 +46,12 @@ paths:
       tags: [Identities]
       operationId: createIdentity
       summary: Register a new identity and provision its virtual account.
-      description:
-        Creates an Identity record in PENDING state and asynchronously
-        provisions a Nomba virtual account against it. The response returns
-        immediately with the identity in PENDING state; integrators should
-        either poll GET /identities/{id} or listen for the
-        `identity.activated` webhook to know when the account is ready.
+      description: >
+        Creates an Identity record and synchronously provisions a Nomba virtual account
+        against it. The response typically returns immediately with the identity in the ACTIVE
+        state and the virtual account details populated. If the downstream provider is temporarily
+        unavailable, it may return in the PENDING or FAILED state, in which case integrators
+        can poll GET /identities/{identityId} or listen for the `identity.activated` webhook.
       requestBody:
         required: true
         content:
@@ -82,6 +82,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              example:
+                code: duplicate_external_reference
+                message: identity with external reference already exists
 
   /identities/{identityId}:
     parameters:

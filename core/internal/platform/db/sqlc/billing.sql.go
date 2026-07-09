@@ -14,6 +14,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const generateInvoicesForPeriod = `-- name: GenerateInvoicesForPeriod :exec
+INSERT INTO console.invoices (
+	integrator_id, billing_record_id, period, amount_kobo, status
+)
+SELECT 
+	integrator_id, id, console.billing_records.period, amount_due_kobo, 'open'
+FROM console.billing_records
+WHERE console.billing_records.period = $1 AND console.billing_records.environment = 'production' AND amount_due_kobo > 0
+ON CONFLICT DO NOTHING
+`
+
+func (q *Queries) GenerateInvoicesForPeriod(ctx context.Context, period string) error {
+	_, err := q.db.Exec(ctx, generateInvoicesForPeriod, period)
+	return err
+}
+
 const getBillingRecords = `-- name: GetBillingRecords :many
 SELECT id, integrator_id, environment, period, accounts_provisioned, transactions_processed, webhook_deliveries, amount_due_kobo, adjustment_kobo, adjustment_reason, synced_at FROM console.billing_records
 WHERE integrator_id = $1
@@ -92,7 +108,7 @@ type GetIdentityByVirtualAccountIDRow struct {
 	Metadata              json.RawMessage `json:"metadata"`
 	CreatedAt             time.Time       `json:"created_at"`
 	UpdatedAt             time.Time       `json:"updated_at"`
-	CredentialEnvironment interface{}     `json:"credential_environment"`
+	CredentialEnvironment string          `json:"credential_environment"`
 }
 
 func (q *Queries) GetIdentityByVirtualAccountID(ctx context.Context, id uuid.UUID) (GetIdentityByVirtualAccountIDRow, error) {
@@ -158,10 +174,10 @@ ORDER BY occurred_at DESC
 `
 
 type GetIntegratorUsageEventsParams struct {
-	IntegratorID uuid.UUID   `json:"integrator_id"`
-	Environment  interface{} `json:"environment"`
-	OccurredAt   time.Time   `json:"occurred_at"`
-	OccurredAt_2 time.Time   `json:"occurred_at_2"`
+	IntegratorID uuid.UUID `json:"integrator_id"`
+	Environment  string    `json:"environment"`
+	OccurredAt   time.Time `json:"occurred_at"`
+	OccurredAt_2 time.Time `json:"occurred_at_2"`
 }
 
 func (q *Queries) GetIntegratorUsageEvents(ctx context.Context, arg GetIntegratorUsageEventsParams) ([]ConsoleUsageEvent, error) {
@@ -332,11 +348,11 @@ INSERT INTO console.usage_events (
 `
 
 type InsertUsageEventParams struct {
-	IntegratorID uuid.UUID   `json:"integrator_id"`
-	Environment  interface{} `json:"environment"`
-	EventType    string      `json:"event_type"`
-	ReferenceID  string      `json:"reference_id"`
-	AmountKobo   int64       `json:"amount_kobo"`
+	IntegratorID uuid.UUID `json:"integrator_id"`
+	Environment  string    `json:"environment"`
+	EventType    string    `json:"event_type"`
+	ReferenceID  string    `json:"reference_id"`
+	AmountKobo   int64     `json:"amount_kobo"`
 }
 
 func (q *Queries) InsertUsageEvent(ctx context.Context, arg InsertUsageEventParams) error {
@@ -347,6 +363,44 @@ func (q *Queries) InsertUsageEvent(ctx context.Context, arg InsertUsageEventPara
 		arg.ReferenceID,
 		arg.AmountKobo,
 	)
+	return err
+}
+
+const rollupUsageEvents = `-- name: RollupUsageEvents :exec
+INSERT INTO console.billing_records (
+	integrator_id, environment, period,
+	accounts_provisioned, transactions_processed, webhook_deliveries, amount_due_kobo
+)
+SELECT 
+	integrator_id, environment, $1 as period,
+	COUNT(CASE WHEN event_type = 'account_provisioned' THEN 1 END) as accounts_provisioned,
+	COUNT(CASE WHEN event_type = 'transaction_processed' THEN 1 END) as transactions_processed,
+	COUNT(CASE WHEN event_type = 'webhook_delivery' THEN 1 END) as webhook_deliveries,
+	SUM(amount_kobo) as amount_due_kobo
+FROM console.usage_events
+WHERE to_char(occurred_at, 'YYYY-MM') = $1 AND environment = 'production'
+GROUP BY integrator_id, environment
+ON CONFLICT (integrator_id, period, environment) DO UPDATE SET
+	accounts_provisioned = EXCLUDED.accounts_provisioned,
+	transactions_processed = EXCLUDED.transactions_processed,
+	webhook_deliveries = EXCLUDED.webhook_deliveries,
+	amount_due_kobo = EXCLUDED.amount_due_kobo,
+	synced_at = now()
+`
+
+func (q *Queries) RollupUsageEvents(ctx context.Context, period string) error {
+	_, err := q.db.Exec(ctx, rollupUsageEvents, period)
+	return err
+}
+
+const suspendIntegrator = `-- name: SuspendIntegrator :exec
+UPDATE public.api_integrators
+SET status = 'suspended'
+WHERE id = $1
+`
+
+func (q *Queries) SuspendIntegrator(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, suspendIntegrator, id)
 	return err
 }
 
@@ -408,13 +462,13 @@ INSERT INTO console.billing_records (
 `
 
 type UpsertBillingRecordParams struct {
-	IntegratorID          uuid.UUID   `json:"integrator_id"`
-	Environment           interface{} `json:"environment"`
-	Period                string      `json:"period"`
-	AccountsProvisioned   int64       `json:"accounts_provisioned"`
-	TransactionsProcessed int64       `json:"transactions_processed"`
-	WebhookDeliveries     int64       `json:"webhook_deliveries"`
-	AmountDueKobo         int64       `json:"amount_due_kobo"`
+	IntegratorID          uuid.UUID `json:"integrator_id"`
+	Environment           string    `json:"environment"`
+	Period                string    `json:"period"`
+	AccountsProvisioned   int64     `json:"accounts_provisioned"`
+	TransactionsProcessed int64     `json:"transactions_processed"`
+	WebhookDeliveries     int64     `json:"webhook_deliveries"`
+	AmountDueKobo         int64     `json:"amount_due_kobo"`
 }
 
 func (q *Queries) UpsertBillingRecord(ctx context.Context, arg UpsertBillingRecordParams) error {

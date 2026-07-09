@@ -21,7 +21,7 @@ RETURNING id, integrator_id, environment, key_id, secret_hash, label, created_at
 type CreateApiCredentialParams struct {
 	ID           uuid.UUID   `json:"id"`
 	IntegratorID uuid.UUID   `json:"integrator_id"`
-	Environment  interface{} `json:"environment"`
+	Environment  string      `json:"environment"`
 	KeyID        string      `json:"key_id"`
 	SecretHash   string      `json:"secret_hash"`
 	CreatedBy    pgtype.UUID `json:"created_by"`
