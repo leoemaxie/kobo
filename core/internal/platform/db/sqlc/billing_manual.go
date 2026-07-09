@@ -58,12 +58,12 @@ func (q *Queries) GetIdentityByVirtualAccountID(ctx context.Context, id uuid.UUI
 }
 
 type PaymentMethod struct {
-	ID             uuid.UUID `json:"id"`
-	IntegratorID   uuid.UUID `json:"integrator_id"`
-	NombaTokenKey  string    `json:"nomba_token_key"`
-	CardLast4      string    `json:"card_last4"`
-	CardBrand      string    `json:"card_brand"`
-	IsDefault      bool      `json:"is_default"`
+	ID            uuid.UUID `json:"id"`
+	IntegratorID  uuid.UUID `json:"integrator_id"`
+	NombaTokenKey string    `json:"nomba_token_key"`
+	CardLast4     string    `json:"card_last4"`
+	CardBrand     string    `json:"card_brand"`
+	IsDefault     bool      `json:"is_default"`
 }
 
 func (q *Queries) GetDefaultPaymentMethod(ctx context.Context, integratorID uuid.UUID) (PaymentMethod, error) {
@@ -96,8 +96,8 @@ func (q *Queries) UpdateInvoiceStatus(ctx context.Context, arg UpdateInvoiceStat
 }
 
 func (q *Queries) SuspendIntegrator(ctx context.Context, integratorID uuid.UUID) error {
-    // Stub
-    return nil
+	// Stub
+	return nil
 }
 
 func (q *Queries) GetIntegratorWalletBalance(ctx context.Context, id uuid.UUID) (int64, error) {
@@ -106,8 +106,8 @@ func (q *Queries) GetIntegratorWalletBalance(ctx context.Context, id uuid.UUID) 
 }
 
 type UpdateIntegratorWalletBalanceParams struct {
-	ID                  uuid.UUID `json:"id"`
-	WalletBalanceKobo   int64     `json:"wallet_balance_kobo"`
+	ID                uuid.UUID `json:"id"`
+	WalletBalanceKobo int64     `json:"wallet_balance_kobo"`
 }
 
 func (q *Queries) UpdateIntegratorWalletBalance(ctx context.Context, arg UpdateIntegratorWalletBalanceParams) error {

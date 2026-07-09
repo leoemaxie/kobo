@@ -59,12 +59,12 @@ func (h *AdminBillingHandler) CreateCheckout(w http.ResponseWriter, r *http.Requ
 
 	checkoutReq := nomba.CheckoutOrderRequest{
 		Order: nomba.OrderInfo{
-			OrderReference:        orderRef,
-			Amount:                amount,
-			Currency:              "NGN",
-			CustomerEmail:         req.Email,
-			CustomerId:            req.IntegratorID,
-			CallbackUrl:           req.CallbackUrl,
+			OrderReference: orderRef,
+			Amount:         amount,
+			Currency:       "NGN",
+			CustomerEmail:  req.Email,
+			CustomerId:     req.IntegratorID,
+			CallbackUrl:    req.CallbackUrl,
 		},
 		TokenizeCard: tokenizeCard,
 	}

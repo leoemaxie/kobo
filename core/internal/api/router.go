@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httplog/v3"
 	"github.com/leoemaxie/kobo"
 	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/handlers"
@@ -13,7 +14,6 @@ import (
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 	"github.com/leoemaxie/kobo/internal/reconciliation"
 	"gopkg.in/yaml.v3"
-	"github.com/go-chi/httplog/v3"
 	"log/slog"
 )
 

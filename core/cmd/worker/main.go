@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"github.com/leoemaxie/kobo/internal/billing"
 	"github.com/leoemaxie/kobo/internal/nomba"
 	"github.com/leoemaxie/kobo/internal/platform/config"
@@ -10,6 +9,7 @@ import (
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 	"github.com/leoemaxie/kobo/internal/platform/telemetry"
 	"github.com/leoemaxie/kobo/internal/reconciliation"
+	"log"
 )
 
 func main() {
@@ -47,11 +47,11 @@ func main() {
 	if err := sweeper.RunSweep(ctx); err != nil {
 		log.Printf("Error running sweep: %v", err)
 	}
-	
+
 	if err := closureSweeper.Run(ctx); err != nil {
 		log.Printf("Error running closure sweep: %v", err)
 	}
-	
+
 	if err := invoiceJob.Run(ctx); err != nil {
 		log.Printf("Error running invoice job: %v", err)
 	}

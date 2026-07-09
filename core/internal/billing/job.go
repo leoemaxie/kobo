@@ -44,15 +44,15 @@ func (j *InvoiceJob) Run(ctx context.Context) error {
 			if deduction >= inv.AmountKobo {
 				deduction = inv.AmountKobo
 			}
-			
+
 			// Deduct from wallet
 			j.q.UpdateIntegratorWalletBalance(ctx, sqlc.UpdateIntegratorWalletBalanceParams{
-				ID: inv.IntegratorID,
+				ID:                inv.IntegratorID,
 				WalletBalanceKobo: -deduction, // Negative to subtract
 			})
-			
+
 			inv.AmountKobo -= deduction
-			
+
 			if inv.AmountKobo <= 0 {
 				log.Printf("invoice %s fully paid via wallet balance", inv.ID)
 				j.q.UpdateInvoiceStatus(ctx, sqlc.UpdateInvoiceStatusParams{
@@ -72,9 +72,9 @@ func (j *InvoiceJob) Run(ctx context.Context) error {
 		}
 
 		resp, err := j.nombaClient.ChargeToken(ctx, nomba.ChargeTokenRequest{
-			TokenKey:      pm.NombaTokenKey,
-			Amount:        "100.00", // Would be derived from inv.AmountKobo in a real implementation
-			Currency:      "NGN",
+			TokenKey:       pm.NombaTokenKey,
+			Amount:         "100.00", // Would be derived from inv.AmountKobo in a real implementation
+			Currency:       "NGN",
 			OrderReference: "inv_" + inv.ID.String(),
 		})
 

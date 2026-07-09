@@ -55,14 +55,14 @@ func (m *mockIdempotencyRepo) CheckOrSetIdempotency(ctx context.Context, referen
 }
 
 func TestProcessWebhook_IgnoreNonPaymentSuccess(t *testing.T) {
-	eng := NewEngine(nil, nil)
+	eng := NewEngine(nil, nil, nil)
 	payload := &nomba.WebhookPayload{EventType: "some_other_event"}
 	err := eng.ProcessWebhook(context.Background(), payload)
 	assert.NoError(t, err)
 }
 
 func TestProcessWebhook_IgnoreNonVirtual(t *testing.T) {
-	eng := NewEngine(nil, nil)
+	eng := NewEngine(nil, nil, nil)
 	payload := &nomba.WebhookPayload{EventType: "payment_success"}
 	payload.Data.Transaction.AliasAccountType = "CARD"
 	err := eng.ProcessWebhook(context.Background(), payload)
@@ -75,7 +75,7 @@ func TestProcessWebhook_AccountNotFound(t *testing.T) {
 			return sqlc.VirtualAccount{}, errors.New("not found")
 		},
 	}
-	eng := NewEngine(mq, nil)
+	eng := NewEngine(mq, nil, nil)
 
 	payload := &nomba.WebhookPayload{EventType: "payment_success"}
 	payload.Data.Transaction.AliasAccountType = "VIRTUAL"
@@ -114,7 +114,7 @@ func TestProcessWebhook_Success(t *testing.T) {
 		},
 	}
 
-	eng := NewEngine(mq, mIdem)
+	eng := NewEngine(mq, mIdem, nil)
 
 	payload := &nomba.WebhookPayload{EventType: "payment_success"}
 	payload.Data.Transaction.AliasAccountType = "VIRTUAL"

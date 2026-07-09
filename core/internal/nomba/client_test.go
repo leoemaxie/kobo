@@ -40,7 +40,7 @@ func TestCreateVirtualAccount(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	client := NewClient(server.URL, "client-id", "client-secret", "account-id", server.Client())
+	client := NewClient(server.URL, "client-id", "client-secret", "account-id", "", server.Client())
 
 	resp, err := client.CreateVirtualAccount(context.Background(), "ref-123", "Test User", "", "tier_1")
 	assert.NoError(t, err)
