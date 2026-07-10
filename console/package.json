@@ -1,39 +1,41 @@
 {
-	"name": "kobo-console",
-	"private": true,
-	"description": "Kobo Console - for Kobo Product Team",
-	"version": "0.0.1",
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"seed:superadmin": "node scripts/seed-superadmin.js",
-		"db:studio": "drizzle-kit studio"
-	},
-	"devDependencies": {
-		"@sveltejs/adapter-auto": "^7.0.1",
-		"@sveltejs/kit": "^2.63.0",
-		"@sveltejs/vite-plugin-svelte": "^7.1.2",
-		"@tailwindcss/vite": "^4.3.2",
-		"@types/node": "^26.1.0",
-		"argon2": "^0.44.0",
-		"drizzle-kit": "^0.31.10",
-		"drizzle-orm": "^0.45.2",
-		"postcss": "^8.5.16",
-		"postgres": "^3.4.9",
-		"svelte": "^5.56.1",
-		"svelte-check": "^4.6.0",
-		"tailwindcss": "^4.3.2",
-		"typescript": "^6.0.3",
-		"vite": "^8.0.16",
-		"vitest": "^4.1.9"
-	},
-	"dependencies": {
-		"@lucide/svelte": "^1.23.0",
-		"@sveltejs/adapter-vercel": "^6.3.4"
-	}
+  "name": "kobo-console",
+  "private": true,
+  "description": "Kobo Console - for Kobo Product Team",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "seed:superadmin": "node scripts/seed-superadmin.js",
+    "db:studio": "drizzle-kit studio"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^7.0.1",
+    "@sveltejs/kit": "^2.63.0",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tailwindcss/vite": "^4.3.2",
+    "@types/node": "^26.1.0",
+    "argon2": "^0.44.0",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2",
+    "postcss": "^8.5.16",
+    "postgres": "^3.4.9",
+    "prettier": "^3.9.5",
+    "prettier-plugin-svelte": "^4.1.1",
+    "svelte": "^5.56.1",
+    "svelte-check": "^4.6.0",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.9"
+  },
+  "dependencies": {
+    "@lucide/svelte": "^1.23.0",
+    "@sveltejs/adapter-vercel": "^6.3.4"
+  }
 }

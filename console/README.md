@@ -13,7 +13,7 @@ This application is structurally independent of the Kobo Core Go API and has its
 - **Authentication**: Custom session-based auth (httpOnly cookies) using Argon2 for password hashing
 - **Deployment**: Vercel / Fly.io
 
-*For a detailed architectural breakdown, see [CONSOLE_ARCHITECTURE](docs/CONSOLE_ARCHITECTURE.md).*
+_For a detailed architectural breakdown, see [CONSOLE_ARCHITECTURE](docs/CONSOLE_ARCHITECTURE.md)._
 
 ## Getting Started
 
@@ -26,16 +26,19 @@ This application is structurally independent of the Kobo Core Go API and has its
 ### Installation & Running
 
 1. **Install dependencies**:
+
    ```bash
    pnpm install
    ```
 
 2. **Configure environment**:
    Copy `.env.example` to `.env` and configure your credentials:
+
    ```bash
    cp .env.example .env
    ```
-   *(Ensure `DATABASE_URL` points to your Postgres instance and `UNSEND_API_KEY` is provided for emails).*
+
+   _(Ensure `DATABASE_URL` points to your Postgres instance and `UNSEND_API_KEY` is provided for emails)._
 
 3. **Start the development server**:
    ```bash
@@ -45,7 +48,7 @@ This application is structurally independent of the Kobo Core Go API and has its
 
 ### Database Setup & Drizzle ORM
 
-This project uses [Drizzle ORM](https://orm.drizzle.team/) purely as a database client to safely read and write data. 
+This project uses [Drizzle ORM](https://orm.drizzle.team/) purely as a database client to safely read and write data.
 
 **Architectural Boundary**: The Console application **does not** own or manage the database schema. The Go `core` repository is the single source of truth for the database.
 You should **never** run `drizzle-kit push` or `drizzle-kit generate` from this directory. Doing so will attempt to delete core tables and cause data loss.

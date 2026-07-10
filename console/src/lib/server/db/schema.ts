@@ -9,203 +9,294 @@ import {
   jsonb,
   uniqueIndex,
   index,
-} from 'drizzle-orm/pg-core';
+} from "drizzle-orm/pg-core";
 
-export const consoleSchema = pgSchema('console');
+export const consoleSchema = pgSchema("console");
 
-export const webhookStatusEnum = consoleSchema.enum('webhook_status', ['active', 'disabled']);
-export const environmentEnum = consoleSchema.enum('environment', ['sandbox', 'production']);
-export const integratorStatusEnum = consoleSchema.enum('integrator_status', [
-  'active',
-  'suspended',
+export const webhookStatusEnum = consoleSchema.enum("webhook_status", [
+  "active",
+  "disabled",
+]);
+export const environmentEnum = consoleSchema.enum("environment", [
+  "sandbox",
+  "production",
+]);
+export const integratorStatusEnum = consoleSchema.enum("integrator_status", [
+  "active",
+  "suspended",
 ]);
 
-export const apiIntegrators = pgTable('api_integrators', {
-  id: uuid('id').primaryKey(),
-  name: text('name').notNull(),
-  plan: text('plan').notNull().default('pay_as_you_go'),
-  status: integratorStatusEnum('status').notNull().default('active'),
-  productionAccessGranted: boolean('production_access_granted').notNull().default(false),
-  productionAccessGrantedAt: timestamp('production_access_granted_at', { withTimezone: true }),
-  productionAccessGrantedBy: uuid('production_access_granted_by'),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+export const apiIntegrators = pgTable("api_integrators", {
+  id: uuid("id").primaryKey(),
+  name: text("name").notNull(),
+  plan: text("plan").notNull().default("pay_as_you_go"),
+  status: integratorStatusEnum("status").notNull().default("active"),
+  productionAccessGranted: boolean("production_access_granted")
+    .notNull()
+    .default(false),
+  productionAccessGrantedAt: timestamp("production_access_granted_at", {
+    withTimezone: true,
+  }),
+  productionAccessGrantedBy: uuid("production_access_granted_by"),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export const apiCredentials = pgTable(
-  'api_credentials',
+  "api_credentials",
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
-    environment: environmentEnum('environment').notNull(),
-    keyId: text('key_id').notNull().unique(),
-    secretHash: text('secret_hash').notNull(),
-    label: text('label'),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    createdBy: uuid('created_by'),
-    rotatedAt: timestamp('rotated_at', { withTimezone: true }),
-    revokedAt: timestamp('revoked_at', { withTimezone: true }),
-    revokedBy: uuid('revoked_by'),
-    revokedReason: text('revoked_reason'),
-    allowedIps: text('allowed_ips').array().notNull().default([]),
-    scopes: text('scopes').array().notNull().default([]),
+    id: uuid("id").primaryKey().defaultRandom(),
+    integratorId: uuid("integrator_id")
+      .notNull()
+      .references(() => apiIntegrators.id),
+    environment: environmentEnum("environment").notNull(),
+    keyId: text("key_id").notNull().unique(),
+    secretHash: text("secret_hash").notNull(),
+    label: text("label"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    createdBy: uuid("created_by"),
+    rotatedAt: timestamp("rotated_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    revokedBy: uuid("revoked_by"),
+    revokedReason: text("revoked_reason"),
+    allowedIps: text("allowed_ips").array().notNull().default([]),
+    scopes: text("scopes").array().notNull().default([]),
   },
   (table) => [
-    uniqueIndex('idx_api_credentials_key_id').on(table.keyId),
-    index('idx_api_credentials_integrator_env').on(
+    uniqueIndex("idx_api_credentials_key_id").on(table.keyId),
+    index("idx_api_credentials_integrator_env").on(
       table.integratorId,
-      table.environment
+      table.environment,
     ),
-  ]
+  ],
 );
 
-export const userRoleEnum = consoleSchema.enum('user_role', ['owner', 'member', 'superadmin']);
+export const userRoleEnum = consoleSchema.enum("user_role", [
+  "owner",
+  "member",
+  "superadmin",
+]);
 
 export const users = consoleSchema.table(
-  'users',
+  "users",
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    integratorId: uuid('integrator_id').references(() => apiIntegrators.id),
-    email: text('email').notNull().unique(),
-    passwordHash: text('password_hash').notNull(),
-    role: userRoleEnum('role').notNull().default('member'),
-    emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true }),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    id: uuid("id").primaryKey().defaultRandom(),
+    integratorId: uuid("integrator_id").references(() => apiIntegrators.id),
+    email: text("email").notNull().unique(),
+    passwordHash: text("password_hash").notNull(),
+    role: userRoleEnum("role").notNull().default("member"),
+    emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
-  (table) => [
-    uniqueIndex('idx_users_email').on(table.email),
-  ]
+  (table) => [uniqueIndex("idx_users_email").on(table.email)],
 );
 
 export const sessions = consoleSchema.table(
-  'sessions',
+  "sessions",
   {
-    id: text('id').primaryKey(),
-    userId: uuid('user_id').notNull().references(() => users.id),
-    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    id: text("id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
   },
-  (table) => [
-    index('idx_sessions_user').on(table.userId),
-  ]
+  (table) => [index("idx_sessions_user").on(table.userId)],
 );
 
-export const emailVerificationTokens = consoleSchema.table('email_verification_tokens', {
-  id: text('id').primaryKey(),
-  userId: uuid('user_id').notNull().references(() => users.id),
-  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
-  usedAt: timestamp('used_at', { withTimezone: true }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const emailVerificationTokens = consoleSchema.table(
+  "email_verification_tokens",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+);
 
-export const passwordResetTokens = consoleSchema.table('password_reset_tokens', {
-  id: text('id').primaryKey(),
-  userId: uuid('user_id').notNull().references(() => users.id),
-  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
-  usedAt: timestamp('used_at', { withTimezone: true }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+export const passwordResetTokens = consoleSchema.table(
+  "password_reset_tokens",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+);
 
-export const invitations = consoleSchema.table('invitations', {
-  id: text('id').primaryKey(),
-  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
-  invitedBy: uuid('invited_by').notNull().references(() => users.id),
-  email: text('email').notNull(),
-  role: userRoleEnum('role').notNull().default('member'),
-  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
-  acceptedAt: timestamp('accepted_at', { withTimezone: true }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+export const invitations = consoleSchema.table("invitations", {
+  id: text("id").primaryKey(),
+  integratorId: uuid("integrator_id")
+    .notNull()
+    .references(() => apiIntegrators.id),
+  invitedBy: uuid("invited_by")
+    .notNull()
+    .references(() => users.id),
+  email: text("email").notNull(),
+  role: userRoleEnum("role").notNull().default("member"),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export const billingRecords = consoleSchema.table(
-  'billing_records',
+  "billing_records",
   {
-    id: uuid('id').primaryKey().defaultRandom(),
-    integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
-    environment: environmentEnum('environment').notNull(),
-    period: text('period').notNull(),
-    accountsProvisioned: bigint('accounts_provisioned', { mode: 'number' }).notNull().default(0),
-    transactionsProcessed: bigint('transactions_processed', { mode: 'number' }).notNull().default(0),
-    webhookDeliveries: bigint('webhook_deliveries', { mode: 'number' }).notNull().default(0),
-    amountDueKobo: bigint('amount_due_kobo', { mode: 'number' }).notNull().default(0),
-    adjustmentKobo: bigint('adjustment_kobo', { mode: 'number' }).notNull().default(0),
-    adjustmentReason: text('adjustment_reason'),
-    syncedAt: timestamp('synced_at', { withTimezone: true }).notNull().defaultNow(),
+    id: uuid("id").primaryKey().defaultRandom(),
+    integratorId: uuid("integrator_id")
+      .notNull()
+      .references(() => apiIntegrators.id),
+    environment: environmentEnum("environment").notNull(),
+    period: text("period").notNull(),
+    accountsProvisioned: bigint("accounts_provisioned", { mode: "number" })
+      .notNull()
+      .default(0),
+    transactionsProcessed: bigint("transactions_processed", { mode: "number" })
+      .notNull()
+      .default(0),
+    webhookDeliveries: bigint("webhook_deliveries", { mode: "number" })
+      .notNull()
+      .default(0),
+    amountDueKobo: bigint("amount_due_kobo", { mode: "number" })
+      .notNull()
+      .default(0),
+    adjustmentKobo: bigint("adjustment_kobo", { mode: "number" })
+      .notNull()
+      .default(0),
+    adjustmentReason: text("adjustment_reason"),
+    syncedAt: timestamp("synced_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (table) => [
-    uniqueIndex('idx_billing_integrator_period_env').on(
+    uniqueIndex("idx_billing_integrator_period_env").on(
       table.integratorId,
       table.period,
-      table.environment
+      table.environment,
     ),
-  ]
+  ],
 );
 
-export const usageEvents = consoleSchema.table('usage_events', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
-  environment: environmentEnum('environment').notNull(),
-  eventType: text('event_type').notNull(),
-  referenceId: text('reference_id').notNull(),
-  amountKobo: bigint('amount_kobo', { mode: 'number' }).notNull(),
-  occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull().defaultNow(),
+export const usageEvents = consoleSchema.table("usage_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  integratorId: uuid("integrator_id")
+    .notNull()
+    .references(() => apiIntegrators.id),
+  environment: environmentEnum("environment").notNull(),
+  eventType: text("event_type").notNull(),
+  referenceId: text("reference_id").notNull(),
+  amountKobo: bigint("amount_kobo", { mode: "number" }).notNull(),
+  occurredAt: timestamp("occurred_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
-export const paymentMethods = consoleSchema.table('payment_methods', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
-  nombaTokenKey: text('nomba_token_key').notNull(),
-  cardLast4: text('card_last4').notNull(),
-  cardBrand: text('card_brand').notNull(),
-  isDefault: boolean('is_default').notNull().default(false),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+export const paymentMethods = consoleSchema.table("payment_methods", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  integratorId: uuid("integrator_id")
+    .notNull()
+    .references(() => apiIntegrators.id),
+  nombaTokenKey: text("nomba_token_key").notNull(),
+  cardLast4: text("card_last4").notNull(),
+  cardBrand: text("card_brand").notNull(),
+  isDefault: boolean("is_default").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
-export const invoiceStatusEnum = consoleSchema.enum('invoice_status', ['open', 'paid', 'failed', 'void']);
-
-export const invoices = consoleSchema.table('invoices', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
-  billingRecordId: uuid('billing_record_id').notNull().references(() => billingRecords.id),
-  period: text('period').notNull(),
-  amountKobo: bigint('amount_kobo', { mode: 'number' }).notNull(),
-  status: invoiceStatusEnum('status').notNull().default('open'),
-  nombaOrderRef: text('nomba_order_ref'),
-  paidAt: timestamp('paid_at', { withTimezone: true }),
-  retryCount: bigint('retry_count', { mode: 'number' }).notNull().default(0),
-  nextRetryAt: timestamp('next_retry_at', { withTimezone: true }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const webhooks = consoleSchema.table('webhooks', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  integratorId: uuid('integrator_id').notNull().references(() => apiIntegrators.id),
-  environment: environmentEnum('environment').notNull(),
-  url: text('url').notNull(),
-  secret: text('secret').notNull(),
-  status: webhookStatusEnum('status').notNull().default('active'),
-  events: jsonb('events').notNull().default([]),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const adminActionEnum = consoleSchema.enum('admin_action', [
-  'integrator_suspended',
-  'integrator_reinstated',
-  'production_access_granted',
-  'credential_force_revoked',
-  'billing_adjustment_applied',
-  'user_session_revoked',
+export const invoiceStatusEnum = consoleSchema.enum("invoice_status", [
+  "open",
+  "paid",
+  "failed",
+  "void",
 ]);
 
-export const adminAuditLog = consoleSchema.table('admin_audit_log', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  actorUserId: uuid('actor_user_id').notNull().references(() => users.id),
-  action: adminActionEnum('action').notNull(),
-  targetIntegratorId: uuid('target_integrator_id').references(() => apiIntegrators.id),
-  targetUserId: uuid('target_user_id').references(() => users.id),
-  targetCredentialId: uuid('target_credential_id').references(() => apiCredentials.id),
-  detail: jsonb('detail').notNull().default({}),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+export const invoices = consoleSchema.table("invoices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  integratorId: uuid("integrator_id")
+    .notNull()
+    .references(() => apiIntegrators.id),
+  billingRecordId: uuid("billing_record_id")
+    .notNull()
+    .references(() => billingRecords.id),
+  period: text("period").notNull(),
+  amountKobo: bigint("amount_kobo", { mode: "number" }).notNull(),
+  status: invoiceStatusEnum("status").notNull().default("open"),
+  nombaOrderRef: text("nomba_order_ref"),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
+  retryCount: bigint("retry_count", { mode: "number" }).notNull().default(0),
+  nextRetryAt: timestamp("next_retry_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const webhooks = consoleSchema.table("webhooks", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  integratorId: uuid("integrator_id")
+    .notNull()
+    .references(() => apiIntegrators.id),
+  environment: environmentEnum("environment").notNull(),
+  url: text("url").notNull(),
+  secret: text("secret").notNull(),
+  status: webhookStatusEnum("status").notNull().default("active"),
+  events: jsonb("events").notNull().default([]),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const adminActionEnum = consoleSchema.enum("admin_action", [
+  "integrator_suspended",
+  "integrator_reinstated",
+  "production_access_granted",
+  "credential_force_revoked",
+  "billing_adjustment_applied",
+  "user_session_revoked",
+]);
+
+export const adminAuditLog = consoleSchema.table("admin_audit_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  actorUserId: uuid("actor_user_id")
+    .notNull()
+    .references(() => users.id),
+  action: adminActionEnum("action").notNull(),
+  targetIntegratorId: uuid("target_integrator_id").references(
+    () => apiIntegrators.id,
+  ),
+  targetUserId: uuid("target_user_id").references(() => users.id),
+  targetCredentialId: uuid("target_credential_id").references(
+    () => apiCredentials.id,
+  ),
+  detail: jsonb("detail").notNull().default({}),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });

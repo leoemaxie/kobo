@@ -1,114 +1,134 @@
-import type { PageServerLoad, Actions } from './$types';
-import { db } from '$lib/server/db';
-import { apiCredentials } from '$lib/server/db/schema';
-import { eq, desc } from 'drizzle-orm';
-import { redirect, fail } from '@sveltejs/kit';
-import { withCache } from '$lib/utils/cache';
+import type { PageServerLoad, Actions } from "./$types";
+import { db } from "$lib/server/db";
+import { apiCredentials } from "$lib/server/db/schema";
+import { eq, desc } from "drizzle-orm";
+import { redirect, fail } from "@sveltejs/kit";
+import { withCache } from "$lib/utils/cache";
 
 export const load: PageServerLoad = async ({ locals, setHeaders }) => {
-	withCache(setHeaders);
+  withCache(setHeaders);
 
-	const user = locals.user;
-	if (!user || !user.integratorId) {
-		throw redirect(302, '/auth/login');
-	}
+  const user = locals.user;
+  if (!user || !user.integratorId) {
+    throw redirect(302, "/auth/login");
+  }
 
-	const dbKeys = await db.query.apiCredentials.findMany({
-		where: eq(apiCredentials.integratorId, user.integratorId),
-		orderBy: [desc(apiCredentials.createdAt)]
-	});
+  const dbKeys = await db.query.apiCredentials.findMany({
+    where: eq(apiCredentials.integratorId, user.integratorId),
+    orderBy: [desc(apiCredentials.createdAt)],
+  });
 
-	const keys = dbKeys.map((k) => ({
-		name: k.label || 'Default Key',
-		id: k.keyId,
-		created: k.createdAt.toISOString().split('T')[0],
-		lastUsed: 'N/A',
-		environment: k.environment,
-		status: k.revokedAt ? 'revoked' : 'active'
-	}));
+  const keys = dbKeys.map((k) => ({
+    name: k.label || "Default Key",
+    id: k.keyId,
+    created: k.createdAt.toISOString().split("T")[0],
+    lastUsed: "N/A",
+    environment: k.environment,
+    status: k.revokedAt ? "revoked" : "active",
+  }));
 
-	return { keys };
+  return { keys };
 };
 
 export const actions: Actions = {
-	createKey: async ({ request, locals }) => {
-		const user = locals.user;
-		if (!user || !user.integratorId) return fail(403, { error: 'Unauthorized' });
+  createKey: async ({ request, locals }) => {
+    const user = locals.user;
+    if (!user || !user.integratorId)
+      return fail(403, { error: "Unauthorized" });
 
-		const data = await request.formData();
-		const label = data.get('label')?.toString() || 'New Key';
-		const env = data.get('environment')?.toString() as 'sandbox' | 'production' || 'sandbox';
-		const scopesStr = data.get('scopes')?.toString();
-		const ipsStr = data.get('ips')?.toString();
-		
-		const scopes = scopesStr ? scopesStr.split(',').map(s => s.trim()) : [];
-		const allowedIps = ipsStr ? ipsStr.split('\n').map(s => s.trim()).filter(Boolean) : [];
+    const data = await request.formData();
+    const label = data.get("label")?.toString() || "New Key";
+    const env =
+      (data.get("environment")?.toString() as "sandbox" | "production") ||
+      "sandbox";
+    const scopesStr = data.get("scopes")?.toString();
+    const ipsStr = data.get("ips")?.toString();
 
-		const { generateKeyPair } = await import('$lib/server/keys');
-		const { keyId, plainSecret, secretHash } = await generateKeyPair(env);
+    const scopes = scopesStr ? scopesStr.split(",").map((s) => s.trim()) : [];
+    const allowedIps = ipsStr
+      ? ipsStr
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
 
-		await db.insert(apiCredentials).values({
-			integratorId: user.integratorId,
-			environment: env,
-			keyId,
-			secretHash,
-			label,
-			createdBy: user.id,
-			scopes,
-			allowedIps
-		});
+    const { generateKeyPair } = await import("$lib/server/keys");
+    const { keyId, plainSecret, secretHash } = await generateKeyPair(env);
 
-		return { success: true, plainSecret };
-	},
+    await db.insert(apiCredentials).values({
+      integratorId: user.integratorId,
+      environment: env,
+      keyId,
+      secretHash,
+      label,
+      createdBy: user.id,
+      scopes,
+      allowedIps,
+    });
 
-	revokeKey: async ({ request, locals }) => {
-		const user = locals.user;
-		if (!user || !user.integratorId) return fail(403, { error: 'Unauthorized' });
+    return { success: true, plainSecret };
+  },
 
-		const data = await request.formData();
-		const keyId = data.get('keyId')?.toString();
-		if (!keyId) return fail(400, { error: 'Missing keyId' });
+  revokeKey: async ({ request, locals }) => {
+    const user = locals.user;
+    if (!user || !user.integratorId)
+      return fail(403, { error: "Unauthorized" });
 
-		await db.update(apiCredentials)
-			.set({ revokedAt: new Date(), revokedBy: user.id })
-			.where(eq(apiCredentials.keyId, keyId));
+    const data = await request.formData();
+    const keyId = data.get("keyId")?.toString();
+    if (!keyId) return fail(400, { error: "Missing keyId" });
 
-		return { success: true };
-	},
+    await db
+      .update(apiCredentials)
+      .set({ revokedAt: new Date(), revokedBy: user.id })
+      .where(eq(apiCredentials.keyId, keyId));
 
-	rollKey: async ({ request, locals }) => {
-		const user = locals.user;
-		if (!user || !user.integratorId) return fail(403, { error: 'Unauthorized' });
+    return { success: true };
+  },
 
-		const data = await request.formData();
-		const keyId = data.get('keyId')?.toString();
-		if (!keyId) return fail(400, { error: 'Missing keyId' });
+  rollKey: async ({ request, locals }) => {
+    const user = locals.user;
+    if (!user || !user.integratorId)
+      return fail(403, { error: "Unauthorized" });
 
-		const existing = await db.query.apiCredentials.findFirst({
-			where: eq(apiCredentials.keyId, keyId)
-		});
-		if (!existing) return fail(404, { error: 'Key not found' });
+    const data = await request.formData();
+    const keyId = data.get("keyId")?.toString();
+    if (!keyId) return fail(400, { error: "Missing keyId" });
 
-		const { generateKeyPair } = await import('$lib/server/keys');
-		const { keyId: newKeyId, plainSecret, secretHash } = await generateKeyPair(existing.environment);
+    const existing = await db.query.apiCredentials.findFirst({
+      where: eq(apiCredentials.keyId, keyId),
+    });
+    if (!existing) return fail(404, { error: "Key not found" });
 
-		await db.transaction(async (tx) => {
-			await tx.update(apiCredentials)
-				.set({ revokedAt: new Date(), revokedBy: user.id, revokedReason: 'rolled' })
-				.where(eq(apiCredentials.keyId, keyId));
+    const { generateKeyPair } = await import("$lib/server/keys");
+    const {
+      keyId: newKeyId,
+      plainSecret,
+      secretHash,
+    } = await generateKeyPair(existing.environment);
 
-			await tx.insert(apiCredentials).values({
-				integratorId: user.integratorId!,
-				environment: existing.environment,
-				keyId: newKeyId,
-				secretHash,
-				label: existing.label,
-				createdBy: user.id,
-				scopes: existing.scopes,
-				allowedIps: existing.allowedIps
-			});
-		});
+    await db.transaction(async (tx) => {
+      await tx
+        .update(apiCredentials)
+        .set({
+          revokedAt: new Date(),
+          revokedBy: user.id,
+          revokedReason: "rolled",
+        })
+        .where(eq(apiCredentials.keyId, keyId));
 
-		return { success: true, plainSecret };
-	}
+      await tx.insert(apiCredentials).values({
+        integratorId: user.integratorId!,
+        environment: existing.environment,
+        keyId: newKeyId,
+        secretHash,
+        label: existing.label,
+        createdBy: user.id,
+        scopes: existing.scopes,
+        allowedIps: existing.allowedIps,
+      });
+    });
+
+    return { success: true, plainSecret };
+  },
 };

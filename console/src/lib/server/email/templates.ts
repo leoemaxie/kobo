@@ -1,6 +1,9 @@
-export function verificationEmailTemplate(token: string, baseUrl: string = 'https://console.kobo.dev'): string {
-	const verifyUrl = `${baseUrl}/auth/verify-email?token=${token}`;
-	return `
+export function verificationEmailTemplate(
+  token: string,
+  baseUrl: string = "https://console.kobo.dev",
+): string {
+  const verifyUrl = `${baseUrl}/auth/verify-email?token=${token}`;
+  return `
 		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
 			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">
 				<div style="margin-bottom: 24px;">
@@ -21,8 +24,11 @@ export function verificationEmailTemplate(token: string, baseUrl: string = 'http
 	`;
 }
 
-export function keyRotationAlertTemplate(environment: string, keyId: string): string {
-	return `
+export function keyRotationAlertTemplate(
+  environment: string,
+  keyId: string,
+): string {
+  return `
 		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
 			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px;">
 				<div style="margin-bottom: 24px; text-align: center;">
@@ -45,8 +51,12 @@ export function keyRotationAlertTemplate(environment: string, keyId: string): st
 	`;
 }
 
-export function billingNoticeTemplate(period: string, amount: string, invoiceUrl: string = 'https://console.kobo.dev/dashboard/billing'): string {
-	return `
+export function billingNoticeTemplate(
+  period: string,
+  amount: string,
+  invoiceUrl: string = "https://console.kobo.dev/dashboard/billing",
+): string {
+  return `
 		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
 			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">
 				<div style="margin-bottom: 24px;">
@@ -68,9 +78,12 @@ export function billingNoticeTemplate(period: string, amount: string, invoiceUrl
 	`;
 }
 
-export function passwordResetTemplate(token: string, baseUrl: string = 'https://console.kobo.dev'): string {
-	const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
-	return `
+export function passwordResetTemplate(
+  token: string,
+  baseUrl: string = "https://console.kobo.dev",
+): string {
+  const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
+  return `
 		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
 			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">
 				<div style="margin-bottom: 24px;">
@@ -91,9 +104,14 @@ export function passwordResetTemplate(token: string, baseUrl: string = 'https://
 	`;
 }
 
-export function invitationEmailTemplate(role: string, workspaceName: string, token: string, baseUrl: string = 'https://console.kobo.dev'): string {
-	const inviteUrl = `${baseUrl}/auth/accept-invite?token=${token}`;
-	return `
+export function invitationEmailTemplate(
+  role: string,
+  workspaceName: string,
+  token: string,
+  baseUrl: string = "https://console.kobo.dev",
+): string {
+  const inviteUrl = `${baseUrl}/auth/accept-invite?token=${token}`;
+  return `
 		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
 			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px; text-align: center;">
 				<div style="margin-bottom: 24px;">
@@ -113,4 +131,3 @@ export function invitationEmailTemplate(role: string, workspaceName: string, tok
 		</div>
 	`;
 }
-

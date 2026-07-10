@@ -1,7 +1,7 @@
-import { db } from '$lib/server/db';
-import { sessions, users } from '$lib/server/db/schema';
-import { eq, and, gt } from 'drizzle-orm';
-import { generateToken, hashToken } from './token';
+import { db } from "$lib/server/db";
+import { sessions, users } from "$lib/server/db/schema";
+import { eq, and, gt } from "drizzle-orm";
+import { generateToken, hashToken } from "./token";
 
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
@@ -18,9 +18,7 @@ export async function validateSession(token: string) {
   const [sessionData] = await db
     .select()
     .from(sessions)
-    .where(
-      and(eq(sessions.id, sessionId), gt(sessions.expiresAt, new Date()))
-    )
+    .where(and(eq(sessions.id, sessionId), gt(sessions.expiresAt, new Date())))
     .innerJoin(users, eq(users.id, sessions.userId))
     .limit(1);
 

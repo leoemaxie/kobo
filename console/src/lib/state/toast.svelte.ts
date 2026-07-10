@@ -1,4 +1,4 @@
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = "success" | "error" | "info";
 
 export interface Toast {
   id: string;
@@ -12,7 +12,9 @@ let toasts = $state<Toast[]>([]);
 
 function add(type: ToastType, message: string, duration = 4000) {
   // Deduplicate: don't show the same message if it's already visible
-  const isDuplicate = toasts.some((t) => t.message === message && t.type === type);
+  const isDuplicate = toasts.some(
+    (t) => t.message === message && t.type === type,
+  );
   if (isDuplicate) return;
 
   const id = Math.random().toString(36).substring(2, 9);
@@ -38,13 +40,13 @@ export const toast = {
     return toasts;
   },
   success(message: string, duration = 4000) {
-    add('success', message, duration);
+    add("success", message, duration);
   },
   error(message: string, duration = 6000) {
-    add('error', message, duration);
+    add("error", message, duration);
   },
   info(message: string, duration = 4000) {
-    add('info', message, duration);
+    add("info", message, duration);
   },
   remove,
   clear,
