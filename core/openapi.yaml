@@ -89,7 +89,7 @@ paths:
         Creates an Identity record and synchronously provisions a Nomba virtual account
         against it. The response typically returns immediately with the identity in the ACTIVE
         state and the virtual account details populated. If the downstream provider is temporarily
-        unavailable, it may return in the PENDING or FAILED state, in which case integrators
+        unavailable, the identity creation is rolled back and an error is returned.
         can poll GET /identities/{identityId} or listen for the `identity.activated` webhook.
       requestBody:
         required: true
@@ -124,6 +124,15 @@ paths:
               example:
                 code: duplicate_external_reference
                 message: identity with external reference already exists
+        '502':
+          description: Downstream provider unavailable. Identity creation was rolled back.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: provisioning_failed
+                message: failed to create virtual account with provider
 
   /identities/{identityId}:
     parameters:
@@ -491,7 +500,6 @@ components:
         - limited
         - closing
         - closed
-        - failed
 
     Identity:
       type: object
@@ -513,10 +521,6 @@ components:
           type: object
           additionalProperties: true
           description: Arbitrary integrator-supplied key-value data, returned as-is.
-        failure_reason:
-          type: string
-          nullable: true
-          description: Populated only when state is "failed"; the underlying Nomba error code/message.
         created_at:
           type: string
           format: date-time

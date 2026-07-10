@@ -19,6 +19,7 @@ type Repository interface {
 	GetIdentityByID(ctx context.Context, arg sqlc.GetIdentityByIDParams) (sqlc.Identity, error)
 	UpdateIdentityState(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error)
 	InsertIdentityEvent(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error)
+	DeleteIdentityCascade(ctx context.Context, arg sqlc.DeleteIdentityCascadeParams) error
 }
 
 type sqlcRepository struct {
@@ -63,4 +64,8 @@ func (r *sqlcRepository) UpdateIdentityState(ctx context.Context, arg sqlc.Updat
 
 func (r *sqlcRepository) InsertIdentityEvent(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error) {
 	return r.q.InsertIdentityEvent(ctx, arg)
+}
+
+func (r *sqlcRepository) DeleteIdentityCascade(ctx context.Context, arg sqlc.DeleteIdentityCascadeParams) error {
+	return r.q.DeleteIdentityCascade(ctx, arg)
 }

@@ -16,7 +16,6 @@ func TestValidTransitions(t *testing.T) {
 	}{
 		// Valid transitions
 		{"Pending -> Active", StatePending, EventProvisionSuccess, StateActive, false},
-		{"Pending -> Failed", StatePending, EventProvisionFail, StateFailed, false},
 		{"Active -> Limited", StateActive, EventLimitExceeded, StateLimited, false},
 		{"Active -> Closing", StateActive, EventCloseInitiated, StateClosing, false},
 		{"Limited -> Active", StateLimited, EventLimitResolved, StateActive, false},

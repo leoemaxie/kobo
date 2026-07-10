@@ -50,6 +50,25 @@ func (q *Queries) CreateIdentity(ctx context.Context, arg CreateIdentityParams) 
 	return i, err
 }
 
+const deleteIdentityCascade = `-- name: DeleteIdentityCascade :exec
+WITH deleted_va AS (
+    DELETE FROM virtual_accounts WHERE identity_id = $1
+), deleted_events AS (
+    DELETE FROM identity_events WHERE identity_id = $1
+)
+DELETE FROM identities WHERE identities.id = $1 AND identities.integrator_id = $2
+`
+
+type DeleteIdentityCascadeParams struct {
+	ID           uuid.UUID `json:"id"`
+	IntegratorID uuid.UUID `json:"integrator_id"`
+}
+
+func (q *Queries) DeleteIdentityCascade(ctx context.Context, arg DeleteIdentityCascadeParams) error {
+	_, err := q.db.Exec(ctx, deleteIdentityCascade, arg.ID, arg.IntegratorID)
+	return err
+}
+
 const getIdentityByExternalReference = `-- name: GetIdentityByExternalReference :one
 SELECT id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at FROM identities
 WHERE integrator_id = $1 AND external_reference = $2

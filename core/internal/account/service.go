@@ -67,29 +67,6 @@ func (s *Service) Provision(ctx context.Context, identityID, integratorID uuid.U
 	resp, nombaErr := s.nombaClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "")
 
 	if nombaErr != nil {
-		// PENDING -> FAILED
-		failState, _ := ValidTransition(State(ident.State), EventProvisionFail)
-		errStr := nombaErr.Error()
-
-		var failReason pgtype.Text
-		failReason.String = errStr
-		failReason.Valid = true
-
-		_, _ = s.repo.UpdateIdentityState(ctx, sqlc.UpdateIdentityStateParams{
-			ID:            identityID,
-			IntegratorID:  integratorID,
-			State:         string(failState),
-			FailureReason: failReason,
-		})
-
-		_, _ = s.repo.InsertIdentityEvent(ctx, sqlc.InsertIdentityEventParams{
-			ID:            uuid.New(),
-			IdentityID:    identityID,
-			EventType:     "provisioning_failed",
-			PreviousState: pgtype.Text{String: ident.State, Valid: true},
-			NewState:      pgtype.Text{String: string(failState), Valid: true},
-			Detail:        []byte(fmt.Sprintf(`{"error": "%s"}`, errStr)),
-		})
 		return fmt.Errorf("nomba provisioning failed: %w", nombaErr)
 	}
 

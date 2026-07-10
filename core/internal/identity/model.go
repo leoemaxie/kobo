@@ -23,7 +23,6 @@ type Identity struct {
 	Metadata          json.RawMessage        `json:"metadata"`
 	State             string                 `json:"state"`
 	VirtualAccount    *VirtualAccountSummary `json:"virtual_account"`
-	FailureReason     *string                `json:"failure_reason,omitempty"`
 	CreatedAt         time.Time              `json:"created_at"`
 	UpdatedAt         time.Time              `json:"updated_at"`
 }

@@ -14,7 +14,6 @@ const (
 	StateLimited State = "limited"
 	StateClosing State = "closing"
 	StateClosed  State = "closed"
-	StateFailed  State = "failed"
 )
 
 type VirtualAccount struct {

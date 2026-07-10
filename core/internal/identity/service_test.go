@@ -15,9 +15,11 @@ type mockRepository struct {
 	CreateIdentityFunc                 func(ctx context.Context, arg sqlc.CreateIdentityParams) (sqlc.Identity, error)
 	GetIdentityByIDFunc                func(ctx context.Context, arg sqlc.GetIdentityByIDParams) (sqlc.Identity, error)
 	GetIdentityByExternalReferenceFunc func(ctx context.Context, arg sqlc.GetIdentityByExternalReferenceParams) (sqlc.Identity, error)
+	DeleteIdentityCascadeFunc          func(ctx context.Context, arg sqlc.DeleteIdentityCascadeParams) error
 	UpdateIdentityProfileFunc          func(ctx context.Context, arg sqlc.UpdateIdentityProfileParams) (sqlc.Identity, error)
 	UpdateIdentityStateFunc            func(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error)
 	ListIdentitiesByStateFunc          func(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error)
+	ListIdentitiesFunc                 func(ctx context.Context, arg sqlc.ListIdentitiesParams) ([]sqlc.Identity, error)
 	InsertIdentityEventFunc            func(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error)
 	ListIdentityEventsFunc                 func(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error)
 	GetActiveVirtualAccountByIdentityIDFunc func(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error)
@@ -36,7 +38,16 @@ func (m *mockRepository) GetIdentityByID(ctx context.Context, arg sqlc.GetIdenti
 	return sqlc.Identity{}, errors.New("unimplemented")
 }
 func (m *mockRepository) GetIdentityByExternalReference(ctx context.Context, arg sqlc.GetIdentityByExternalReferenceParams) (sqlc.Identity, error) {
+	if m.GetIdentityByExternalReferenceFunc != nil {
+		return m.GetIdentityByExternalReferenceFunc(ctx, arg)
+	}
 	return sqlc.Identity{}, errors.New("unimplemented")
+}
+func (m *mockRepository) DeleteIdentityCascade(ctx context.Context, arg sqlc.DeleteIdentityCascadeParams) error {
+	if m.DeleteIdentityCascadeFunc != nil {
+		return m.DeleteIdentityCascadeFunc(ctx, arg)
+	}
+	return errors.New("unimplemented")
 }
 func (m *mockRepository) UpdateIdentityProfile(ctx context.Context, arg sqlc.UpdateIdentityProfileParams) (sqlc.Identity, error) {
 	if m.UpdateIdentityProfileFunc != nil {
@@ -45,9 +56,21 @@ func (m *mockRepository) UpdateIdentityProfile(ctx context.Context, arg sqlc.Upd
 	return sqlc.Identity{}, errors.New("unimplemented")
 }
 func (m *mockRepository) UpdateIdentityState(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error) {
+	if m.UpdateIdentityStateFunc != nil {
+		return m.UpdateIdentityStateFunc(ctx, arg)
+	}
 	return sqlc.Identity{}, errors.New("unimplemented")
 }
 func (m *mockRepository) ListIdentitiesByState(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error) {
+	if m.ListIdentitiesByStateFunc != nil {
+		return m.ListIdentitiesByStateFunc(ctx, arg)
+	}
+	return nil, errors.New("unimplemented")
+}
+func (m *mockRepository) ListIdentities(ctx context.Context, arg sqlc.ListIdentitiesParams) ([]sqlc.Identity, error) {
+	if m.ListIdentitiesFunc != nil {
+		return m.ListIdentitiesFunc(ctx, arg)
+	}
 	return nil, errors.New("unimplemented")
 }
 func (m *mockRepository) InsertIdentityEvent(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error) {
@@ -57,6 +80,9 @@ func (m *mockRepository) InsertIdentityEvent(ctx context.Context, arg sqlc.Inser
 	return sqlc.IdentityEvent{}, nil // Default to no-op
 }
 func (m *mockRepository) ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error) {
+	if m.ListIdentityEventsFunc != nil {
+		return m.ListIdentityEventsFunc(ctx, identityID)
+	}
 	return nil, errors.New("unimplemented")
 }
 func (m *mockRepository) GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error) {

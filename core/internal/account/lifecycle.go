@@ -8,7 +8,6 @@ type Event string
 
 const (
 	EventProvisionSuccess Event = "provision_success"
-	EventProvisionFail    Event = "provision_fail"
 	EventLimitExceeded    Event = "limit_exceeded"
 	EventLimitResolved    Event = "limit_resolved"
 	EventCloseInitiated   Event = "close_initiated"
@@ -24,8 +23,6 @@ func ValidTransition(current State, event Event) (State, error) {
 		switch event {
 		case EventProvisionSuccess:
 			return StateActive, nil
-		case EventProvisionFail:
-			return StateFailed, nil
 		}
 	case StateActive:
 		switch event {

@@ -11,6 +11,7 @@ type Repository interface {
 	CreateIdentity(ctx context.Context, arg sqlc.CreateIdentityParams) (sqlc.Identity, error)
 	GetIdentityByID(ctx context.Context, arg sqlc.GetIdentityByIDParams) (sqlc.Identity, error)
 	GetIdentityByExternalReference(ctx context.Context, arg sqlc.GetIdentityByExternalReferenceParams) (sqlc.Identity, error)
+	DeleteIdentityCascade(ctx context.Context, arg sqlc.DeleteIdentityCascadeParams) error
 	UpdateIdentityProfile(ctx context.Context, arg sqlc.UpdateIdentityProfileParams) (sqlc.Identity, error)
 	UpdateIdentityState(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error)
 	ListIdentitiesByState(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error)
@@ -38,6 +39,10 @@ func (r *sqlcRepository) GetIdentityByID(ctx context.Context, arg sqlc.GetIdenti
 
 func (r *sqlcRepository) GetIdentityByExternalReference(ctx context.Context, arg sqlc.GetIdentityByExternalReferenceParams) (sqlc.Identity, error) {
 	return r.q.GetIdentityByExternalReference(ctx, arg)
+}
+
+func (r *sqlcRepository) DeleteIdentityCascade(ctx context.Context, arg sqlc.DeleteIdentityCascadeParams) error {
+	return r.q.DeleteIdentityCascade(ctx, arg)
 }
 
 func (r *sqlcRepository) UpdateIdentityProfile(ctx context.Context, arg sqlc.UpdateIdentityProfileParams) (sqlc.Identity, error) {

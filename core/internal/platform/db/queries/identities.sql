@@ -11,6 +11,14 @@ WHERE id = $1 AND integrator_id = $2;
 SELECT * FROM identities
 WHERE integrator_id = $1 AND external_reference = $2;
 
+-- name: DeleteIdentityCascade :exec
+WITH deleted_va AS (
+    DELETE FROM virtual_accounts WHERE identity_id = $1
+), deleted_events AS (
+    DELETE FROM identity_events WHERE identity_id = $1
+)
+DELETE FROM identities WHERE identities.id = $1 AND identities.integrator_id = $2;
+
 -- name: UpdateIdentityProfile :one
 -- Used for renames and metadata updates only. Never changes state or id.
 UPDATE identities

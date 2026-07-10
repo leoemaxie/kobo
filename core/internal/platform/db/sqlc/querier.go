@@ -35,6 +35,7 @@ type Querier interface {
 	// The WHERE clause ensures we never go negative: if balance < amount,
 	// zero rows are updated and the caller must roll back.
 	DeductIntegratorBalance(ctx context.Context, arg DeductIntegratorBalanceParams) (int64, error)
+	DeleteIdentityCascade(ctx context.Context, arg DeleteIdentityCascadeParams) error
 	GenerateInvoicesForPeriod(ctx context.Context, period string) error
 	// internal/platform/db/queries/payouts.sql
 	// SQLC queries for the payout system.

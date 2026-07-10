@@ -64,6 +64,13 @@ func (s *Service) Register(ctx context.Context, integratorID uuid.UUID, external
 	return ident, nil
 }
 
+func (s *Service) Delete(ctx context.Context, id, integratorID uuid.UUID) error {
+	return s.repo.DeleteIdentityCascade(ctx, sqlc.DeleteIdentityCascadeParams{
+		ID:           id,
+		IntegratorID: integratorID,
+	})
+}
+
 func (s *Service) Get(ctx context.Context, id, integratorID uuid.UUID) (*Identity, error) {
 	row, err := s.repo.GetIdentityByID(ctx, sqlc.GetIdentityByIDParams{
 		ID:           id,
@@ -172,10 +179,6 @@ func (s *Service) populateVirtualAccount(ctx context.Context, ident *Identity) {
 }
 
 func (s *Service) mapSQLCToIdentity(row sqlc.Identity) *Identity {
-	var failureReason *string
-	if row.FailureReason.Valid {
-		failureReason = &row.FailureReason.String
-	}
 	return &Identity{
 		ID:                row.ID,
 		IntegratorID:      row.IntegratorID,
@@ -183,7 +186,6 @@ func (s *Service) mapSQLCToIdentity(row sqlc.Identity) *Identity {
 		DisplayName:       row.DisplayName,
 		Metadata:          row.Metadata,
 		State:             row.State,
-		FailureReason:     failureReason,
 		CreatedAt:         row.CreatedAt,
 		UpdatedAt:         row.UpdatedAt,
 	}
