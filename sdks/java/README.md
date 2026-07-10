@@ -72,6 +72,10 @@ public class App {
             Identity fetchedIdentity = kobo.identities().get(identity.getId());
             System.out.println("Identity State: " + fetchedIdentity.getState());
 
+            // List identities
+            Identity[] identities = kobo.identities().list(null, 10, 0);
+            System.out.println("Found " + identities.length + " identities");
+
             // List transactions for an account
             if (fetchedIdentity.getVirtualAccount() != null) {
                  // Wait for account to be provisioned, then list txns

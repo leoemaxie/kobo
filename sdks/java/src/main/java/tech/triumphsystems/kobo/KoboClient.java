@@ -131,6 +131,21 @@ public final class KoboClient {
             return http.get("/identities/" + identityId, null, Identity.class);
         }
 
+        /**
+         * List identities with optional state filter and pagination.
+         *
+         * @param state  Filter by state. Pass {@code null} to return all.
+         * @param limit  Number of records per page. Pass {@code null} for server default (50).
+         * @param offset Number of records to skip. Pass {@code null} for default (0).
+         */
+        public Identity[] list(IdentityState state, Integer limit, Integer offset) {
+            Map<String, String> q = new LinkedHashMap<>();
+            if (state  != null) q.put("state",  state.getValue());
+            if (limit  != null) q.put("limit",  limit.toString());
+            if (offset != null) q.put("offset", offset.toString());
+            return http.get("/identities", q, Identity[].class);
+        }
+
         /** Update display profile fields. At least one field must be set. */
         public Identity update(String identityId, UpdateIdentityRequest req) {
             return http.patch("/identities/" + identityId, req, Identity.class);

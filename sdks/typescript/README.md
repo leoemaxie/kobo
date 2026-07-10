@@ -68,6 +68,10 @@ async function run() {
     const fetchedIdentity = await kobo.identities.get(identity.id);
     console.log("Identity State:", fetchedIdentity.state);
 
+    // List identities
+    const identities = await kobo.identities.list({ limit: 10 });
+    console.log(`Found ${identities.length} identities`);
+
     // List transactions for an account
     if (fetchedIdentity.virtual_account) {
         // Wait for account to be provisioned, then list txns

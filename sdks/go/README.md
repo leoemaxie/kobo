@@ -76,6 +76,15 @@ func main() {
 	}
 	fmt.Printf("Identity State: %s\n", fetchedIdentity.State)
 
+	// List identities
+	limit := 10
+	opts := kobo.ListIdentitiesOptions{Limit: &limit}
+	identities, err := client.Identities.List(ctx, opts)
+	if err != nil {
+		log.Fatalf("Failed to list identities: %v", err)
+	}
+	fmt.Printf("Found %d identities\n", len(identities))
+
 	// List transactions for an account
 	// if fetchedIdentity.VirtualAccount != nil {
 	//     opts := kobo.ListTransactionsOptions{}

@@ -8,6 +8,7 @@ import type {
   HealthResponse,
   Identity,
   ListExceptionsParams,
+  ListIdentitiesOptions,
   ListTransactionsOptions,
   PaginationParams,
   ResolveExceptionRequest,
@@ -60,6 +61,17 @@ export class IdentitiesClient {
    */
   async get(identityId: string): Promise<Identity> {
     return this.http.get<Identity>(`/identities/${identityId}`);
+  }
+
+  /**
+   * List identities for the integrator.
+   */
+  async list(opts?: ListIdentitiesOptions): Promise<Identity[]> {
+    const q: Record<string, string> = {};
+    if (opts?.state) q["state"] = opts.state;
+    if (opts?.limit !== undefined) q["limit"] = String(opts.limit);
+    if (opts?.offset !== undefined) q["offset"] = String(opts.offset);
+    return this.http.get<Identity[]>("/identities", q);
   }
 
   /**
@@ -332,5 +344,6 @@ function buildPaginationQuery(
 export type {
   GetStatementOptions,
   ListExceptionsParams,
+  ListIdentitiesOptions,
   ListTransactionsOptions,
 };

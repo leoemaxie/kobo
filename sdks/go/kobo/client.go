@@ -183,6 +183,26 @@ func (s *IdentitiesService) Create(ctx context.Context, req CreateIdentityReques
 	return &out, nil
 }
 
+// List returns a list of identities for the integrator.
+func (s *IdentitiesService) List(ctx context.Context, opts ListIdentitiesOptions) ([]Identity, error) {
+	q := url.Values{}
+	if opts.State != nil {
+		q.Set("state", string(*opts.State))
+	}
+	if opts.Limit != nil {
+		q.Set("limit", strconv.Itoa(*opts.Limit))
+	}
+	if opts.Offset != nil {
+		q.Set("offset", strconv.Itoa(*opts.Offset))
+	}
+	
+	var out []Identity
+	if err := s.c.do(ctx, http.MethodGet, "/identities", q, nil, &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Get fetches a single identity record.
 func (s *IdentitiesService) Get(ctx context.Context, identityID string) (*Identity, error) {
 	var out Identity

@@ -151,6 +151,11 @@ export interface GetStatementOptions {
 }
 
 export interface ListTransactionsOptions extends PaginationParams {}
+export interface ListIdentitiesOptions {
+  state?: IdentityState;
+  limit?: number;
+  offset?: number;
+}
 
 // ─── Health ───────────────────────────────────────────────────────────────────
 

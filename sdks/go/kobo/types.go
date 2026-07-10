@@ -212,6 +212,13 @@ type ListTransactionsOptions struct {
 	PaginationOptions
 }
 
+// ListIdentitiesOptions carries filtering and pagination for identities.
+type ListIdentitiesOptions struct {
+	State  *IdentityState
+	Limit  *int
+	Offset *int
+}
+
 // ─── Health ───────────────────────────────────────────────────────────────────
 
 // HealthResponse is the response from the /healthz endpoint.
