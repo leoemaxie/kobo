@@ -3,7 +3,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { students, parentStudents } from '$lib/server/db/schema';
 import { and, eq } from 'drizzle-orm';
-import { koboFetch } from '$lib/server/kobo-client';
+import { kobo } from '$lib/server/kobo-client';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
     if (!locals.user) {
@@ -33,9 +33,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     let identity;
 
     try {
-        identity = await koboFetch(`/identities/${student.koboIdentityId}`);
-        statement = await koboFetch(`/accounts/${student.koboIdentityId}/statement`);
-        transactions = await koboFetch(`/accounts/${student.koboIdentityId}/transactions`);
+        identity = await kobo.identities.get(student.koboIdentityId);
+        statement = await kobo.accounts.getStatement(student.koboIdentityId);
+        transactions = await kobo.accounts.listTransactions(student.koboIdentityId);
     } catch (e) {
         console.error("Failed to fetch Kobo data:", e);
         throw error(500, 'Failed to fetch financial records from Kobo');
@@ -52,8 +52,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
                 bankName: identity.virtual_account?.bank_name || 'Kobo Demo Bank',
             },
             statement: {
-                balance: statement.balance,
-                currency: statement.currency || 'NGN',
+                balance: statement.closing_balance_kobo,
+                currency: 'NGN',
             },
             transactions: transactions.data || []
         }

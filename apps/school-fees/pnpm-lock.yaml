@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@kobo/sdk':
+        specifier: link:../../sdks/typescript
+        version: link:../../sdks/typescript
       '@lucide/svelte':
         specifier: ^1.23.0
         version: 1.23.0(svelte@5.56.4)

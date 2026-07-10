@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { parentStudents, students } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { koboFetch } from '$lib/server/kobo-client';
+import { kobo } from '$lib/server/kobo-client';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
@@ -27,12 +27,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const studentsWithBalance = await Promise.all(linked.map(async ({ student }) => {
 		try {
-			const statement = await koboFetch(`/accounts/${student.koboIdentityId}/statement`);
+			const statement = await kobo.accounts.getStatement(student.koboIdentityId);
 			return {
 				id: student.id,
 				name: student.name,
 				class: student.className,
-				balance: `₦ ${(statement.balance / 100).toLocaleString()}`
+				balance: `₦ ${(statement.closing_balance_kobo / 100).toLocaleString()}`
 			};
 		} catch (e) {
 			return {

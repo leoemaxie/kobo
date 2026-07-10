@@ -2,7 +2,7 @@ import type { PageServerLoad, Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { students } from '$lib/server/db/schema';
-import { koboFetch } from '$lib/server/kobo-client';
+import { kobo } from '$lib/server/kobo-client';
 import { eq } from 'drizzle-orm';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -46,13 +46,12 @@ export const actions: Actions = {
         const id = globalThis.crypto.randomUUID();
 
         try {
-            const koboResponse = await koboFetch('/identities', {
-                method: 'POST',
-                body: JSON.stringify({
-                    external_reference: id,
-                    display_name: name,
+            const koboResponse = await kobo.identities.create({
+                external_reference: id,
+                display_name: name,
+                metadata: {
                     identity_type: 'individual'
-                })
+                }
             });
 
             await db.insert(students).values({
@@ -82,11 +81,8 @@ export const actions: Actions = {
         if (studentRows.length === 0) return fail(404, { error: 'Student not found' });
 
         try {
-            await koboFetch(`/identities/${studentRows[0].koboIdentityId}/close`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    sweep_destination: { type: "refund_to_source" }
-                })
+            await kobo.identities.close(studentRows[0].koboIdentityId, {
+                sweep_destination: { type: "refund_to_source" }
             });
             return { success: true };
         } catch (e: any) {
