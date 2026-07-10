@@ -3,7 +3,7 @@
   import { PUBLIC_DOCS_URL } from '$env/static/public';
   import {
     LayoutDashboard, Key, CreditCard, Settings, Users,
-    Webhook, BookOpen, LifeBuoy, ChevronDown, ShieldCheck
+    Webhook, BookOpen, LifeBuoy, ChevronDown, ShieldCheck, Landmark
   } from '@lucide/svelte';
   import { enhance } from '$app/forms';
   import { toast } from '$lib/state/toast.svelte';
@@ -11,12 +11,15 @@
 
   let { onCloseMobile } = $props<{ onCloseMobile?: () => void }>();
 
-  const navItems = [
+  const consoleState = useConsoleState();
+
+  let navItems = $derived([
     { name: 'Overview', path: '/dashboard', icon: LayoutDashboard },
     { name: 'API Keys', path: '/dashboard/api-keys', icon: Key },
     { name: 'Webhooks', path: '/dashboard/webhooks', icon: Webhook },
     { name: 'Billing', path: '/dashboard/billing', icon: CreditCard },
-  ];
+    ...(consoleState.user?.role === 'owner' ? [{ name: 'Payouts', path: '/dashboard/payouts', icon: Landmark }] : [])
+  ]);
 
   const bottomItems = [
     { name: 'Team', path: '/dashboard/team', icon: Users },
@@ -29,7 +32,6 @@
     return page.url.pathname.startsWith(path);
   }
 
-  const consoleState = useConsoleState();
   let workspaceName = $derived(consoleState.user?.integrator?.name || 'Workspace');
   let workspaceInitial = $derived(workspaceName.charAt(0).toUpperCase());
   let workspacePlan = $derived((consoleState.user?.integrator?.plan || 'Free Tier').replace(/_/g, ' '));
