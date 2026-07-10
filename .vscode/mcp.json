@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"Nomba Developers": {
+			"url": "https://developer.nomba.com/mcp",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}

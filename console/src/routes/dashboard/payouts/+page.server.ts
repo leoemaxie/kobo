@@ -30,6 +30,9 @@ export const load: PageServerLoad = async ({
     const banksRes = await fetch(`${env.CORE_URL}/console/payouts/banks`, {
       headers,
     });
+    if (!banksRes.ok) {
+      console.error(`Failed to fetch banks: ${banksRes.status} ${banksRes.statusText} - ${await banksRes.text()}`);
+    }
     const banks = banksRes.ok ? await banksRes.json() : [];
 
     // Fetch current bank account
@@ -37,12 +40,18 @@ export const load: PageServerLoad = async ({
       `${env.CORE_URL}/console/payouts/bank-account`,
       { headers },
     );
+    if (!accountRes.ok && accountRes.status !== 404) {
+      console.error(`Failed to fetch bank account: ${accountRes.status} ${accountRes.statusText} - ${await accountRes.text()}`);
+    }
     const bankAccount = accountRes.ok ? await accountRes.json() : null;
 
     // Fetch payout history
     const historyRes = await fetch(`${env.CORE_URL}/console/payouts/`, {
       headers,
     });
+    if (!historyRes.ok) {
+      console.error(`Failed to fetch payouts: ${historyRes.status} ${historyRes.statusText} - ${await historyRes.text()}`);
+    }
     const payouts = historyRes.ok ? await historyRes.json() : [];
 
     // Get wallet balance
