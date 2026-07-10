@@ -6,8 +6,7 @@ public enum IdentityState {
     ACTIVE("active"),
     LIMITED("limited"),
     CLOSING("closing"),
-    CLOSED("closed"),
-    FAILED("failed");
+    CLOSED("closed");
 
     private final String value;
     IdentityState(String value) { this.value = value; }

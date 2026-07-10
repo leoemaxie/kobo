@@ -15,7 +15,6 @@ public final class Identity {
     private final IdentityState state;
     private final VirtualAccountSummary virtualAccount;
     private final Map<String, Object> metadata;
-    private final String failureReason;
     private final Instant createdAt;
     private final Instant updatedAt;
 
@@ -26,7 +25,6 @@ public final class Identity {
             IdentityState state,
             VirtualAccountSummary virtualAccount,
             Map<String, Object> metadata,
-            String failureReason,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
@@ -35,7 +33,6 @@ public final class Identity {
         this.state = state;
         this.virtualAccount = virtualAccount;
         this.metadata = metadata;
-        this.failureReason = failureReason;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -50,13 +47,10 @@ public final class Identity {
 
     public IdentityState getState() { return state; }
 
-    /** Null while in {@code pending} or {@code failed} state. */
+    /** Null while in {@code pending} state. */
     public VirtualAccountSummary getVirtualAccount() { return virtualAccount; }
 
     public Map<String, Object> getMetadata() { return metadata; }
-
-    /** Non-null only when state is {@code failed}. */
-    public String getFailureReason() { return failureReason; }
 
     public Instant getCreatedAt() { return createdAt; }
 

@@ -10,8 +10,7 @@ export type IdentityState =
   | "active"
   | "limited"
   | "closing"
-  | "closed"
-  | "failed";
+  | "closed";
 
 
 
@@ -53,7 +52,6 @@ export interface Identity {
   state: IdentityState;
   virtual_account?: VirtualAccountSummary | null;
   metadata?: Record<string, unknown>;
-  failure_reason?: string | null;
   created_at: string;
   updated_at: string;
 }

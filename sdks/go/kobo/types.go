@@ -18,10 +18,7 @@ const (
 	IdentityStateLimited IdentityState = "limited"
 	IdentityStateClosing IdentityState = "closing"
 	IdentityStateClosed  IdentityState = "closed"
-	IdentityStateFailed  IdentityState = "failed"
 )
-
-
 
 // TransactionDirection is the direction of a transaction (v1 only supports inbound).
 type TransactionDirection string
@@ -91,7 +88,6 @@ type Identity struct {
 	State             IdentityState          `json:"state"`
 	VirtualAccount    *VirtualAccountSummary `json:"virtual_account,omitempty"`
 	Metadata          map[string]interface{} `json:"metadata,omitempty"`
-	FailureReason     *string                `json:"failure_reason,omitempty"`
 	CreatedAt         time.Time              `json:"created_at"`
 	UpdatedAt         time.Time              `json:"updated_at"`
 }
