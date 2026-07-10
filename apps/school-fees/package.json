@@ -35,7 +35,7 @@
 		"vite": "^8.0.16"
 	},
 	"dependencies": {
-		"@kobo/sdk": "link:../../sdks/typescript",
+		"@kobo/sdk": "workspace:*",
 		"@lucide/svelte": "^1.23.0",
 		"@sveltejs/adapter-vercel": "^6.3.4"
 	}

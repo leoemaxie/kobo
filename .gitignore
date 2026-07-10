@@ -1,3 +1,4 @@
 .env
 .instructions
+node_modules/
 DESIGN.md

@@ -1,0 +1,7 @@
+packages:
+  - apps/**
+  - sdks/typescript
+
+onlyBuiltDependencies:
+  - argon2
+  - esbuild
