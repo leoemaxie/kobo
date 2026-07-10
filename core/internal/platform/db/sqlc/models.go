@@ -118,6 +118,37 @@ type ConsolePaymentMethod struct {
 	CreatedAt     time.Time   `json:"created_at"`
 }
 
+type ConsolePayout struct {
+	ID                    uuid.UUID   `json:"id"`
+	IntegratorID          uuid.UUID   `json:"integrator_id"`
+	BankAccountID         uuid.UUID   `json:"bank_account_id"`
+	RequestedAmountKobo   int64       `json:"requested_amount_kobo"`
+	PlatformFeeKobo       int64       `json:"platform_fee_kobo"`
+	TransferFeeBufferKobo int64       `json:"transfer_fee_buffer_kobo"`
+	ActualTransferFeeKobo pgtype.Int8 `json:"actual_transfer_fee_kobo"`
+	NetAmountKobo         int64       `json:"net_amount_kobo"`
+	Status                string      `json:"status"`
+	FailureReason         pgtype.Text `json:"failure_reason"`
+	MerchantTxRef         string      `json:"merchant_tx_ref"`
+	NombaTransferID       pgtype.Text `json:"nomba_transfer_id"`
+	InitiatedBy           uuid.UUID   `json:"initiated_by"`
+	CreatedAt             time.Time   `json:"created_at"`
+	UpdatedAt             time.Time   `json:"updated_at"`
+}
+
+type ConsolePayoutBankAccount struct {
+	ID            uuid.UUID `json:"id"`
+	IntegratorID  uuid.UUID `json:"integrator_id"`
+	AccountNumber string    `json:"account_number"`
+	AccountName   string    `json:"account_name"`
+	BankCode      string    `json:"bank_code"`
+	BankName      string    `json:"bank_name"`
+	IsActive      bool      `json:"is_active"`
+	CreatedBy     uuid.UUID `json:"created_by"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}
+
 type ConsoleSession struct {
 	ID        string             `json:"id"`
 	UserID    uuid.UUID          `json:"user_id"`

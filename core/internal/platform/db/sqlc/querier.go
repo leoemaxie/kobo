@@ -12,16 +12,41 @@ import (
 )
 
 type Querier interface {
+	// Returns the number of payouts currently in 'pending' or 'processing' state.
+	// Used to prevent an integrator from initiating a second concurrent payout.
+	CountInProgressPayouts(ctx context.Context, integratorID uuid.UUID) (int64, error)
 	CreateApiCredential(ctx context.Context, arg CreateApiCredentialParams) (ApiCredential, error)
 	CreateApiIntegrator(ctx context.Context, arg CreateApiIntegratorParams) (ApiIntegrator, error)
 	CreateIdentity(ctx context.Context, arg CreateIdentityParams) (Identity, error)
+	// ---------------------------------------------------------------------------
+	// Payout lifecycle
+	// ---------------------------------------------------------------------------
+	CreatePayout(ctx context.Context, arg CreatePayoutParams) (ConsolePayout, error)
 	CreateVirtualAccount(ctx context.Context, arg CreateVirtualAccountParams) (VirtualAccount, error)
+	// Reversal: re-credits the balance when a payout fails after deduction.
+	// Also used by the webhook handler to reverse a failed transfer.
+	CreditIntegratorBalance(ctx context.Context, arg CreditIntegratorBalanceParams) error
+	// Marks all active bank accounts for an integrator as inactive.
+	// Always called inside a transaction before InsertPayoutBankAccount.
+	DeactivatePayoutBankAccounts(ctx context.Context, integratorID uuid.UUID) error
 	// Sets is_active to false when a new account is provisioned for the identity
 	DeactivateVirtualAccount(ctx context.Context, identityID uuid.UUID) error
+	// Atomically deducts the given amount from wallet_balance_kobo.
+	// The WHERE clause ensures we never go negative: if balance < amount,
+	// zero rows are updated and the caller must roll back.
+	DeductIntegratorBalance(ctx context.Context, arg DeductIntegratorBalanceParams) (int64, error)
 	GenerateInvoicesForPeriod(ctx context.Context, period string) error
+	// internal/platform/db/queries/payouts.sql
+	// SQLC queries for the payout system.
+	// All tables live in the console schema. Balance lives on public.api_integrators.
+	// ---------------------------------------------------------------------------
+	// Bank account management
+	// ---------------------------------------------------------------------------
+	GetActivePayoutBankAccount(ctx context.Context, integratorID uuid.UUID) (ConsolePayoutBankAccount, error)
 	GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (VirtualAccount, error)
 	GetApiIntegratorByKey(ctx context.Context, keyID string) (GetApiIntegratorByKeyRow, error)
 	GetBillingRecords(ctx context.Context, integratorID uuid.UUID) ([]ConsoleBillingRecord, error)
+	GetConsoleSession(ctx context.Context, id string) (GetConsoleSessionRow, error)
 	GetDefaultPaymentMethod(ctx context.Context, integratorID uuid.UUID) (ConsolePaymentMethod, error)
 	GetExceptionByID(ctx context.Context, arg GetExceptionByIDParams) (Exception, error)
 	GetIdempotencyKey(ctx context.Context, nombaReference string) (IdempotencyKey, error)
@@ -33,6 +58,8 @@ type Querier interface {
 	GetIntegratorWalletBalance(ctx context.Context, id uuid.UUID) (int64, error)
 	// Calculates the sum of all 'inbound' matched transactions before the given time
 	GetLedgerOpeningBalance(ctx context.Context, arg GetLedgerOpeningBalanceParams) (int64, error)
+	GetPayoutByID(ctx context.Context, id uuid.UUID) (ConsolePayout, error)
+	GetPayoutByMerchantTxRef(ctx context.Context, merchantTxRef string) (ConsolePayout, error)
 	GetPendingInvoices(ctx context.Context) ([]ConsoleInvoice, error)
 	GetVirtualAccountByAccountNumber(ctx context.Context, accountNumber pgtype.Text) (VirtualAccount, error)
 	GetVirtualAccountByID(ctx context.Context, id uuid.UUID) (VirtualAccount, error)
@@ -42,15 +69,26 @@ type Querier interface {
 	InsertInvoice(ctx context.Context, arg InsertInvoiceParams) (ConsoleInvoice, error)
 	InsertLedgerEntry(ctx context.Context, arg InsertLedgerEntryParams) (LedgerEntry, error)
 	InsertPaymentMethod(ctx context.Context, arg InsertPaymentMethodParams) (ConsolePaymentMethod, error)
+	InsertPayoutBankAccount(ctx context.Context, arg InsertPayoutBankAccountParams) (ConsolePayoutBankAccount, error)
 	InsertUsageEvent(ctx context.Context, arg InsertUsageEventParams) error
 	ListActiveVirtualAccounts(ctx context.Context) ([]VirtualAccount, error)
 	ListAllIdentitiesByState(ctx context.Context, state string) ([]Identity, error)
 	ListExceptionsByStatus(ctx context.Context, arg ListExceptionsByStatusParams) ([]Exception, error)
+	ListIdentities(ctx context.Context, arg ListIdentitiesParams) ([]Identity, error)
 	ListIdentitiesByState(ctx context.Context, arg ListIdentitiesByStateParams) ([]Identity, error)
 	ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]IdentityEvent, error)
 	ListLedgerEntriesByAccount(ctx context.Context, arg ListLedgerEntriesByAccountParams) ([]LedgerEntry, error)
 	ListLedgerEntriesByIdentityAndPeriod(ctx context.Context, arg ListLedgerEntriesByIdentityAndPeriodParams) ([]LedgerEntry, error)
 	ListOpenExceptions(ctx context.Context, arg ListOpenExceptionsParams) ([]Exception, error)
+	ListPayoutsForIntegrator(ctx context.Context, arg ListPayoutsForIntegratorParams) ([]ConsolePayout, error)
+	// ---------------------------------------------------------------------------
+	// Balance operations on public.api_integrators
+	// These supplement the existing UpdateIntegratorWalletBalance query in billing.sql.
+	// ---------------------------------------------------------------------------
+	// Acquires a row-level lock on the integrator for the duration of the caller's
+	// transaction. MUST be called inside BEGIN/COMMIT. This prevents concurrent
+	// payout requests from racing to deduct the same balance.
+	LockIntegratorRow(ctx context.Context, id uuid.UUID) (int64, error)
 	ResolveException(ctx context.Context, arg ResolveExceptionParams) (Exception, error)
 	RollupUsageEvents(ctx context.Context, period string) error
 	SuspendIntegrator(ctx context.Context, id uuid.UUID) error
@@ -63,6 +101,7 @@ type Querier interface {
 	UpdateIdentityState(ctx context.Context, arg UpdateIdentityStateParams) (Identity, error)
 	UpdateIntegratorWalletBalance(ctx context.Context, arg UpdateIntegratorWalletBalanceParams) error
 	UpdateInvoiceStatus(ctx context.Context, arg UpdateInvoiceStatusParams) error
+	UpdatePayoutStatus(ctx context.Context, arg UpdatePayoutStatusParams) (ConsolePayout, error)
 	// Called after a successful provisioning to set the account number and bank info
 	UpdateVirtualAccountProvisioning(ctx context.Context, arg UpdateVirtualAccountProvisioningParams) (VirtualAccount, error)
 	UpsertBillingRecord(ctx context.Context, arg UpsertBillingRecordParams) error

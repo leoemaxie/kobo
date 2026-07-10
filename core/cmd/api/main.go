@@ -14,6 +14,7 @@ import (
 	"github.com/leoemaxie/kobo/internal/integrator"
 	"github.com/leoemaxie/kobo/internal/ledger"
 	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/payout"
 	"github.com/leoemaxie/kobo/internal/platform/config"
 	"github.com/leoemaxie/kobo/internal/platform/db"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
@@ -53,6 +54,7 @@ func main() {
 	idemRepo := reconciliation.NewIdempotencyRepository(q)
 	usageRecorder := billing.NewUsageRecorder(q)
 	reconEngine := reconciliation.NewEngine(q, idemRepo, usageRecorder, nombaClient)
+	payoutSvc := payout.NewService(pool, q, nombaClient)
 
 	healthHandler := handlers.NewHealthHandler(pool)
 	identityHandler := handlers.NewIdentityHandler(identitySvc, accountSvc, usageRecorder)
@@ -60,8 +62,9 @@ func main() {
 	exceptionsHandler := handlers.NewExceptionsHandler(exceptionsSvc)
 	adminHandler := handlers.NewAdminHandler(integratorSvc)
 	adminBillingHandler := handlers.NewAdminBillingHandler(nombaClient, q)
+	payoutHandler := handlers.NewPayoutHandler(payoutSvc, nombaClient)
 
-	router := api.NewRouter(q, healthHandler, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, adminBillingHandler, reconEngine, cfg.NombaWebhookSecret)
+	router := api.NewRouter(q, healthHandler, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, adminBillingHandler, payoutHandler, reconEngine, cfg.NombaWebhookSecret)
 
 	log.Printf("Starting Kobo server on port %s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {

@@ -51,3 +51,10 @@ ORDER BY created_at ASC;
 SELECT * FROM identities
 WHERE state = $1
 ORDER BY created_at ASC;
+
+-- name: ListIdentities :many
+SELECT * FROM identities
+WHERE integrator_id = $1 
+  AND (sqlc.narg('state')::text IS NULL OR state = sqlc.narg('state'))
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3;

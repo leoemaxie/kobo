@@ -4,21 +4,26 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/payout"
 	"github.com/leoemaxie/kobo/internal/reconciliation"
 )
 
 type WebhookHandler struct {
 	engine        reconciliation.Engine
+	payoutSvc     *payout.Service
 	webhookSecret string
 }
 
-func NewWebhookHandler(engine reconciliation.Engine, webhookSecret string) *WebhookHandler {
+func NewWebhookHandler(engine reconciliation.Engine, payoutSvc *payout.Service, webhookSecret string) *WebhookHandler {
 	return &WebhookHandler{
 		engine:        engine,
+		payoutSvc:     payoutSvc,
 		webhookSecret: webhookSecret,
 	}
 }
@@ -54,6 +59,27 @@ func (h *WebhookHandler) HandleNombaWebhook(w http.ResponseWriter, r *http.Reque
 	if !nomba.VerifyWebhookSignature(&payload, sigHeader, timeHeader, h.webhookSecret) {
 		http.Error(w, "invalid signature", http.StatusUnauthorized)
 		return
+	}
+
+	if payload.EventType == "transfer.success" || payload.EventType == "transfer.failed" {
+		if payload.Data.Meta.MerchantTxRef != "" && strings.HasPrefix(payload.Data.Meta.MerchantTxRef, "payout_") {
+			// Extract status from event type if status field is missing
+			status := payload.Data.Status
+			if status == "" {
+				if payload.EventType == "transfer.success" {
+					status = "SUCCESS"
+				} else {
+					status = "FAILED"
+				}
+			}
+
+			err := h.payoutSvc.HandleTransferWebhook(r.Context(), payload.Data.Meta.MerchantTxRef, status, payload.Data.ID)
+			if err != nil {
+				log.Printf("payout webhook handling failed: %v", err)
+			}
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 	}
 
 	err = h.engine.ProcessWebhook(r.Context(), &payload)

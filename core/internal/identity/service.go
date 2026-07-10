@@ -78,6 +78,31 @@ func (s *Service) Get(ctx context.Context, id, integratorID uuid.UUID) (*Identit
 	return ident, nil
 }
 
+func (s *Service) List(ctx context.Context, integratorID uuid.UUID, state *string, limit, offset int32) ([]*Identity, error) {
+	var stateParam pgtype.Text
+	if state != nil {
+		stateParam = pgtype.Text{String: *state, Valid: true}
+	}
+	
+	rows, err := s.repo.ListIdentities(ctx, sqlc.ListIdentitiesParams{
+		IntegratorID: integratorID,
+		State:        stateParam,
+		Limit:        limit,
+		Offset:       offset,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to list identities: %w", err)
+	}
+
+	identities := make([]*Identity, 0, len(rows))
+	for _, row := range rows {
+		ident := s.mapSQLCToIdentity(row)
+		s.populateVirtualAccount(ctx, ident)
+		identities = append(identities, ident)
+	}
+	return identities, nil
+}
+
 func (s *Service) UpdateProfile(ctx context.Context, id, integratorID uuid.UUID, displayName *string, metadata json.RawMessage) (*Identity, error) {
 	var metaBytes []byte
 	var err error

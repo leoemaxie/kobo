@@ -177,6 +177,56 @@ func (q *Queries) ListAllIdentitiesByState(ctx context.Context, state string) ([
 	return items, nil
 }
 
+const listIdentities = `-- name: ListIdentities :many
+SELECT id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at FROM identities
+WHERE integrator_id = $1 
+  AND ($4::text IS NULL OR state = $4)
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3
+`
+
+type ListIdentitiesParams struct {
+	IntegratorID uuid.UUID   `json:"integrator_id"`
+	Limit        int32       `json:"limit"`
+	Offset       int32       `json:"offset"`
+	State        pgtype.Text `json:"state"`
+}
+
+func (q *Queries) ListIdentities(ctx context.Context, arg ListIdentitiesParams) ([]Identity, error) {
+	rows, err := q.db.Query(ctx, listIdentities,
+		arg.IntegratorID,
+		arg.Limit,
+		arg.Offset,
+		arg.State,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Identity{}
+	for rows.Next() {
+		var i Identity
+		if err := rows.Scan(
+			&i.ID,
+			&i.IntegratorID,
+			&i.ExternalReference,
+			&i.DisplayName,
+			&i.State,
+			&i.FailureReason,
+			&i.Metadata,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listIdentitiesByState = `-- name: ListIdentitiesByState :many
 SELECT id, integrator_id, external_reference, display_name, state, failure_reason, metadata, created_at, updated_at FROM identities
 WHERE integrator_id = $1 AND state = $2
