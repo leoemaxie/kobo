@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Plus } from '@lucide/svelte';
-  import StandardKeysTable from './StandardKeysTable.svelte';
-  import RestrictedKeysSection from './RestrictedKeysSection.svelte';
-  import CreateKeyModal from './CreateKeyModal.svelte';
-  import CreateRestrictedKeyModal from './CreateRestrictedKeyModal.svelte';
+  import StandardKeysTable from '$lib/components/api-keys/StandardKeysTable.svelte';
+  import RestrictedKeysSection from '$lib/components/api-keys/RestrictedKeysSection.svelte';
+  import CreateKeyModal from '$lib/components/api-keys/CreateKeyModal.svelte';
+  import CreateRestrictedKeyModal from '$lib/components/api-keys/CreateRestrictedKeyModal.svelte';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import CodeBadge from '$lib/components/ui/CodeBadge.svelte';
   import Button from '$lib/components/ui/Button.svelte';

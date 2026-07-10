@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
-  generateSessionId,
   createSession,
   validateSession,
   revokeSession,
@@ -9,6 +8,7 @@ import {
 import { db } from "$lib/server/db";
 import { sessions, users } from "$lib/server/db/schema";
 import * as drizzleOrm from "drizzle-orm";
+import * as tokenModule from "./token";
 
 const mockInsertValues = vi.fn();
 const mockSelectLimit = vi.fn();
@@ -18,14 +18,14 @@ const mockSelectWhere = vi
   .mockReturnValue({ innerJoin: mockSelectInnerJoin });
 const mockSelectFrom = vi.fn().mockReturnValue({ where: mockSelectWhere });
 
-const mockUpdateWhere = vi.fn();
-const mockUpdateSet = vi.fn().mockReturnValue({ where: mockUpdateWhere });
+const mockDeleteWhere = vi.fn();
+const mockDelete = vi.fn().mockReturnValue({ where: mockDeleteWhere });
 
 vi.mock("$lib/server/db", () => ({
   db: {
     insert: vi.fn(() => ({ values: mockInsertValues })),
     select: vi.fn(() => ({ from: mockSelectFrom })),
-    update: vi.fn(() => ({ set: mockUpdateSet })),
+    delete: mockDelete,
   },
 }));
 
@@ -34,7 +34,6 @@ vi.mock("$lib/server/db/schema", () => ({
     id: "sessions.id",
     userId: "sessions.userId",
     expiresAt: "sessions.expiresAt",
-    revokedAt: "sessions.revokedAt",
   },
   users: {
     id: "users.id",
@@ -51,47 +50,20 @@ vi.mock("drizzle-orm", () => ({
 describe("session.ts", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // If crypto is not available in test env, mock it
-    if (typeof globalThis.crypto === "undefined") {
-      globalThis.crypto = {
-        getRandomValues: (arr: Uint8Array) => {
-          for (let i = 0; i < arr.length; i++) {
-            arr[i] = Math.floor(Math.random() * 256);
-          }
-          return arr;
-        },
-      } as any;
-    }
-  });
-
-  describe("generateSessionId", () => {
-    it("should generate a 64-character hex string", () => {
-      const id = generateSessionId();
-      expect(typeof id).toBe("string");
-      expect(id).toHaveLength(64);
-      expect(/^[0-9a-f]{64}$/.test(id)).toBe(true);
-    });
-
-    it("should generate unique ids", () => {
-      const id1 = generateSessionId();
-      const id2 = generateSessionId();
-      expect(id1).not.toBe(id2);
-    });
   });
 
   describe("createSession", () => {
     it("should create a session and insert it into the database", async () => {
       const result = await createSession("user_123");
 
-      expect(result).toHaveProperty("id");
+      expect(result).toHaveProperty("token");
       expect(result).toHaveProperty("expiresAt");
-      expect(result.id).toHaveLength(64);
+      expect(typeof result.token).toBe("string");
       expect(result.expiresAt).toBeInstanceOf(Date);
 
       expect(db.insert).toHaveBeenCalledWith(sessions);
       expect(mockInsertValues).toHaveBeenCalledWith({
-        id: result.id,
+        id: expect.any(String),
         userId: "user_123",
         expiresAt: result.expiresAt,
       });
@@ -130,32 +102,29 @@ describe("session.ts", () => {
   });
 
   describe("revokeSession", () => {
-    it("should update revokedAt for the specific session", async () => {
+    it("should delete the specific session", async () => {
       await revokeSession("sess_123");
 
-      expect(db.update).toHaveBeenCalledWith(sessions);
-      expect(mockUpdateSet).toHaveBeenCalledWith({
-        revokedAt: expect.any(Date),
-      });
-      expect(mockUpdateWhere).toHaveBeenCalledWith(
+      expect(db.delete).toHaveBeenCalledWith(sessions);
+      expect(mockDeleteWhere).toHaveBeenCalledWith(
         expect.objectContaining({
           op: "eq",
-          args: ["sessions.id", "sess_123"],
+          args: ["sessions.id", expect.any(String)],
         }),
       );
     });
   });
 
   describe("revokeAllSessionsForUser", () => {
-    it("should update revokedAt for all active sessions of a user", async () => {
+    it("should delete all active sessions of a user", async () => {
       await revokeAllSessionsForUser("user_456");
 
-      expect(db.update).toHaveBeenCalledWith(sessions);
-      expect(mockUpdateSet).toHaveBeenCalledWith({
-        revokedAt: expect.any(Date),
-      });
-      expect(mockUpdateWhere).toHaveBeenCalledWith(
-        expect.objectContaining({ op: "and" }),
+      expect(db.delete).toHaveBeenCalledWith(sessions);
+      expect(mockDeleteWhere).toHaveBeenCalledWith(
+        expect.objectContaining({
+          op: "eq",
+          args: ["sessions.userId", "user_456"],
+        }),
       );
     });
   });

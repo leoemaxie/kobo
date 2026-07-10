@@ -44,6 +44,9 @@ export const apiIntegrators = pgTable("api_integrators", {
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
+  walletBalanceKobo: bigint("wallet_balance_kobo", { mode: "number" })
+    .notNull()
+    .default(0),
 });
 
 export const apiCredentials = pgTable(

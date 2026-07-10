@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Plus } from '@lucide/svelte';
-  import TeamList from './TeamList.svelte';
-  import InviteMemberModal from '../../../lib/components/team/InviteMemberModal.svelte';
+  import TeamList from '$lib/components/team/TeamList.svelte';
+  import InviteMemberModal from '$lib/components/team/InviteMemberModal.svelte';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import CodeBadge from '$lib/components/ui/CodeBadge.svelte';
   import Button from '$lib/components/ui/Button.svelte';

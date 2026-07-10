@@ -1,7 +1,7 @@
 <script lang="ts">
-  import CurrentPeriodCard from './CurrentPeriodCard.svelte';
-  import PlanDetailsCard from './PlanDetailsCard.svelte';
-  import InvoiceHistory from './InvoiceHistory.svelte';
+  import CurrentPeriodCard from '$lib/components/billing/CurrentPeriodCard.svelte';
+  import PlanDetailsCard from '$lib/components/billing/PlanDetailsCard.svelte';
+  import InvoiceHistory from '$lib/components/billing/InvoiceHistory.svelte';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import CodeBadge from '$lib/components/ui/CodeBadge.svelte';
   import Button from '$lib/components/ui/Button.svelte';

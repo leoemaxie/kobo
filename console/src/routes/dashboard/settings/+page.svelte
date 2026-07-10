@@ -1,6 +1,6 @@
 <script lang="ts">
-  import WorkspaceInfoCard from './WorkspaceInfoCard.svelte';
-  import DangerZoneCard from './DangerZoneCard.svelte';
+  import WorkspaceInfoCard from '$lib/components/settings/WorkspaceInfoCard.svelte';
+  import DangerZoneCard from '$lib/components/settings/DangerZoneCard.svelte';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import CodeBadge from '$lib/components/ui/CodeBadge.svelte';
 

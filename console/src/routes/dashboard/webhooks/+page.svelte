@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Plus } from '@lucide/svelte';
-  import WebhookList from './WebhookList.svelte';
-  import AddWebhookModal from './AddWebhookModal.svelte';
+  import WebhookList from '$lib/components/webhooks/WebhookList.svelte';
+  import AddWebhookModal from '$lib/components/webhooks/AddWebhookModal.svelte';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import CodeBadge from '$lib/components/ui/CodeBadge.svelte';
   import Button from '$lib/components/ui/Button.svelte';
