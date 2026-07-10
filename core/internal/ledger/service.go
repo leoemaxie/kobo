@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
 type Service struct {
@@ -21,4 +22,8 @@ func (s *Service) GetStatements(ctx context.Context, identityID uuid.UUID, limit
 	}
 
 	return s.repo.ListLedgerEntriesByAccount(ctx, va.ID, limit, offset)
+}
+
+func (s *Service) GetActiveVirtualAccount(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error) {
+	return s.repo.GetActiveVirtualAccountByIdentityID(ctx, identityID)
 }

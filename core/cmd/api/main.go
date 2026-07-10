@@ -58,7 +58,7 @@ func main() {
 
 	healthHandler := handlers.NewHealthHandler(pool)
 	identityHandler := handlers.NewIdentityHandler(identitySvc, accountSvc, usageRecorder)
-	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc)
+	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc, nombaClient)
 	exceptionsHandler := handlers.NewExceptionsHandler(exceptionsSvc)
 	adminHandler := handlers.NewAdminHandler(integratorSvc)
 	adminBillingHandler := handlers.NewAdminBillingHandler(nombaClient, q)

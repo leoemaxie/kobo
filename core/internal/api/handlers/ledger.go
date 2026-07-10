@@ -12,24 +12,69 @@ import (
 	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/ledger"
+	"github.com/leoemaxie/kobo/internal/nomba"
 )
 
 type LedgerHandler struct {
-	svc *ledger.Service
+	svc         *ledger.Service
+	nombaClient *nomba.Client
 }
 
-func NewLedgerHandler(svc *ledger.Service) *LedgerHandler {
-	return &LedgerHandler{svc: svc}
+func NewLedgerHandler(svc *ledger.Service, nombaClient *nomba.Client) *LedgerHandler {
+	return &LedgerHandler{svc: svc, nombaClient: nombaClient}
 }
 
 func (h *LedgerHandler) GetTransactions(w http.ResponseWriter, r *http.Request) {
-	// Pagination parameters
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"data": [], "next_cursor": null}`))
+	_ = middleware.GetIntegratorID(r.Context())
+
+	idStr := chi.URLParam(r, "accountId")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		apierrors.LogAndWriteError(w, http.StatusBadRequest, "invalid_id", "invalid account ID", err)
+		return
+	}
+
+	dateTo := time.Now()
+	dateFrom := dateTo.AddDate(0, -1, 0) // Default to last 30 days
+
+	if fromStr := r.URL.Query().Get("dateFrom"); fromStr != "" {
+		if parsed, err := time.Parse("2006-01-02", fromStr); err == nil {
+			dateFrom = parsed
+		}
+	}
+	if toStr := r.URL.Query().Get("dateTo"); toStr != "" {
+		if parsed, err := time.Parse("2006-01-02", toStr); err == nil {
+			dateTo = parsed
+		}
+	}
+
+	va, err := h.svc.GetActiveVirtualAccount(r.Context(), id)
+	if err != nil {
+		apierrors.LogAndWriteError(w, http.StatusNotFound, "not_found", "account not found", err)
+		return
+	}
+
+	if !va.AccountNumber.Valid {
+		apierrors.WriteError(w, http.StatusBadRequest, "invalid_account", "account has no account number")
+		return
+	}
+
+	txns, err := h.nombaClient.FetchTransactions(r.Context(), va.AccountNumber.String, dateFrom, dateTo)
+	if err != nil {
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to fetch transactions", err)
+		return
+	}
+
+	response := map[string]interface{}{
+		"data":        txns,
+		"next_cursor": nil,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func (h *LedgerHandler) GetStatement(w http.ResponseWriter, r *http.Request) {
-	// Integrator access check could go here if needed
 	_ = middleware.GetIntegratorID(r.Context())
 
 	idStr := chi.URLParam(r, "accountId")
