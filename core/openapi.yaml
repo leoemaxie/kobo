@@ -42,6 +42,45 @@ tags:
 
 paths:
   /identities:
+    get:
+      tags: [Identities]
+      operationId: listIdentities
+      summary: List all identities for the integrator.
+      parameters:
+        - name: state
+          in: query
+          description: Filter identities by state.
+          required: false
+          schema:
+            $ref: '#/components/schemas/IdentityState'
+        - name: limit
+          in: query
+          description: Max number of records to return.
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+        - name: offset
+          in: query
+          description: Number of records to skip.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: A list of identities.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Identity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
     post:
       tags: [Identities]
       operationId: createIdentity

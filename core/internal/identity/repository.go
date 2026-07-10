@@ -14,6 +14,7 @@ type Repository interface {
 	UpdateIdentityProfile(ctx context.Context, arg sqlc.UpdateIdentityProfileParams) (sqlc.Identity, error)
 	UpdateIdentityState(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error)
 	ListIdentitiesByState(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error)
+	ListIdentities(ctx context.Context, arg sqlc.ListIdentitiesParams) ([]sqlc.Identity, error)
 	InsertIdentityEvent(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error)
 	ListIdentityEvents(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error)
 	GetActiveVirtualAccountByIdentityID(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error)
@@ -49,6 +50,10 @@ func (r *sqlcRepository) UpdateIdentityState(ctx context.Context, arg sqlc.Updat
 
 func (r *sqlcRepository) ListIdentitiesByState(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error) {
 	return r.q.ListIdentitiesByState(ctx, arg)
+}
+
+func (r *sqlcRepository) ListIdentities(ctx context.Context, arg sqlc.ListIdentitiesParams) ([]sqlc.Identity, error) {
+	return r.q.ListIdentities(ctx, arg)
 }
 
 func (r *sqlcRepository) InsertIdentityEvent(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error) {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -91,6 +92,38 @@ func (h *IdentityHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ident)
+}
+
+func (h *IdentityHandler) List(w http.ResponseWriter, r *http.Request) {
+	integratorID := middleware.GetIntegratorID(r.Context())
+
+	limit := int32(50)
+	if l := r.URL.Query().Get("limit"); l != "" {
+		if parsed, err := strconv.ParseInt(l, 10, 32); err == nil {
+			limit = int32(parsed)
+		}
+	}
+
+	offset := int32(0)
+	if o := r.URL.Query().Get("offset"); o != "" {
+		if parsed, err := strconv.ParseInt(o, 10, 32); err == nil {
+			offset = int32(parsed)
+		}
+	}
+
+	var state *string
+	if s := r.URL.Query().Get("state"); s != "" {
+		state = &s
+	}
+
+	identities, err := h.svc.List(r.Context(), integratorID, state, limit, offset)
+	if err != nil {
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to list identities", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(identities)
 }
 
 func (h *IdentityHandler) Update(w http.ResponseWriter, r *http.Request) {
