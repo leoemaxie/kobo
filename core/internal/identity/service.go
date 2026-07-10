@@ -79,7 +79,7 @@ func (s *Service) Get(ctx context.Context, id, integratorID uuid.UUID) (*Identit
 	if err != nil {
 		return nil, fmt.Errorf("failed to get identity: %w", err)
 	}
-	
+
 	ident := s.mapSQLCToIdentity(row)
 	s.populateVirtualAccount(ctx, ident)
 	return ident, nil
@@ -90,7 +90,7 @@ func (s *Service) List(ctx context.Context, integratorID uuid.UUID, state *strin
 	if state != nil {
 		stateParam = pgtype.Text{String: *state, Valid: true}
 	}
-	
+
 	rows, err := s.repo.ListIdentities(ctx, sqlc.ListIdentitiesParams{
 		IntegratorID: integratorID,
 		State:        stateParam,

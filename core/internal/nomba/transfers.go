@@ -78,7 +78,7 @@ func (c *Client) TransferToBank(ctx context.Context, req TransferToBankRequest) 
 	}
 
 	b, _ := json.Marshal(req)
-	
+
 	// Ensure we call v2
 	baseURL := c.baseURL
 	if strings.HasSuffix(baseURL, "/v1") {
@@ -89,7 +89,7 @@ func (c *Client) TransferToBank(ctx context.Context, req TransferToBankRequest) 
 
 	path := fmt.Sprintf("/transfers/bank/%s", c.subAccountID)
 	url := fmt.Sprintf("%s%s", baseURL, path)
-	
+
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(b))
 	if err != nil {
 		return TransferToBankResponse{}, err

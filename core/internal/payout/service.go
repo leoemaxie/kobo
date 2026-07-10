@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	MinPayoutKobo              int64 = 100_000 // 1,000 NGN
-	TransferFeeBufferKobo      int64 = 5_000   // 50 NGN buffer
-	PlatformFeeKobo            int64 = 0
+	MinPayoutKobo         int64 = 100_000 // 1,000 NGN
+	TransferFeeBufferKobo int64 = 5_000   // 50 NGN buffer
+	PlatformFeeKobo       int64 = 0
 )
 
 var (
@@ -49,11 +49,11 @@ func (s *Service) SaveBankAccount(ctx context.Context, integratorID, userID uuid
 	}
 
 	var savedAccount sqlc.ConsolePayoutBankAccount
-	
+
 	// 2. Transaction to deactivate existing and insert new
 	err = pgx.BeginFunc(ctx, s.pool, func(tx pgx.Tx) error {
 		qtx := s.q.(*sqlc.Queries).WithTx(tx)
-		
+
 		err := qtx.DeactivatePayoutBankAccounts(ctx, integratorID)
 		if err != nil {
 			return err
@@ -121,7 +121,7 @@ func (s *Service) RequestPayout(ctx context.Context, integratorID, initiatedByUs
 	}
 
 	totalDeduction = requestedAmountKobo + TransferFeeBufferKobo + PlatformFeeKobo
-	
+
 	_, err = qtx.DeductIntegratorBalance(ctx, sqlc.DeductIntegratorBalanceParams{
 		ID:                integratorID,
 		WalletBalanceKobo: totalDeduction,
@@ -238,7 +238,7 @@ func (s *Service) HandleTransferWebhook(ctx context.Context, merchantTxRef, nomb
 
 	// Any non-SUCCESS is considered failed
 	totalDeduction := payout.RequestedAmountKobo + payout.TransferFeeBufferKobo + payout.PlatformFeeKobo
-	
+
 	// Reversal
 	err = s.q.CreditIntegratorBalance(ctx, sqlc.CreditIntegratorBalanceParams{
 		ID:                payout.IntegratorID,
@@ -263,4 +263,3 @@ func (s *Service) ListPayouts(ctx context.Context, integratorID uuid.UUID, limit
 		Offset:       offset,
 	})
 }
-

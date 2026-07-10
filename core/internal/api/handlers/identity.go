@@ -55,9 +55,9 @@ func (h *IdentityHandler) Create(w http.ResponseWriter, r *http.Request) {
 	// Synchronously provision the account (Serverless Option 1)
 	if err := h.accountSvc.Provision(r.Context(), ident.ID, integratorID); err != nil {
 		log.Printf("failed to provision account synchronously for identity %s: %v. Deleting identity to avoid failed state.", ident.ID, err)
-		
+
 		_ = h.svc.Delete(r.Context(), ident.ID, integratorID)
-		
+
 		apierrors.LogAndWriteError(w, http.StatusBadGateway, "provisioning_failed", "failed to create virtual account with provider", err)
 		return
 	}

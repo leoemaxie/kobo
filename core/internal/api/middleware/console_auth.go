@@ -30,7 +30,7 @@ func ConsoleAuthMiddleware(q sqlc.Querier) func(http.Handler) http.Handler {
 			}
 
 			token := strings.TrimPrefix(authHeader, "Bearer ")
-			
+
 			session, err := q.GetConsoleSession(r.Context(), token)
 			if err != nil {
 				apierrors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Invalid or expired session")

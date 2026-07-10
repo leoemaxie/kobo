@@ -31,7 +31,7 @@ type WebhookPayload struct {
 			CustomerId     string  `json:"customerId"`
 		} `json:"order"`
 		TokenizedCardData *TokenizedCardData `json:"tokenizedCardData,omitempty"`
-		
+
 		// Transfer fields
 		ID     string `json:"id,omitempty"`
 		Status string `json:"status,omitempty"`

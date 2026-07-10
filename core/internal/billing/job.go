@@ -80,7 +80,7 @@ func (j *InvoiceJob) Run(ctx context.Context) error {
 				Amount:         float64(inv.AmountKobo) / 100.0,
 				Currency:       "NGN",
 				OrderReference: "inv_" + inv.ID.String(),
-				CustomerEmail:  "billing@yourdomain.com", // Required by Nomba API
+				CustomerEmail:  "billing@yourdomain.com",                    // Required by Nomba API
 				CallbackUrl:    "https://api.yourdomain.com/webhooks/nomba", // Required by Nomba API
 			},
 		})

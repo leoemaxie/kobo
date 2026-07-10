@@ -12,16 +12,16 @@ import (
 )
 
 type mockRepository struct {
-	CreateIdentityFunc                 func(ctx context.Context, arg sqlc.CreateIdentityParams) (sqlc.Identity, error)
-	GetIdentityByIDFunc                func(ctx context.Context, arg sqlc.GetIdentityByIDParams) (sqlc.Identity, error)
-	GetIdentityByExternalReferenceFunc func(ctx context.Context, arg sqlc.GetIdentityByExternalReferenceParams) (sqlc.Identity, error)
-	DeleteIdentityCascadeFunc          func(ctx context.Context, arg sqlc.DeleteIdentityCascadeParams) error
-	UpdateIdentityProfileFunc          func(ctx context.Context, arg sqlc.UpdateIdentityProfileParams) (sqlc.Identity, error)
-	UpdateIdentityStateFunc            func(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error)
-	ListIdentitiesByStateFunc          func(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error)
-	ListIdentitiesFunc                 func(ctx context.Context, arg sqlc.ListIdentitiesParams) ([]sqlc.Identity, error)
-	InsertIdentityEventFunc            func(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error)
-	ListIdentityEventsFunc                 func(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error)
+	CreateIdentityFunc                      func(ctx context.Context, arg sqlc.CreateIdentityParams) (sqlc.Identity, error)
+	GetIdentityByIDFunc                     func(ctx context.Context, arg sqlc.GetIdentityByIDParams) (sqlc.Identity, error)
+	GetIdentityByExternalReferenceFunc      func(ctx context.Context, arg sqlc.GetIdentityByExternalReferenceParams) (sqlc.Identity, error)
+	DeleteIdentityCascadeFunc               func(ctx context.Context, arg sqlc.DeleteIdentityCascadeParams) error
+	UpdateIdentityProfileFunc               func(ctx context.Context, arg sqlc.UpdateIdentityProfileParams) (sqlc.Identity, error)
+	UpdateIdentityStateFunc                 func(ctx context.Context, arg sqlc.UpdateIdentityStateParams) (sqlc.Identity, error)
+	ListIdentitiesByStateFunc               func(ctx context.Context, arg sqlc.ListIdentitiesByStateParams) ([]sqlc.Identity, error)
+	ListIdentitiesFunc                      func(ctx context.Context, arg sqlc.ListIdentitiesParams) ([]sqlc.Identity, error)
+	InsertIdentityEventFunc                 func(ctx context.Context, arg sqlc.InsertIdentityEventParams) (sqlc.IdentityEvent, error)
+	ListIdentityEventsFunc                  func(ctx context.Context, identityID uuid.UUID) ([]sqlc.IdentityEvent, error)
 	GetActiveVirtualAccountByIdentityIDFunc func(ctx context.Context, identityID uuid.UUID) (sqlc.VirtualAccount, error)
 }
 
