@@ -32,7 +32,7 @@
           };
         }}
       >
-        <Button type="submit" variant="secondary" size="md">
+        <Button type="submit" variant="ghost" size="md">
           <LogOut size={13} /> Leave Workspace
         </Button>
       </form>
