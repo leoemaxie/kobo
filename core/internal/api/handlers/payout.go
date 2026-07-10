@@ -30,7 +30,7 @@ func (h *PayoutHandler) Svc() *payout.Service {
 func (h *PayoutHandler) ListBanks(w http.ResponseWriter, r *http.Request) {
 	banks, err := h.nombaClient.ListBanks(r.Context())
 	if err != nil {
-		apierrors.WriteError(w, http.StatusInternalServerError, "internal_error", "Failed to list banks")
+		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "Failed to list banks", err)
 		return
 	}
 
