@@ -130,10 +130,12 @@ export const actions: Actions = {
       }
 
       const data = await res.json();
-      if (data.checkout_link) {
-        throw redirect(303, data.checkout_link);
+      const link = data.checkout_link || data.checkoutLink || data.CheckoutLink;
+      if (link) {
+        throw redirect(303, link);
       }
 
+      console.error("Invalid payment gateway response:", data);
       return fail(500, { error: "Invalid response from payment gateway" });
     } catch (e) {
       if ((e as any).status === 303) throw e;
