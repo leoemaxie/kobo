@@ -61,6 +61,16 @@ const config: Config = {
         }
       },
     ],
+    [
+      'docusaurus-plugin-mcp-server',
+      {
+        server: {
+          name: 'kobo-docs',
+          version: '1.0.0',
+        },
+        excludeRoutes: ['/', '/404*', '/search*'],
+      },
+    ],
     './src/plugins/webpack-fallback/index.js',
   ],
 
