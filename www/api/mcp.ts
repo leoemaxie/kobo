@@ -2,9 +2,7 @@ import { createWebRequestHandler } from 'docusaurus-plugin-mcp-server/adapters';
 import docs from '../build/mcp/docs.json';
 import searchIndex from '../build/mcp/search-index.json';
 
-export const config = {
-  runtime: 'edge',
-};
+
 
 const handler = createWebRequestHandler({
   docs,
