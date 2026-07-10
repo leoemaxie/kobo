@@ -1,15 +1,15 @@
-import { fail, redirect, isRedirect } from "@sveltejs/kit";
-import type { Actions, PageServerLoad } from "./$types";
-import { db } from "$lib/server/db";
-import { users, passwordResetTokens } from "$lib/server/db/schema";
-import { eq, and, gt } from "drizzle-orm";
-import * as argon2 from "argon2";
-import { revokeAllSessionsForUser } from "$lib/server/auth/session";
-import { hashToken } from "$lib/server/auth/token";
+import { fail, redirect, isRedirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+import { db } from '$lib/server/db';
+import { users, passwordResetTokens } from '$lib/server/db/schema';
+import { eq, and, gt } from 'drizzle-orm';
+import * as argon2 from 'argon2';
+import { revokeAllSessionsForUser } from '$lib/server/auth/session';
+import { hashToken } from '$lib/server/auth/token';
 
 export const load: PageServerLoad = async ({ url }) => {
-  const token = url.searchParams.get("token");
-  if (!token) throw redirect(302, "/auth/login");
+  const token = url.searchParams.get('token');
+  if (!token) throw redirect(302, '/auth/login');
 
   const tokenHash = hashToken(token);
 
@@ -17,15 +17,12 @@ export const load: PageServerLoad = async ({ url }) => {
     .select()
     .from(passwordResetTokens)
     .where(
-      and(
-        eq(passwordResetTokens.id, tokenHash),
-        gt(passwordResetTokens.expiresAt, new Date()),
-      ),
+      and(eq(passwordResetTokens.id, tokenHash), gt(passwordResetTokens.expiresAt, new Date())),
     )
     .limit(1);
 
   if (!tokenData) {
-    throw redirect(302, "/auth/login?error=invalid_reset_token");
+    throw redirect(302, '/auth/login?error=invalid_reset_token');
   }
 
   return { token };
@@ -35,12 +32,11 @@ export const actions: Actions = {
   default: async ({ request, url }) => {
     try {
       const data = await request.formData();
-      const token =
-        url.searchParams.get("token") || data.get("token")?.toString();
-      const password = data.get("password")?.toString();
+      const token = url.searchParams.get('token') || data.get('token')?.toString();
+      const password = data.get('password')?.toString();
 
       if (!token || !password) {
-        return fail(400, { error: "Missing required fields" });
+        return fail(400, { error: 'Missing required fields' });
       }
 
       const tokenHash = hashToken(token);
@@ -49,15 +45,12 @@ export const actions: Actions = {
         .select()
         .from(passwordResetTokens)
         .where(
-          and(
-            eq(passwordResetTokens.id, tokenHash),
-            gt(passwordResetTokens.expiresAt, new Date()),
-          ),
+          and(eq(passwordResetTokens.id, tokenHash), gt(passwordResetTokens.expiresAt, new Date())),
         )
         .limit(1);
 
       if (!tokenData) {
-        return fail(400, { error: "Invalid or expired token" });
+        return fail(400, { error: 'Invalid or expired token' });
       }
 
       const passwordHash = await argon2.hash(password);
@@ -68,22 +61,20 @@ export const actions: Actions = {
         .where(eq(users.id, tokenData.userId));
 
       // Delete the token instead of setting usedAt
-      await db
-        .delete(passwordResetTokens)
-        .where(eq(passwordResetTokens.id, tokenHash));
+      await db.delete(passwordResetTokens).where(eq(passwordResetTokens.id, tokenHash));
 
       // Revoke all existing sessions so old logins are terminated
       await revokeAllSessionsForUser(tokenData.userId);
 
-      throw redirect(303, "/auth/login?reset=success");
+      throw redirect(303, '/auth/login?reset=success');
     } catch (error) {
       if (isRedirect(error)) {
         throw error;
       }
 
-      console.error("Password reset error:", error);
+      console.error('Password reset error:', error);
       return fail(500, {
-        error: "An unexpected error occurred during password reset.",
+        error: 'An unexpected error occurred during password reset.',
       });
     }
   },

@@ -1,6 +1,6 @@
-import { setContext, getContext } from "svelte";
+import { setContext, getContext } from 'svelte';
 
-const CONSOLE_STATE_KEY = Symbol("CONSOLE_STATE");
+const CONSOLE_STATE_KEY = Symbol('CONSOLE_STATE');
 
 export class ConsoleState {
   apiKeys = $state<any[]>([]);
@@ -12,7 +12,7 @@ export class ConsoleState {
   logs = $state<any[]>([]); // API Logs from the dashboard
   settings = $state<any>(null);
   user = $state<any>(null);
-  currentEnvironment = $state<"sandbox" | "production">("sandbox");
+  currentEnvironment = $state<'sandbox' | 'production'>('sandbox');
 
   // Admin-specific state
   adminIntegrators = $state<any[]>([]);
@@ -61,7 +61,7 @@ export function useConsoleState(): ConsoleState {
   const state = getContext<ConsoleState>(CONSOLE_STATE_KEY);
   if (!state) {
     throw new Error(
-      "useConsoleState must be used within a component tree initialized with initConsoleState()",
+      'useConsoleState must be used within a component tree initialized with initConsoleState()',
     );
   }
   return state;

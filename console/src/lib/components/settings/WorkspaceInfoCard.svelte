@@ -17,7 +17,7 @@
   use:enhance={() => {
     return async ({ result, update }) => {
       if (result.type === 'failure') {
-        toast.error(result.data?.error as string || 'Update failed.');
+        toast.error((result.data?.error as string) || 'Update failed.');
       } else if (result.type === 'error') {
         toast.error('An unexpected server error occurred.');
       } else {

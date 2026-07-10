@@ -1,6 +1,6 @@
 export function verificationEmailTemplate(
   token: string,
-  baseUrl: string = "https://console.kobo.dev",
+  baseUrl: string = 'https://console.kobo.dev',
 ): string {
   const verifyUrl = `${baseUrl}/auth/verify-email?token=${token}`;
   return `
@@ -24,10 +24,7 @@ export function verificationEmailTemplate(
 	`;
 }
 
-export function keyRotationAlertTemplate(
-  environment: string,
-  keyId: string,
-): string {
+export function keyRotationAlertTemplate(environment: string, keyId: string): string {
   return `
 		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
 			<div style="background-color: #111; border: 1px solid #222; border-radius: 12px; padding: 40px;">
@@ -54,7 +51,7 @@ export function keyRotationAlertTemplate(
 export function billingNoticeTemplate(
   period: string,
   amount: string,
-  invoiceUrl: string = "https://console.kobo.dev/dashboard/billing",
+  invoiceUrl: string = 'https://console.kobo.dev/dashboard/billing',
 ): string {
   return `
 		<div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 24px; color: #f5f5f5; background-color: #0a0a0a;">
@@ -80,7 +77,7 @@ export function billingNoticeTemplate(
 
 export function passwordResetTemplate(
   token: string,
-  baseUrl: string = "https://console.kobo.dev",
+  baseUrl: string = 'https://console.kobo.dev',
 ): string {
   const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
   return `
@@ -108,7 +105,7 @@ export function invitationEmailTemplate(
   role: string,
   workspaceName: string,
   token: string,
-  baseUrl: string = "https://console.kobo.dev",
+  baseUrl: string = 'https://console.kobo.dev',
 ): string {
   const inviteUrl = `${baseUrl}/auth/accept-invite?token=${token}`;
   return `

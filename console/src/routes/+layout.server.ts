@@ -1,6 +1,6 @@
-import { db } from "$lib/server/db";
-import { apiIntegrators } from "$lib/server/db/schema";
-import { eq } from "drizzle-orm";
+import { db } from '$lib/server/db';
+import { apiIntegrators } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 
 export const load = async ({ locals }: any) => {
   let integrator = null;

@@ -4,26 +4,43 @@
 
   const consoleState = useConsoleState();
   const logs = $derived(consoleState.adminAuditLogs);
-
 </script>
 
 <svelte:head>
   <title>Audit Log | Kobo Console</title>
 </svelte:head>
 
-
 <div class="space-y-6">
-
   <Card class="p-0 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-border">
         <thead class="bg-sidebar">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Timestamp</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Actor</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Action</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Target</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Details</th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Timestamp</th
+            >
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Actor</th
+            >
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Action</th
+            >
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Target</th
+            >
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Details</th
+            >
           </tr>
         </thead>
         <tbody class="bg-element divide-y divide-border text-sm text-main">

@@ -17,38 +17,58 @@
           <img src="/logo.png" alt="Kobo Logo" class="h-8 w-auto invert opacity-90" />
           <span class="text-xl font-bold tracking-tight text-pure-white select-none">Console</span>
         </div>
-        
+
         <div class="hidden sm:flex sm:space-x-1">
-          <a href="/dashboard" 
-             class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page.url.pathname === '/dashboard' ? 'bg-carbon text-pure-white border border-iron' : 'text-smoke hover:bg-carbon hover:text-bone'}">
+          <a
+            href="/dashboard"
+            class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page
+              .url.pathname === '/dashboard'
+              ? 'bg-carbon text-pure-white border border-iron'
+              : 'text-smoke hover:bg-carbon hover:text-bone'}"
+          >
             <LayoutDashboard size={16} /> Dashboard
           </a>
-          <a href="/api-keys" 
-             class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page.url.pathname === '/dashboard/api-keys' ? 'bg-carbon text-pure-white border border-iron' : 'text-smoke hover:bg-carbon hover:text-bone'}">
+          <a
+            href="/api-keys"
+            class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page
+              .url.pathname === '/dashboard/api-keys'
+              ? 'bg-carbon text-pure-white border border-iron'
+              : 'text-smoke hover:bg-carbon hover:text-bone'}"
+          >
             <Key size={16} /> API Keys
           </a>
-          <a href="/billing" 
-             class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page.url.pathname === '/dashboard/billing' ? 'bg-carbon text-pure-white border border-iron' : 'text-smoke hover:bg-carbon hover:text-bone'}">
+          <a
+            href="/billing"
+            class="flex items-center gap-2 px-3 py-2 rounded-radius-md text-sm font-medium transition-colors {page
+              .url.pathname === '/dashboard/billing'
+              ? 'bg-carbon text-pure-white border border-iron'
+              : 'text-smoke hover:bg-carbon hover:text-bone'}"
+          >
             <CreditCard size={16} /> Billing
           </a>
         </div>
       </div>
 
       <div class="flex items-center gap-4">
-        <button 
+        <button
           onclick={toggleEnv}
           class="flex items-center gap-2 rounded-radius-full border border-iron bg-carbon px-3 py-1 text-xs font-semibold uppercase tracking-widest transition-all hover:bg-graphite"
         >
           {#if currentEnv === 'sandbox'}
-            <span class="h-2 w-2 rounded-full bg-smoke shadow-[0_0_8px_rgba(160,160,160,0.5)]"></span>
+            <span class="h-2 w-2 rounded-full bg-smoke shadow-[0_0_8px_rgba(160,160,160,0.5)]"
+            ></span>
             <span class="text-smoke">Sandbox</span>
           {:else}
-            <span class="h-2 w-2 rounded-full bg-electric-lime shadow-[0_0_8px_rgba(250,255,105,0.5)]"></span>
+            <span
+              class="h-2 w-2 rounded-full bg-electric-lime shadow-[0_0_8px_rgba(250,255,105,0.5)]"
+            ></span>
             <span class="text-electric-lime">Production</span>
           {/if}
         </button>
 
-        <div class="h-8 w-8 rounded-full bg-graphite flex items-center justify-center border border-iron text-sm font-medium text-bone">
+        <div
+          class="h-8 w-8 rounded-full bg-graphite flex items-center justify-center border border-iron text-sm font-medium text-bone"
+        >
           A
         </div>
       </div>

@@ -9,7 +9,6 @@
   <title>Dashboard | Kobo Console</title>
 </svelte:head>
 
-
 <div class="space-y-6">
   <!-- Page header + project metadata -->
   <DashboardHeader />

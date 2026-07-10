@@ -25,7 +25,9 @@
 </script>
 
 <code
-  class="font-inconsolata text-[11px] border rounded px-2 py-0.5 tracking-[0.05em] {styles[variant]} {className}"
+  class="font-inconsolata text-[11px] border rounded px-2 py-0.5 tracking-[0.05em] {styles[
+    variant
+  ]} {className}"
 >
   {@render children()}
 </code>

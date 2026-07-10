@@ -1,13 +1,13 @@
-import type { PageServerLoad } from "./$types";
-import { db } from "$lib/server/db";
-import { apiIntegrators, users } from "$lib/server/db/schema";
-import { eq, desc } from "drizzle-orm";
-import { redirect, fail } from "@sveltejs/kit";
+import type { PageServerLoad } from './$types';
+import { db } from '$lib/server/db';
+import { apiIntegrators, users } from '$lib/server/db/schema';
+import { eq, desc } from 'drizzle-orm';
+import { redirect, fail } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
   const user = locals.user;
-  if (!user || user.role !== "superadmin") {
-    throw redirect(302, "/auth/login");
+  if (!user || user.role !== 'superadmin') {
+    throw redirect(302, '/auth/login');
   }
 
   const allInteg = await db
@@ -31,13 +31,13 @@ export const load: PageServerLoad = async ({ locals }) => {
       mapped.push({
         id: row.id,
         name: row.name,
-        email: row.email || "No owner email",
+        email: row.email || 'No owner email',
         status: row.status,
         prodAccess: row.prodAccess,
-        joined: row.joined.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
+        joined: row.joined.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
         }),
       });
     }

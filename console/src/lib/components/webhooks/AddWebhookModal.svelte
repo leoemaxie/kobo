@@ -18,7 +18,7 @@
     'account.created': false,
     'transaction.completed': false,
     'transaction.failed': false,
-    'account.closed': false
+    'account.closed': false,
   });
 
   function handleCopy() {
@@ -26,36 +26,58 @@
     toast.success('Secret copied to clipboard');
   }
 
-  let eventsList = $derived(Object.keys(selectedEvents).filter(k => selectedEvents[k]).join(','));
+  let eventsList = $derived(
+    Object.keys(selectedEvents)
+      .filter((k) => selectedEvents[k])
+      .join(','),
+  );
 </script>
 
 <Modal title="Add Webhook Endpoint" {onClose}>
   {#if !secretKey}
-    <form method="POST" action="?/addEndpoint" use:enhance={() => {
-      isLoading = true;
-      return async ({ result, update }) => {
-        isLoading = false;
-        if (result.type === 'success' && (result as any).data?.secret) {
-          secretKey = (result as any).data.secret as string;
-          toast.success('Webhook endpoint created');
-        } else {
-          toast.error((result as any).data?.error || 'Failed to add endpoint');
-        }
-        await update({ reset: false });
-      };
-    }} class="p-6 flex flex-col gap-5">
-      
+    <form
+      method="POST"
+      action="?/addEndpoint"
+      use:enhance={() => {
+        isLoading = true;
+        return async ({ result, update }) => {
+          isLoading = false;
+          if (result.type === 'success' && (result as any).data?.secret) {
+            secretKey = (result as any).data.secret as string;
+            toast.success('Webhook endpoint created');
+          } else {
+            toast.error((result as any).data?.error || 'Failed to add endpoint');
+          }
+          await update({ reset: false });
+        };
+      }}
+      class="p-6 flex flex-col gap-5"
+    >
       <input type="hidden" name="environment" value={currentEnv} />
-      
-      <Input id="url" label="Endpoint URL" type="url" name="url" placeholder="https://api.yourdomain.com/webhooks" required class="font-mono" />
+
+      <Input
+        id="url"
+        label="Endpoint URL"
+        type="url"
+        name="url"
+        placeholder="https://api.yourdomain.com/webhooks"
+        required
+        class="font-mono"
+      />
 
       <div class="space-y-1.5">
-        <label for="events" class="block text-xs font-semibold text-muted uppercase tracking-widest">Events to Listen For</label>
+        <label for="events" class="block text-xs font-semibold text-muted uppercase tracking-widest"
+          >Events to Listen For</label
+        >
         <input id="events" type="hidden" name="events" value={eventsList} />
         <div class="flex flex-col gap-2 bg-sidebar border border-border p-3 rounded-lg">
           {#each Object.keys(selectedEvents) as event}
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" bind:checked={selectedEvents[event]} class="rounded bg-element border-border text-primary focus:ring-primary focus:ring-offset-sidebar" />
+              <input
+                type="checkbox"
+                bind:checked={selectedEvents[event]}
+                class="rounded bg-element border-border text-primary focus:ring-primary focus:ring-offset-sidebar"
+              />
               <span class="text-sm font-mono text-main">{event}</span>
             </label>
           {/each}
@@ -73,11 +95,21 @@
     <div class="p-6 flex flex-col gap-5">
       <div class="bg-primary-transparent border border-primary-border rounded-lg p-4">
         <p class="text-sm font-medium text-primary mb-2">Please copy this webhook secret now.</p>
-        <p class="text-xs text-muted leading-relaxed">Use this secret to verify webhook payloads. It will not be shown again.</p>
+        <p class="text-xs text-muted leading-relaxed">
+          Use this secret to verify webhook payloads. It will not be shown again.
+        </p>
       </div>
       <div class="relative">
-        <input type="text" readonly value={secretKey} class="w-full bg-sidebar border border-border rounded-lg pl-4 pr-12 py-3 text-sm font-mono text-main" />
-        <button onclick={handleCopy} class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-muted hover:text-primary transition-colors">
+        <input
+          type="text"
+          readonly
+          value={secretKey}
+          class="w-full bg-sidebar border border-border rounded-lg pl-4 pr-12 py-3 text-sm font-mono text-main"
+        />
+        <button
+          onclick={handleCopy}
+          class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-muted hover:text-primary transition-colors"
+        >
           <Copy size={16} />
         </button>
       </div>

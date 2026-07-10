@@ -17,34 +17,56 @@
   <title>Sign Up | Kobo Console</title>
 </svelte:head>
 
-
 <div class="w-full">
   <AuthLogo heading="Create your account">
     Already have an account?
-    <a href="/auth/login" class="font-semibold text-primary hover:opacity-80 transition-colors ml-1">Sign in</a>
+    <a href="/auth/login" class="font-semibold text-primary hover:opacity-80 transition-colors ml-1"
+      >Sign in</a
+    >
   </AuthLogo>
 
   <!-- Card -->
   <div class="bg-element border border-border rounded-[10px] px-6 sm:px-16 py-6 shadow-sm">
-    <form class="space-y-6" method="POST" use:enhance={() => {
-      loading = true;
-      return async ({ result, update }) => {
-        loading = false;
-        if (result.type === 'failure') {
-          toast.error(result.data?.error as string || 'Signup failed. Please check your details.');
-        } else if (result.type === 'error') {
-          toast.error('An unexpected server error occurred.');
-        }
-        await update();
-      };
-    }}>
-
+    <form
+      class="space-y-6"
+      method="POST"
+      use:enhance={() => {
+        loading = true;
+        return async ({ result, update }) => {
+          loading = false;
+          if (result.type === 'failure') {
+            toast.error(
+              (result.data?.error as string) || 'Signup failed. Please check your details.',
+            );
+          } else if (result.type === 'error') {
+            toast.error('An unexpected server error occurred.');
+          }
+          await update();
+        };
+      }}
+    >
       <!-- Email field -->
-      <IconInput id="email" label="Work Email" type="email" name="email" placeholder="you@company.com" bind:value={email} required>
+      <IconInput
+        id="email"
+        label="Work Email"
+        type="email"
+        name="email"
+        placeholder="you@company.com"
+        bind:value={email}
+        required
+      >
         {#snippet icon()}<Mail size={15} class="text-subtle" />{/snippet}
       </IconInput>
 
-      <IconInput id="password" label="Password" type={showPassword ? 'text' : 'password'} name="password" placeholder="••••••••••••" bind:value={password} required>
+      <IconInput
+        id="password"
+        label="Password"
+        type={showPassword ? 'text' : 'password'}
+        name="password"
+        placeholder="••••••••••••"
+        bind:value={password}
+        required
+      >
         {#snippet icon()}<Lock size={15} class="text-subtle" />{/snippet}
         {#snippet trailing()}
           <button
@@ -57,7 +79,6 @@
           </button>
         {/snippet}
       </IconInput>
-
 
       <div class="pt-1">
         <Button type="submit" variant="primary" size="lg" class="w-full" disabled={loading}>

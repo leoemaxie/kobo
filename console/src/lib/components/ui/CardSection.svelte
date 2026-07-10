@@ -27,11 +27,15 @@
 </script>
 
 <div
-  class="bg-element border rounded-lg overflow-hidden {danger ? 'border-red-500/25' : 'border-border-subtle'} {className}"
+  class="bg-element border rounded-lg overflow-hidden {danger
+    ? 'border-red-500/25'
+    : 'border-border-subtle'} {className}"
 >
   <!-- Header band -->
   <div
-    class="px-5 py-4 border-b flex items-center justify-between {danger ? 'border-red-500/25 bg-red-500/[0.06]' : 'border-border-subtle bg-sidebar'}"
+    class="px-5 py-4 border-b flex items-center justify-between {danger
+      ? 'border-red-500/25 bg-red-500/[0.06]'
+      : 'border-border-subtle bg-sidebar'}"
   >
     <div>
       <h3 class="text-sm font-semibold {danger ? 'text-red-400' : 'text-main'} m-0">{title}</h3>

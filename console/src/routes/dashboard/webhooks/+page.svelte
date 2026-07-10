@@ -11,7 +11,9 @@
 
   const consoleState = useConsoleState();
   let currentEnv = $derived(consoleState.currentEnvironment);
-  let filteredEndpoints = $derived(data.endpoints.filter((e: any) => e.environment === currentEnv || !e.environment));
+  let filteredEndpoints = $derived(
+    data.endpoints.filter((e: any) => e.environment === currentEnv || !e.environment),
+  );
 
   let showAddModal = $state(false);
 </script>
@@ -30,7 +32,7 @@
       <CodeBadge variant="neutral">{filteredEndpoints.length} / 5</CodeBadge>
     {/snippet}
     {#snippet actions()}
-      <Button variant="primary" size="md" onclick={() => showAddModal = true}>
+      <Button variant="primary" size="md" onclick={() => (showAddModal = true)}>
         <Plus size={13} /> Add Endpoint
       </Button>
     {/snippet}
@@ -40,5 +42,5 @@
 </div>
 
 {#if showAddModal}
-  <AddWebhookModal onClose={() => showAddModal = false} />
+  <AddWebhookModal onClose={() => (showAddModal = false)} />
 {/if}

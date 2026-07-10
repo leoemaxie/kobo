@@ -23,8 +23,8 @@
       '/auth/verify-email',
       '/auth/forgot-password',
       '/auth/reset-password',
-      '/dashboard/onboarding'
-    ].includes(page.url.pathname)
+      '/dashboard/onboarding',
+    ].includes(page.url.pathname),
   );
   let isAdminRoute = $derived(page.url.pathname.startsWith('/admin'));
   let isMobileMenuOpen = $state(false);
@@ -37,9 +37,9 @@
   <div class="flex h-screen w-screen overflow-hidden bg-[var(--bg-app)]">
     <!-- Overlay for mobile sidebar -->
     {#if isMobileMenuOpen}
-      <div 
+      <div
         class="fixed inset-0 bg-black/50 z-40 lg:hidden"
-        onclick={() => isMobileMenuOpen = false}
+        onclick={() => (isMobileMenuOpen = false)}
         role="button"
         tabindex="0"
         aria-label="Close menu"
@@ -48,17 +48,19 @@
     {/if}
 
     <!-- Sidebar -->
-    <div class="
+    <div
+      class="
       fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-in-out
       lg:relative lg:translate-x-0
       {isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-    ">
-      <Sidebar onCloseMobile={() => isMobileMenuOpen = false} />
+    "
+    >
+      <Sidebar onCloseMobile={() => (isMobileMenuOpen = false)} />
     </div>
 
     <!-- Main Content -->
     <div class="flex flex-col flex-1 min-w-0 overflow-hidden w-full">
-      <Header bind:isMobileMenuOpen={isMobileMenuOpen} />
+      <Header bind:isMobileMenuOpen />
       <main class="flex-1 overflow-y-auto px-5 py-6 sm:p-6 lg:px-12 lg:py-8 pb-16">
         {#if navigating.to}
           <PageSkeleton />

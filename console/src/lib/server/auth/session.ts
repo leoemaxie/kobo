@@ -1,7 +1,7 @@
-import { db } from "$lib/server/db";
-import { sessions, users } from "$lib/server/db/schema";
-import { eq, and, gt } from "drizzle-orm";
-import { generateToken, hashToken } from "./token";
+import { db } from '$lib/server/db';
+import { sessions, users } from '$lib/server/db/schema';
+import { eq, and, gt } from 'drizzle-orm';
+import { generateToken, hashToken } from './token';
 
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 

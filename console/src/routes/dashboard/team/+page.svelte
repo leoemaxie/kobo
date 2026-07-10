@@ -22,7 +22,7 @@
       <CodeBadge>{data.members.length} / 10</CodeBadge>
     {/snippet}
     {#snippet actions()}
-      <Button variant="primary" size="md" onclick={() => showInviteModal = true}>
+      <Button variant="primary" size="md" onclick={() => (showInviteModal = true)}>
         <Plus size={13} /> Invite Member
       </Button>
     {/snippet}
@@ -32,5 +32,5 @@
 </div>
 
 {#if showInviteModal}
-  <InviteMemberModal onClose={() => showInviteModal = false} />
+  <InviteMemberModal onClose={() => (showInviteModal = false)} />
 {/if}

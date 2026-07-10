@@ -18,7 +18,9 @@
   } = $props();
 </script>
 
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 border-b border-border-subtle gap-4 sm:gap-0">
+<div
+  class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-5 border-b border-border-subtle gap-4 sm:gap-0"
+>
   <div>
     <p class="text-[11px] font-bold uppercase tracking-widest text-subtle mb-1.5">{title}</p>
     {#if meta}

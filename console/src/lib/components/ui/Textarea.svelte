@@ -24,9 +24,11 @@
   } = $props();
 
   const inputStyles: Record<string, string> = {
-    default:  'block w-full rounded-[6px] border border-border bg-sidebar px-3 py-2 text-sm text-main placeholder:text-subtle focus:border-primary focus:outline-none transition-colors resize-vertical',
-    settings: 'block w-full max-w-[400px] rounded-[6px] border border-border bg-element px-3 py-2 text-sm text-main placeholder:text-subtle focus:border-primary focus:outline-none transition-colors resize-vertical',
-    mono:     'block w-full rounded-lg border border-border bg-sidebar px-4 py-2.5 text-sm font-mono text-main placeholder:text-subtle focus:border-border-focus focus:outline-none transition-colors resize-vertical',
+    default:
+      'block w-full rounded-[6px] border border-border bg-sidebar px-3 py-2 text-sm text-main placeholder:text-subtle focus:border-primary focus:outline-none transition-colors resize-vertical',
+    settings:
+      'block w-full max-w-[400px] rounded-[6px] border border-border bg-element px-3 py-2 text-sm text-main placeholder:text-subtle focus:border-primary focus:outline-none transition-colors resize-vertical',
+    mono: 'block w-full rounded-lg border border-border bg-sidebar px-4 py-2.5 text-sm font-mono text-main placeholder:text-subtle focus:border-border-focus focus:outline-none transition-colors resize-vertical',
   };
 </script>
 
@@ -46,6 +48,5 @@
     {placeholder}
     bind:value
     class={inputStyles[variant]}
-    {...rest}
-  ></textarea>
+    {...rest}></textarea>
 </div>

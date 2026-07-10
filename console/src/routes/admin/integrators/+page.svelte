@@ -13,18 +13,32 @@
   <title>Integrators | Kobo Console</title>
 </svelte:head>
 
-
 <div class="space-y-6">
-
   <Card class="pt-1 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-border">
         <thead class="bg-sidebar">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Integrator</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Status</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Env Access</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase">Joined</th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Integrator</th
+            >
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Status</th
+            >
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Env Access</th
+            >
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium tracking-wider text-muted uppercase"
+              >Joined</th
+            >
             <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
           </tr>
         </thead>
@@ -39,59 +53,94 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 {#if integrator.status === 'active'}
-                  <span class="inline-flex items-center rounded-radius-full bg-primary-transparent border border-primary-border px-2.5 py-0.5 text-xs font-medium text-primary">Active</span>
+                  <span
+                    class="inline-flex items-center rounded-radius-full bg-primary-transparent border border-primary-border px-2.5 py-0.5 text-xs font-medium text-primary"
+                    >Active</span
+                  >
                 {:else}
-                  <span class="inline-flex items-center rounded-radius-full bg-sidebar border border-border px-2.5 py-0.5 text-xs font-medium text-subtle">Suspended</span>
+                  <span
+                    class="inline-flex items-center rounded-radius-full bg-sidebar border border-border px-2.5 py-0.5 text-xs font-medium text-subtle"
+                    >Suspended</span
+                  >
                 {/if}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full bg-muted shadow-sm" title="Sandbox Access"></span>
+                  <span class="h-2 w-2 rounded-full bg-muted shadow-sm" title="Sandbox Access"
+                  ></span>
                   {#if integrator.prodAccess}
-                    <span class="h-2 w-2 rounded-full bg-primary shadow-sm" title="Production Access"></span>
+                    <span
+                      class="h-2 w-2 rounded-full bg-primary shadow-sm"
+                      title="Production Access"
+                    ></span>
                   {/if}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-muted">{integrator.joined}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-2">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-2"
+              >
                 {#if !integrator.prodAccess && integrator.status === 'active'}
-                  <form method="POST" action="?/grantProduction" use:enhance={() => {
-                    return async ({ result, update }) => {
-                      if (result.type === 'success') toast.success('Granted production access');
-                      else toast.error((result as any).data?.error || 'Failed to grant access');
-                      await update();
-                    };
-                  }}>
+                  <form
+                    method="POST"
+                    action="?/grantProduction"
+                    use:enhance={() => {
+                      return async ({ result, update }) => {
+                        if (result.type === 'success') toast.success('Granted production access');
+                        else toast.error((result as any).data?.error || 'Failed to grant access');
+                        await update();
+                      };
+                    }}
+                  >
                     <input type="hidden" name="id" value={integrator.id} />
                     <Button type="submit" variant="pill" class="!px-2 !py-1 text-xs gap-1">
                       <CheckCircle size={12} /> Grant Prod
                     </Button>
                   </form>
                 {/if}
-                
+
                 {#if integrator.status === 'active'}
-                  <form method="POST" action="?/suspendIntegrator" use:enhance={() => {
-                    return async ({ result, update }) => {
-                      if (result.type === 'success') toast.success('Integrator suspended');
-                      else toast.error((result as any).data?.error || 'Failed to suspend');
-                      await update();
-                    };
-                  }}>
+                  <form
+                    method="POST"
+                    action="?/suspendIntegrator"
+                    use:enhance={() => {
+                      return async ({ result, update }) => {
+                        if (result.type === 'success') toast.success('Integrator suspended');
+                        else toast.error((result as any).data?.error || 'Failed to suspend');
+                        await update();
+                      };
+                    }}
+                  >
                     <input type="hidden" name="id" value={integrator.id} />
-                    <button type="submit" onclick={(e) => { if(!confirm('Suspend integrator?')) e.preventDefault(); }} class="text-muted hover:text-error transition-colors mt-1.5" title="Suspend Integrator">
+                    <button
+                      type="submit"
+                      onclick={(e) => {
+                        if (!confirm('Suspend integrator?')) e.preventDefault();
+                      }}
+                      class="text-muted hover:text-error transition-colors mt-1.5"
+                      title="Suspend Integrator"
+                    >
                       <Ban size={16} />
                     </button>
                   </form>
                 {:else}
-                  <form method="POST" action="?/reinstateIntegrator" use:enhance={() => {
-                    return async ({ result, update }) => {
-                      if (result.type === 'success') toast.success('Integrator reinstated');
-                      else toast.error((result as any).data?.error || 'Failed to reinstate');
-                      await update();
-                    };
-                  }}>
+                  <form
+                    method="POST"
+                    action="?/reinstateIntegrator"
+                    use:enhance={() => {
+                      return async ({ result, update }) => {
+                        if (result.type === 'success') toast.success('Integrator reinstated');
+                        else toast.error((result as any).data?.error || 'Failed to reinstate');
+                        await update();
+                      };
+                    }}
+                  >
                     <input type="hidden" name="id" value={integrator.id} />
-                    <button type="submit" class="text-muted hover:text-primary transition-colors mt-1.5" title="Reinstate Integrator">
+                    <button
+                      type="submit"
+                      class="text-muted hover:text-primary transition-colors mt-1.5"
+                      title="Reinstate Integrator"
+                    >
                       <Play size={16} />
                     </button>
                   </form>

@@ -28,14 +28,19 @@
     [key: string]: unknown;
   } = $props();
 
-  const base = 'inline-flex items-center justify-center gap-1.5 font-inter font-bold cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-60 disabled:cursor-not-allowed';
+  const base =
+    'inline-flex items-center justify-center gap-1.5 font-inter font-bold cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-60 disabled:cursor-not-allowed';
 
   const variants: Record<string, string> = {
-    primary: 'bg-primary text-primary-text border border-primary rounded-[7px] shadow-md hover:opacity-90 hover:-translate-y-0.5 active:translate-y-0 focus:ring-primary',
-    ghost:   'bg-transparent border border-border text-main rounded-[7px] hover:bg-element-hover focus:ring-border',
-    danger:  'bg-transparent border border-red-500 text-red-500 rounded-[6px] hover:bg-red-500 hover:text-white focus:ring-red-500',
-    neutral: 'bg-sidebar border border-border text-muted rounded-[6px] hover:text-main focus:ring-border',
-    pill:    'bg-element text-primary rounded-full border border-primary-border px-3 py-1 text-xs hover:opacity-90',
+    primary:
+      'bg-primary text-primary-text border border-primary rounded-[7px] shadow-md hover:opacity-90 hover:-translate-y-0.5 active:translate-y-0 focus:ring-primary',
+    ghost:
+      'bg-transparent border border-border text-main rounded-[7px] hover:bg-element-hover focus:ring-border',
+    danger:
+      'bg-transparent border border-red-500 text-red-500 rounded-[6px] hover:bg-red-500 hover:text-white focus:ring-red-500',
+    neutral:
+      'bg-sidebar border border-border text-muted rounded-[6px] hover:text-main focus:ring-border',
+    pill: 'bg-element text-primary rounded-full border border-primary-border px-3 py-1 text-xs hover:opacity-90',
   };
 
   const sizes: Record<string, string> = {
@@ -45,9 +50,6 @@
   };
 </script>
 
-<button
-  class="{base} {variants[variant]} {sizes[size]} {className}"
-  {...rest}
->
+<button class="{base} {variants[variant]} {sizes[size]} {className}" {...rest}>
   {@render children()}
 </button>

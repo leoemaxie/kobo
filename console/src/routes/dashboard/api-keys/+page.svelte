@@ -31,20 +31,30 @@
       <span class="text-[13px] text-subtle">Toggle in header to switch to production</span>
     {/snippet}
     {#snippet actions()}
-      <Button variant="primary" size="md" onclick={() => showCreateModal = true}>
+      <Button variant="primary" size="md" onclick={() => (showCreateModal = true)}>
         <Plus size={13} /> Create Key
       </Button>
     {/snippet}
   </PageHeader>
 
-  <StandardKeysTable keys={data.keys.filter(k => k.status === 'active' && !k.id.includes('restricted') && k.environment === currentEnv)} on:create={() => showCreateModal = true} />
-  <RestrictedKeysSection keys={data.keys.filter(k => k.status === 'active' && k.id.includes('restricted') && k.environment === currentEnv)} on:create={() => showCreateRestrictedModal = true} />
+  <StandardKeysTable
+    keys={data.keys.filter(
+      (k) => k.status === 'active' && !k.id.includes('restricted') && k.environment === currentEnv,
+    )}
+    on:create={() => (showCreateModal = true)}
+  />
+  <RestrictedKeysSection
+    keys={data.keys.filter(
+      (k) => k.status === 'active' && k.id.includes('restricted') && k.environment === currentEnv,
+    )}
+    on:create={() => (showCreateRestrictedModal = true)}
+  />
 </div>
 
 {#if showCreateModal}
-  <CreateKeyModal onClose={() => showCreateModal = false} />
+  <CreateKeyModal onClose={() => (showCreateModal = false)} />
 {/if}
 
 {#if showCreateRestrictedModal}
-  <CreateRestrictedKeyModal onClose={() => showCreateRestrictedModal = false} />
+  <CreateRestrictedKeyModal onClose={() => (showCreateRestrictedModal = false)} />
 {/if}

@@ -8,6 +8,6 @@ export const withCache = (
   staleWhileRevalidate: number = 120,
 ) => {
   setHeaders({
-    "cache-control": `private, max-age=${maxAge}, stale-while-revalidate=${staleWhileRevalidate}`,
+    'cache-control': `private, max-age=${maxAge}, stale-while-revalidate=${staleWhileRevalidate}`,
   });
 };

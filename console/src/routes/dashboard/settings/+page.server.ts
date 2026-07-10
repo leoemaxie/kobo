@@ -1,7 +1,7 @@
-import { fail, redirect } from "@sveltejs/kit";
-import type { Actions, PageServerLoad, PageServerLoadEvent } from "./$types";
-import { withCache } from "$lib/utils/cache";
-import { db } from "$lib/server/db";
+import { fail, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad, PageServerLoadEvent } from './$types';
+import { withCache } from '$lib/utils/cache';
+import { db } from '$lib/server/db';
 import {
   apiIntegrators,
   users,
@@ -12,17 +12,14 @@ import {
   emailVerificationTokens,
   passwordResetTokens,
   adminAuditLog,
-} from "$lib/server/db/schema";
-import { eq, inArray, or, and } from "drizzle-orm";
+} from '$lib/server/db/schema';
+import { eq, inArray, or, and } from 'drizzle-orm';
 
-export const load: PageServerLoad = async ({
-  locals,
-  setHeaders,
-}: PageServerLoadEvent) => {
+export const load: PageServerLoad = async ({ locals, setHeaders }: PageServerLoadEvent) => {
   withCache(setHeaders);
 
   const user = locals.user;
-  if (!user) throw redirect(302, "/auth/login");
+  if (!user) throw redirect(302, '/auth/login');
 
   const integrator = await db.query.apiIntegrators.findFirst({
     where: eq(apiIntegrators.id, user.integratorId!),
@@ -38,17 +35,17 @@ export const actions: Actions = {
   updateWorkspace: async ({ request, locals }) => {
     try {
       const user = locals.user;
-      if (!user || user.role !== "owner") {
+      if (!user || user.role !== 'owner') {
         return fail(403, {
-          error: "Only owners can update workspace settings",
+          error: 'Only owners can update workspace settings',
         });
       }
 
       const data = await request.formData();
-      const name = data.get("name")?.toString();
+      const name = data.get('name')?.toString();
 
       if (!name) {
-        return fail(400, { error: "Missing required fields" });
+        return fail(400, { error: 'Missing required fields' });
       }
 
       await db
@@ -58,55 +55,49 @@ export const actions: Actions = {
 
       return { success: true };
     } catch (error) {
-      console.error("Update workspace error:", error);
-      return fail(500, { error: "An unexpected error occurred." });
+      console.error('Update workspace error:', error);
+      return fail(500, { error: 'An unexpected error occurred.' });
     }
   },
 
   leaveWorkspace: async ({ locals }) => {
     try {
       const user = locals.user;
-      if (!user || !user.integratorId)
-        return fail(400, { error: "You are not in a workspace" });
+      if (!user || !user.integratorId) return fail(400, { error: 'You are not in a workspace' });
 
-      if (user.role === "owner") {
+      if (user.role === 'owner') {
         const owners = await db
           .select()
           .from(users)
-          .where(
-            and(
-              eq(users.integratorId, user.integratorId),
-              eq(users.role, "owner"),
-            ),
-          );
+          .where(and(eq(users.integratorId, user.integratorId), eq(users.role, 'owner')));
         if (owners.length <= 1) {
           return fail(400, {
             error:
-              "You are the only owner of this workspace. Please transfer ownership or delete the workspace instead.",
+              'You are the only owner of this workspace. Please transfer ownership or delete the workspace instead.',
           });
         }
       }
 
       await db
         .update(users)
-        .set({ integratorId: null, role: "owner" })
+        .set({ integratorId: null, role: 'owner' })
         .where(eq(users.id, user.id));
 
-      throw redirect(303, "/dashboard/onboarding");
+      throw redirect(303, '/dashboard/onboarding');
     } catch (error) {
-      import("@sveltejs/kit").then(({ isRedirect }) => {
+      import('@sveltejs/kit').then(({ isRedirect }) => {
         if (isRedirect(error)) throw error;
       });
       if ((error as any)?.status === 303) throw error;
-      return fail(500, { error: "Failed to leave workspace" });
+      return fail(500, { error: 'Failed to leave workspace' });
     }
   },
 
   deleteWorkspace: async ({ locals, cookies }) => {
     try {
       const user = locals.user;
-      if (!user || user.role !== "owner") {
-        return fail(403, { error: "Unauthorized" });
+      if (!user || user.role !== 'owner') {
+        return fail(403, { error: 'Unauthorized' });
       }
 
       const intId = user.integratorId!;
@@ -120,24 +111,16 @@ export const actions: Actions = {
 
       // Manual cascade delete to avoid Postgres foreign key violations
       await db.delete(webhooks).where(eq(webhooks.integratorId, intId));
-      await db
-        .delete(billingRecords)
-        .where(eq(billingRecords.integratorId, intId));
-      await db
-        .delete(apiCredentials)
-        .where(eq(apiCredentials.integratorId, intId));
+      await db.delete(billingRecords).where(eq(billingRecords.integratorId, intId));
+      await db.delete(apiCredentials).where(eq(apiCredentials.integratorId, intId));
 
       await db
         .delete(adminAuditLog)
         .where(
           or(
             eq(adminAuditLog.targetIntegratorId, intId),
-            userIds.length > 0
-              ? inArray(adminAuditLog.actorUserId, userIds)
-              : undefined,
-            userIds.length > 0
-              ? inArray(adminAuditLog.targetUserId, userIds)
-              : undefined,
+            userIds.length > 0 ? inArray(adminAuditLog.actorUserId, userIds) : undefined,
+            userIds.length > 0 ? inArray(adminAuditLog.targetUserId, userIds) : undefined,
           ),
         );
 
@@ -146,9 +129,7 @@ export const actions: Actions = {
         await db
           .delete(emailVerificationTokens)
           .where(inArray(emailVerificationTokens.userId, userIds));
-        await db
-          .delete(passwordResetTokens)
-          .where(inArray(passwordResetTokens.userId, userIds));
+        await db.delete(passwordResetTokens).where(inArray(passwordResetTokens.userId, userIds));
       }
 
       // Unlink users then delete
@@ -158,17 +139,17 @@ export const actions: Actions = {
       await db.delete(apiIntegrators).where(eq(apiIntegrators.id, intId));
 
       // Kill the session cookie
-      cookies.delete("session", { path: "/" });
-      throw redirect(303, "/auth/signup");
+      cookies.delete('session', { path: '/' });
+      throw redirect(303, '/auth/signup');
     } catch (error) {
-      import("@sveltejs/kit").then(({ isRedirect }) => {
+      import('@sveltejs/kit').then(({ isRedirect }) => {
         if (isRedirect(error)) throw error;
       });
       if ((error as any)?.status === 303) throw error; // Handle SvelteKit redirect error object directly as a fallback if isRedirect isn't available synchronously
 
-      console.error("Delete workspace error:", error);
+      console.error('Delete workspace error:', error);
       return fail(500, {
-        error: "Failed to delete workspace. Please check constraints.",
+        error: 'Failed to delete workspace. Please check constraints.',
       });
     }
   },

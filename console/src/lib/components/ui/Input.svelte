@@ -29,8 +29,10 @@
   } = $props();
 
   const inputStyles: Record<string, string> = {
-    default:  'block w-full rounded-[6px] border border-border bg-element px-3 py-2 text-sm text-main placeholder:text-subtle shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors disabled:opacity-60 disabled:cursor-not-allowed',
-    settings: 'block w-full max-w-[400px] rounded-[6px] border border-border bg-element px-3 py-2 text-sm text-main placeholder:text-subtle focus:border-primary focus:outline-none transition-colors disabled:opacity-60 disabled:cursor-not-allowed',
+    default:
+      'block w-full rounded-[6px] border border-border bg-element px-3 py-2 text-sm text-main placeholder:text-subtle shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors disabled:opacity-60 disabled:cursor-not-allowed',
+    settings:
+      'block w-full max-w-[400px] rounded-[6px] border border-border bg-element px-3 py-2 text-sm text-main placeholder:text-subtle focus:border-primary focus:outline-none transition-colors disabled:opacity-60 disabled:cursor-not-allowed',
   };
 </script>
 
@@ -44,14 +46,7 @@
     </label>
   {/if}
 
-  <input
-    {id}
-    {type}
-    {required}
-    bind:value
-    class={inputStyles[variant]}
-    {...rest}
-  />
+  <input {id} {type} {required} bind:value class={inputStyles[variant]} {...rest} />
 
   {#if hint}
     <p class="text-[11px] text-subtle mt-1">{hint}</p>

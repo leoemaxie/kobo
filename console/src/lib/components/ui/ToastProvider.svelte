@@ -52,7 +52,6 @@
     >
       <!-- Top content row -->
       <div class="flex items-start gap-2.5 px-3.5 pt-3 pb-2.5">
-
         <!-- Icon -->
         <div class="flex-shrink-0 mt-[1px]">
           {#if t.type === 'success'}
@@ -93,10 +92,7 @@
       </div>
 
       <!-- Progress bar -->
-      <div
-        class="h-[2px] w-full"
-        style="background: var(--bg-active);"
-      >
+      <div class="h-[2px] w-full" style="background: var(--bg-active);">
         <div
           class="h-full transition-none"
           style="

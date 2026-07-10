@@ -42,7 +42,10 @@
 
 <div class="space-y-1.5 {className}">
   {#if label}
-    <label for={id} class="block text-xs font-semibold text-muted uppercase tracking-widest {labelClass}">
+    <label
+      for={id}
+      class="block text-xs font-semibold text-muted uppercase tracking-widest {labelClass}"
+    >
       {label}
       {#if required}<span class="text-primary ml-0.5">*</span>{/if}
     </label>

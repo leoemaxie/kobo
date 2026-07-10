@@ -103,11 +103,11 @@ import {
   pgEnum,
   uniqueIndex,
   index,
-} from "drizzle-orm/pg-core";
+} from 'drizzle-orm/pg-core';
 
 // All Console tables live in the `console` Postgres schema, matching the
 // grants set up in section 1. Drizzle's pgSchema() maps directly to this.
-export const consoleSchema = pgSchema("console");
+export const consoleSchema = pgSchema('console');
 
 // ---------------------------------------------------------------------------
 // Shared table: api_integrators
@@ -117,32 +117,23 @@ export const consoleSchema = pgSchema("console");
 // (to be added to the Go side, mirroring this shape).
 // ---------------------------------------------------------------------------
 
-export const environmentEnum = consoleSchema.enum("environment", [
-  "sandbox",
-  "production",
-]);
-export const integratorStatusEnum = consoleSchema.enum("integrator_status", [
-  "active",
-  "suspended",
+export const environmentEnum = consoleSchema.enum('environment', ['sandbox', 'production']);
+export const integratorStatusEnum = consoleSchema.enum('integrator_status', [
+  'active',
+  'suspended',
 ]);
 
-export const apiIntegrators = consoleSchema.table("api_integrators", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  status: integratorStatusEnum("status").notNull().default("active"),
-  productionAccessGranted: boolean("production_access_granted")
-    .notNull()
-    .default(false),
-  productionAccessGrantedAt: timestamp("production_access_granted_at", {
+export const apiIntegrators = consoleSchema.table('api_integrators', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  status: integratorStatusEnum('status').notNull().default('active'),
+  productionAccessGranted: boolean('production_access_granted').notNull().default(false),
+  productionAccessGrantedAt: timestamp('production_access_granted_at', {
     withTimezone: true,
   }),
-  productionAccessGrantedBy: uuid("production_access_granted_by"), // references users.id, nullable, set by superadmin
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
+  productionAccessGrantedBy: uuid('production_access_granted_by'), // references users.id, nullable, set by superadmin
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
 // ---------------------------------------------------------------------------
@@ -151,29 +142,27 @@ export const apiIntegrators = consoleSchema.table("api_integrators", {
 // ---------------------------------------------------------------------------
 
 export const apiCredentials = consoleSchema.table(
-  "api_credentials",
+  'api_credentials',
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    integratorId: uuid("integrator_id")
+    id: uuid('id').primaryKey().defaultRandom(),
+    integratorId: uuid('integrator_id')
       .notNull()
       .references(() => apiIntegrators.id),
-    environment: environmentEnum("environment").notNull(),
-    keyId: text("key_id").notNull().unique(), // public identifier, safe to log, e.g. "kobo_sandbox_a1b2c3"
-    secretHash: text("secret_hash").notNull(), // SHA-256 of the raw secret; raw secret is never stored
-    label: text("label"), // optional integrator-supplied name, e.g. "CI pipeline key"
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    createdBy: uuid("created_by").notNull(), // references users.id
-    rotatedAt: timestamp("rotated_at", { withTimezone: true }),
-    revokedAt: timestamp("revoked_at", { withTimezone: true }),
-    revokedBy: uuid("revoked_by"), // references users.id, nullable
-    revokedReason: text("revoked_reason"),
+    environment: environmentEnum('environment').notNull(),
+    keyId: text('key_id').notNull().unique(), // public identifier, safe to log, e.g. "kobo_sandbox_a1b2c3"
+    secretHash: text('secret_hash').notNull(), // SHA-256 of the raw secret; raw secret is never stored
+    label: text('label'), // optional integrator-supplied name, e.g. "CI pipeline key"
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    createdBy: uuid('created_by').notNull(), // references users.id
+    rotatedAt: timestamp('rotated_at', { withTimezone: true }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    revokedBy: uuid('revoked_by'), // references users.id, nullable
+    revokedReason: text('revoked_reason'),
   },
   (table) => ({
     // Hot path: Core's auth middleware looks up by keyId on every request.
-    keyIdIdx: uniqueIndex("idx_api_credentials_key_id").on(table.keyId),
-    integratorEnvIdx: index("idx_api_credentials_integrator_env").on(
+    keyIdIdx: uniqueIndex('idx_api_credentials_key_id').on(table.keyId),
+    integratorEnvIdx: index('idx_api_credentials_integrator_env').on(
       table.integratorId,
       table.environment,
     ),
@@ -184,31 +173,23 @@ export const apiCredentials = consoleSchema.table(
 // users
 // ---------------------------------------------------------------------------
 
-export const userRoleEnum = consoleSchema.enum("user_role", [
-  "owner",
-  "member",
-  "superadmin",
-]);
+export const userRoleEnum = consoleSchema.enum('user_role', ['owner', 'member', 'superadmin']);
 
 export const users = consoleSchema.table(
-  "users",
+  'users',
   {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: uuid('id').primaryKey().defaultRandom(),
     // Nullable: superadmins are not tied to an integrator.
-    integratorId: uuid("integrator_id").references(() => apiIntegrators.id),
-    email: text("email").notNull().unique(),
-    passwordHash: text("password_hash").notNull(), // argon2
-    role: userRoleEnum("role").notNull().default("member"),
-    emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    integratorId: uuid('integrator_id').references(() => apiIntegrators.id),
+    email: text('email').notNull().unique(),
+    passwordHash: text('password_hash').notNull(), // argon2
+    role: userRoleEnum('role').notNull().default('member'),
+    emailVerifiedAt: timestamp('email_verified_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    emailIdx: uniqueIndex("idx_users_email").on(table.email),
+    emailIdx: uniqueIndex('idx_users_email').on(table.email),
   }),
 );
 
@@ -217,22 +198,20 @@ export const users = consoleSchema.table(
 // ---------------------------------------------------------------------------
 
 export const sessions = consoleSchema.table(
-  "sessions",
+  'sessions',
   {
-    id: text("id").primaryKey(), // random session token, NOT a JWT — see section 3
-    userId: uuid("user_id")
+    id: text('id').primaryKey(), // random session token, NOT a JWT — see section 3
+    userId: uuid('user_id')
       .notNull()
       .references(() => users.id),
-    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     // Set to a non-null revocation reason to kill a session instantly
     // (e.g. superadmin-forced logout) without waiting for expiry.
-    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
   },
   (table) => ({
-    userIdx: index("idx_sessions_user").on(table.userId),
+    userIdx: index('idx_sessions_user').on(table.userId),
   }),
 );
 
@@ -240,20 +219,15 @@ export const sessions = consoleSchema.table(
 // email_verification_tokens — short-lived, single-use.
 // ---------------------------------------------------------------------------
 
-export const emailVerificationTokens = consoleSchema.table(
-  "email_verification_tokens",
-  {
-    id: text("id").primaryKey(), // random token, sent in the Unsend verification link
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => users.id),
-    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-    usedAt: timestamp("used_at", { withTimezone: true }),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-  },
-);
+export const emailVerificationTokens = consoleSchema.table('email_verification_tokens', {
+  id: text('id').primaryKey(), // random token, sent in the Unsend verification link
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  usedAt: timestamp('used_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
 
 // ---------------------------------------------------------------------------
 // billing_records — synced periodically from Kobo Core's usage data.
@@ -261,35 +235,27 @@ export const emailVerificationTokens = consoleSchema.table(
 // ---------------------------------------------------------------------------
 
 export const billingRecords = consoleSchema.table(
-  "billing_records",
+  'billing_records',
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    integratorId: uuid("integrator_id")
+    id: uuid('id').primaryKey().defaultRandom(),
+    integratorId: uuid('integrator_id')
       .notNull()
       .references(() => apiIntegrators.id),
-    environment: environmentEnum("environment").notNull(),
-    period: text("period").notNull(), // "YYYY-MM"
-    accountsProvisioned: bigint("accounts_provisioned", { mode: "number" })
+    environment: environmentEnum('environment').notNull(),
+    period: text('period').notNull(), // "YYYY-MM"
+    accountsProvisioned: bigint('accounts_provisioned', { mode: 'number' }).notNull().default(0),
+    transactionsProcessed: bigint('transactions_processed', { mode: 'number' })
       .notNull()
       .default(0),
-    transactionsProcessed: bigint("transactions_processed", { mode: "number" })
-      .notNull()
-      .default(0),
-    amountDueKobo: bigint("amount_due_kobo", { mode: "number" })
-      .notNull()
-      .default(0),
+    amountDueKobo: bigint('amount_due_kobo', { mode: 'number' }).notNull().default(0),
     // Manual adjustments (credits/corrections) applied by a superadmin.
     // Positive = credit to integrator, negative = additional charge.
-    adjustmentKobo: bigint("adjustment_kobo", { mode: "number" })
-      .notNull()
-      .default(0),
-    adjustmentReason: text("adjustment_reason"),
-    syncedAt: timestamp("synced_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
+    adjustmentKobo: bigint('adjustment_kobo', { mode: 'number' }).notNull().default(0),
+    adjustmentReason: text('adjustment_reason'),
+    syncedAt: timestamp('synced_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => ({
-    integratorPeriodIdx: uniqueIndex("idx_billing_integrator_period_env").on(
+    integratorPeriodIdx: uniqueIndex('idx_billing_integrator_period_env').on(
       table.integratorId,
       table.period,
       table.environment,
@@ -301,32 +267,26 @@ export const billingRecords = consoleSchema.table(
 // admin_audit_log — append-only. Every superadmin action writes here.
 // ---------------------------------------------------------------------------
 
-export const adminActionEnum = consoleSchema.enum("admin_action", [
-  "integrator_suspended",
-  "integrator_reinstated",
-  "production_access_granted",
-  "credential_force_revoked",
-  "billing_adjustment_applied",
-  "user_session_revoked",
+export const adminActionEnum = consoleSchema.enum('admin_action', [
+  'integrator_suspended',
+  'integrator_reinstated',
+  'production_access_granted',
+  'credential_force_revoked',
+  'billing_adjustment_applied',
+  'user_session_revoked',
 ]);
 
-export const adminAuditLog = consoleSchema.table("admin_audit_log", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  actorUserId: uuid("actor_user_id")
+export const adminAuditLog = consoleSchema.table('admin_audit_log', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  actorUserId: uuid('actor_user_id')
     .notNull()
     .references(() => users.id), // must have role = 'superadmin' at time of action
-  action: adminActionEnum("action").notNull(),
-  targetIntegratorId: uuid("target_integrator_id").references(
-    () => apiIntegrators.id,
-  ),
-  targetUserId: uuid("target_user_id").references(() => users.id),
-  targetCredentialId: uuid("target_credential_id").references(
-    () => apiCredentials.id,
-  ),
-  detail: jsonb("detail").notNull().default({}), // free-form context, e.g. { reason, previous_value, new_value }
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
+  action: adminActionEnum('action').notNull(),
+  targetIntegratorId: uuid('target_integrator_id').references(() => apiIntegrators.id),
+  targetUserId: uuid('target_user_id').references(() => users.id),
+  targetCredentialId: uuid('target_credential_id').references(() => apiCredentials.id),
+  detail: jsonb('detail').notNull().default({}), // free-form context, e.g. { reason, previous_value, new_value }
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 ```
 
@@ -370,15 +330,15 @@ uses opaque server-side session tokens, not JWTs.
 
 ```typescript
 // src/lib/server/auth/session.ts
-import { randomBytes } from "node:crypto";
-import { db } from "$lib/server/db";
-import { sessions, users } from "$lib/server/db/schema";
-import { eq, and, isNull, gt } from "drizzle-orm";
+import { randomBytes } from 'node:crypto';
+import { db } from '$lib/server/db';
+import { sessions, users } from '$lib/server/db/schema';
+import { eq, and, isNull, gt } from 'drizzle-orm';
 
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 export function generateSessionId(): string {
-  return randomBytes(32).toString("base64url");
+  return randomBytes(32).toString('base64url');
 }
 
 export async function createSession(userId: string) {
@@ -406,10 +366,7 @@ export async function validateSession(sessionId: string) {
 }
 
 export async function revokeSession(sessionId: string) {
-  await db
-    .update(sessions)
-    .set({ revokedAt: new Date() })
-    .where(eq(sessions.id, sessionId));
+  await db.update(sessions).set({ revokedAt: new Date() }).where(eq(sessions.id, sessionId));
 }
 
 // Used by the superadmin "force logout" admin action — revokes every active
@@ -432,14 +389,14 @@ is already validated by the time it runs.
 
 ```typescript
 // src/hooks.server.ts
-import type { Handle } from "@sveltejs/kit";
-import { validateSession } from "$lib/server/auth/session";
+import type { Handle } from '@sveltejs/kit';
+import { validateSession } from '$lib/server/auth/session';
 
-const PUBLIC_ROUTES = ["/login", "/signup", "/verify-email"];
-const SUPERADMIN_PREFIX = "/admin";
+const PUBLIC_ROUTES = ['/login', '/signup', '/verify-email'];
+const SUPERADMIN_PREFIX = '/admin';
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const sessionId = event.cookies.get("session");
+  const sessionId = event.cookies.get('session');
   const result = sessionId ? await validateSession(sessionId) : null;
 
   event.locals.user = result?.users ?? null; // shape depends on your join result
@@ -449,23 +406,20 @@ export const handle: Handle = async ({ event, resolve }) => {
   const isPublic = PUBLIC_ROUTES.some((p) => path.startsWith(p));
 
   if (!isPublic && !event.locals.user) {
-    return Response.redirect(new URL("/login", event.url), 302);
+    return Response.redirect(new URL('/login', event.url), 302);
   }
 
   if (
     event.locals.user &&
     !event.locals.user.emailVerifiedAt &&
-    path !== "/verify-email" &&
+    path !== '/verify-email' &&
     !isPublic
   ) {
-    return Response.redirect(new URL("/verify-email", event.url), 302);
+    return Response.redirect(new URL('/verify-email', event.url), 302);
   }
 
-  if (
-    path.startsWith(SUPERADMIN_PREFIX) &&
-    event.locals.user?.role !== "superadmin"
-  ) {
-    return new Response("Not found", { status: 404 }); // 404, not 403 — don't reveal the admin area exists
+  if (path.startsWith(SUPERADMIN_PREFIX) && event.locals.user?.role !== 'superadmin') {
+    return new Response('Not found', { status: 404 }); // 404, not 403 — don't reveal the admin area exists
   }
 
   return resolve(event);
