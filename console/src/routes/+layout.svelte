@@ -7,13 +7,14 @@
   import ToastProvider from '$lib/components/ui/ToastProvider.svelte';
   import { initConsoleState } from '$lib/state/console.svelte';
 
-  let { data, children } = $props();
+  let { children } = $props();
 
   const consoleState = initConsoleState();
 
   $effect(() => {
     // This deep-updates all the $state runes inside the class whenever the SvelteKit loader data updates
-    consoleState.hydrate(data);
+    // We use page.data to ensure we get both layout data and page-level data (like dashboard logs)
+    consoleState.hydrate(page.data);
   });
 
   let isAuthRoute = $derived(
