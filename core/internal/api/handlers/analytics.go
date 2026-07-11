@@ -1,10 +1,12 @@
 package handlers
 
 import (
-	"context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
@@ -52,7 +54,7 @@ func (h *AnalyticsHandler) GetAnalytics(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	integratorUUID, err := sqlc.ParseUUID(integratorID)
+	integratorUUID, err := uuid.Parse(integratorID)
 	if err != nil {
 		errors.WriteError(w, http.StatusInternalServerError, "internal_error", "Invalid integrator ID")
 		return
@@ -128,7 +130,8 @@ func (h *AnalyticsHandler) GetAnalytics(w http.ResponseWriter, r *http.Request) 
 		Metrics: metrics,
 		Logs:    logs,
 	}
-	errors.WriteJSON(w, http.StatusOK, res)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(res)
 }
 
 func timeSince(t time.Time) string {

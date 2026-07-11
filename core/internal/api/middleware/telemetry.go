@@ -32,7 +32,7 @@ func RequestTelemetryMiddleware(q *sqlc.Queries) func(next http.Handler) http.Ha
 					// We do this in a goroutine so it doesn't block the request response
 					go func() {
 						// Using context.Background() because the request context is canceled when request ends
-						_ = q.CreateRequestLog(context.Background(), sqlc.CreateRequestLogParams{
+						_, _ = q.CreateRequestLog(context.Background(), sqlc.CreateRequestLogParams{
 							IntegratorID: integratorID,
 							Method:       r.Method,
 							Path:         r.URL.Path,
