@@ -103,7 +103,7 @@ async function main() {
         process.exit(1);
     }
 
-    const client = postgres(databaseUrl);
+    const client = postgres(databaseUrl, { ssl: 'require' });
     const db = drizzle(client);
 
     const rl = readline.createInterface({ input, output });

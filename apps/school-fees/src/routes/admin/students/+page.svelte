@@ -1,10 +1,20 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { Copy, Check } from '@lucide/svelte';
 
   let { data, form } = $props();
   let students = $derived(data.students);
 
   let isSubmitting = $state(false);
+  let copiedId = $state<string | null>(null);
+
+  function copyToClipboard(text: string, id: string) {
+    navigator.clipboard.writeText(text);
+    copiedId = id;
+    setTimeout(() => {
+      copiedId = null;
+    }, 2000);
+  }
 </script>
 
 <svelte:head>
@@ -48,6 +58,18 @@
           };
         }}>
           <div class="space-y-1.5">
+            <label for="studentId" class="block text-xs font-semibold text-smoke uppercase tracking-widest">Student ID</label>
+            <input
+              id="studentId"
+              name="studentId"
+              type="text"
+              required
+              placeholder="e.g. STU-12345"
+              class="block w-full rounded-lg border border-iron bg-void-black px-4 py-2.5 text-sm text-paper placeholder-fog focus:border-electric-lime focus:outline-none focus:ring-1 focus:ring-electric-lime transition-colors"
+            />
+          </div>
+
+          <div class="space-y-1.5">
             <label for="studentName" class="block text-xs font-semibold text-smoke uppercase tracking-widest">Student Name</label>
             <input
               id="studentName"
@@ -70,6 +92,7 @@
               class="block w-full rounded-lg border border-iron bg-void-black px-4 py-2.5 text-sm text-paper placeholder-fog focus:border-electric-lime focus:outline-none focus:ring-1 focus:ring-electric-lime transition-colors"
             />
           </div>
+
 
           <div class="pt-2">
             <button
@@ -94,6 +117,7 @@
               <tr class="border-b border-iron/50">
                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke">Name</th>
                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke">Class</th>
+                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke">Virtual Account</th>
                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke">Registered</th>
                 <th class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-smoke">Actions</th>
               </tr>
@@ -103,6 +127,28 @@
                 <tr class="hover:bg-graphite/30 transition-colors">
                   <td class="px-6 py-4 text-sm font-medium text-pure-white whitespace-nowrap">{student.name}</td>
                   <td class="px-6 py-4 text-sm text-smoke whitespace-nowrap">{student.class}</td>
+                  <td class="px-6 py-4 text-sm text-smoke whitespace-nowrap">
+                    {#if student.virtualAccountNo}
+                      <div class="flex items-center gap-2">
+                        <div class="font-medium text-electric-lime">{student.virtualAccountNo}</div>
+                        <button
+                          type="button"
+                          onclick={() => copyToClipboard(student.virtualAccountNo!, student.id)}
+                          class="text-smoke hover:text-electric-lime transition-colors focus:outline-none"
+                          title="Copy account number"
+                        >
+                          {#if copiedId === student.id}
+                            <Check size={14} class="text-electric-lime" />
+                          {:else}
+                            <Copy size={14} />
+                          {/if}
+                        </button>
+                      </div>
+                      <div class="text-xs opacity-70 mt-0.5">{student.accountName || '-'}</div>
+                    {:else}
+                      <span class="text-xs opacity-50">Not assigned</span>
+                    {/if}
+                  </td>
                   <td class="px-6 py-4 text-sm text-smoke whitespace-nowrap">{student.date}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-right">
                     <form method="POST" action="?/closeAccount" use:enhance>

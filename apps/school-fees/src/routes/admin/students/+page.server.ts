@@ -15,14 +15,23 @@ export const load: PageServerLoad = async ({ locals }) => {
 
     const allStudents = await db.select().from(students).orderBy(students.createdAt);
     
+    // Fetch identities from Kobo to get virtual account details
+    const koboIdentities = await kobo.identities.list({ limit: 100 });
+    const identityMap = new Map(koboIdentities.map(id => [id.id, id]));
+
     return {
-        students: allStudents.map(s => ({
-            id: s.id,
-            name: s.name,
-            class: s.className,
-            date: s.createdAt.toLocaleDateString(),
-            koboIdentityId: s.koboIdentityId
-        }))
+        students: allStudents.map(s => {
+            const identity = identityMap.get(s.koboIdentityId);
+            return {
+                id: s.id,
+                name: s.name,
+                class: s.className,
+                virtualAccountNo: identity?.virtual_account?.account_number || null,
+                accountName: identity?.virtual_account?.account_name || null,
+                date: s.createdAt.toLocaleDateString(),
+                koboIdentityId: s.koboIdentityId
+            };
+        })
     };
 };
 
@@ -38,12 +47,11 @@ export const actions: Actions = {
         const data = await request.formData();
         const name = data.get('name') as string;
         const className = data.get('className') as string;
+        const id = data.get('studentId') as string;
 
-        if (!name || !className) {
+        if (!name || !className || !id) {
             return fail(400, { error: 'Missing fields' });
         }
-
-        const id = globalThis.crypto.randomUUID();
 
         try {
             const koboResponse = await kobo.identities.create({
