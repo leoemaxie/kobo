@@ -13,11 +13,11 @@ function getKoboClient(): KoboClient {
     const apiKey = memoryApiKey || env.KOBO_API_KEY as string;
     const apiSecret = memoryApiSecret || env.KOBO_API_SECRET as string;
     
-    const isDev = process.env.NODE_ENV === 'production';
+    const isProd = process.env.NODE_ENV === 'production';
     
-    return isDev 
-        ? KoboClient.sandbox(apiKey, apiSecret)
-: new KoboClient(apiKey, apiSecret, { baseUrl: 'http://localhost:8080/v1' });
+    return isProd 
+        ? new KoboClient(apiKey, apiSecret) 
+        : new KoboClient(apiKey, apiSecret, { baseUrl: 'http://localhost:8080/v1' });
 }
 
 // Proxy to dynamically resolve the client using the latest credentials 
