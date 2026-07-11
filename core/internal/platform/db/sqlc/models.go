@@ -249,6 +249,17 @@ type LedgerEntry struct {
 	CreatedAt        time.Time   `json:"created_at"`
 }
 
+type RequestLog struct {
+	ID           uuid.UUID `json:"id"`
+	IntegratorID uuid.UUID `json:"integrator_id"`
+	Method       string    `json:"method"`
+	Path         string    `json:"path"`
+	StatusCode   int32     `json:"status_code"`
+	LatencyMs    int32     `json:"latency_ms"`
+	RequestID    string    `json:"request_id"`
+	CreatedAt    time.Time `json:"created_at"`
+}
+
 type VirtualAccount struct {
 	ID                 uuid.UUID   `json:"id"`
 	IdentityID         uuid.UUID   `json:"identity_id"`

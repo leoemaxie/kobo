@@ -1,0 +1,146 @@
+package handlers
+
+import (
+	"context"
+	"net/http"
+	"strconv"
+	"time"
+
+	"github.com/leoemaxie/kobo/internal/api/errors"
+	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
+)
+
+type AnalyticsHandler struct {
+	q *sqlc.Queries
+}
+
+func NewAnalyticsHandler(q *sqlc.Queries) *AnalyticsHandler {
+	return &AnalyticsHandler{
+		q: q,
+	}
+}
+
+type Metric struct {
+	Key   string `json:"key"`
+	Label string `json:"label"`
+	Value string `json:"value"`
+	Delta string `json:"delta,omitempty"`
+	Sub   string `json:"sub,omitempty"`
+	Trend string `json:"trend,omitempty"`
+	Bar   int    `json:"bar,omitempty"`
+}
+
+type LogEntry struct {
+	Method string `json:"method"`
+	Path   string `json:"path"`
+	Status int    `json:"status"`
+	Ms     int    `json:"ms"`
+	ID     string `json:"id"`
+	Time   string `json:"time"`
+}
+
+type AnalyticsResponse struct {
+	Metrics []Metric   `json:"metrics"`
+	Logs    []LogEntry `json:"logs"`
+}
+
+func (h *AnalyticsHandler) GetAnalytics(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	integratorID, ok := ctx.Value("integrator_id").(string)
+	if !ok {
+		errors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Integrator ID missing from context")
+		return
+	}
+
+	integratorUUID, err := sqlc.ParseUUID(integratorID)
+	if err != nil {
+		errors.WriteError(w, http.StatusInternalServerError, "internal_error", "Invalid integrator ID")
+		return
+	}
+
+	// Fetch Total API Requests
+	totalRequests, err := h.q.GetTotalApiRequests(ctx, integratorUUID)
+	if err != nil {
+		totalRequests = 0
+	}
+
+	// Fetch Virtual Accounts
+	virtualAccounts, err := h.q.CountVirtualAccountsByIntegrator(ctx, integratorUUID)
+	if err != nil {
+		virtualAccounts = 0
+	}
+
+	// Fetch Error Rate
+	errorRate, err := h.q.GetErrorRate(ctx, integratorUUID)
+	if err != nil {
+		errorRate = 0
+	}
+
+	// Fetch P99 Latency
+	p99Latency, err := h.q.GetP99Latency(ctx, integratorUUID)
+	if err != nil {
+		p99Latency = 0
+	}
+
+	metrics := []Metric{
+		{
+			Key:   "api_requests",
+			Label: "API Requests",
+			Value: strconv.FormatInt(totalRequests, 10),
+			Sub:   "Last 30 days",
+		},
+		{
+			Key:   "virtual_accounts",
+			Label: "Virtual Accounts",
+			Value: strconv.FormatInt(virtualAccounts, 10),
+		},
+		{
+			Key:   "error_rate",
+			Label: "Error Rate",
+			Value: strconv.FormatFloat(errorRate, 'f', 2, 64) + "%",
+			Sub:   "Last 30 days",
+		},
+		{
+			Key:   "p99_latency",
+			Label: "p99 Latency",
+			Value: strconv.FormatFloat(p99Latency, 'f', 0, 64) + "ms",
+			Sub:   "Last 30 days",
+		},
+	}
+
+	// Fetch Recent Logs
+	recentLogs, err := h.q.GetRecentRequestLogs(ctx, integratorUUID)
+	logs := []LogEntry{}
+	if err == nil {
+		for _, rl := range recentLogs {
+			logs = append(logs, LogEntry{
+				Method: rl.Method,
+				Path:   rl.Path,
+				Status: int(rl.StatusCode),
+				Ms:     int(rl.LatencyMs),
+				ID:     rl.RequestID,
+				Time:   timeSince(rl.CreatedAt),
+			})
+		}
+	}
+
+	res := AnalyticsResponse{
+		Metrics: metrics,
+		Logs:    logs,
+	}
+	errors.WriteJSON(w, http.StatusOK, res)
+}
+
+func timeSince(t time.Time) string {
+	d := time.Since(t)
+	if d.Hours() > 24 {
+		return strconv.Itoa(int(d.Hours()/24)) + "d ago"
+	}
+	if d.Hours() > 1 {
+		return strconv.Itoa(int(d.Hours())) + "h ago"
+	}
+	if d.Minutes() > 1 {
+		return strconv.Itoa(int(d.Minutes())) + "m ago"
+	}
+	return "just now"
+}

@@ -17,9 +17,6 @@ type BankInfo struct {
 	Logo    string `json:"logo"`
 }
 
-type ListBanksResponse struct {
-	Results []BankInfo `json:"results"`
-}
 
 type LookupBankAccountResponse struct {
 	AccountNumber string `json:"accountNumber"`
@@ -46,12 +43,12 @@ type TransferToBankResponse struct {
 // ListBanks returns all Nigerian banks and their codes.
 // Calls: GET /v1/transfers/banks
 func (c *Client) ListBanks(ctx context.Context) ([]BankInfo, error) {
-	var resp ListBanksResponse
+	var resp []BankInfo
 	path := "/transfers/banks"
 	if err := c.doRequest(ctx, http.MethodGet, path, nil, &resp, ""); err != nil {
 		return nil, err
 	}
-	return resp.Results, nil
+	return resp, nil
 }
 
 // LookupBankAccount resolves an account number to the account holder's name.

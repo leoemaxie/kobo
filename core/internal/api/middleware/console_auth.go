@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"net/http"
 	"strings"
 
@@ -31,7 +33,10 @@ func ConsoleAuthMiddleware(q sqlc.Querier) func(http.Handler) http.Handler {
 
 			token := strings.TrimPrefix(authHeader, "Bearer ")
 
-			session, err := q.GetConsoleSession(r.Context(), token)
+			hash := sha256.Sum256([]byte(token))
+			hashedToken := hex.EncodeToString(hash[:])
+
+			session, err := q.GetConsoleSession(r.Context(), hashedToken)
 			if err != nil {
 				apierrors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Invalid or expired session")
 				return

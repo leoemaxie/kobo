@@ -15,6 +15,7 @@ type Querier interface {
 	// Returns the number of payouts currently in 'pending' or 'processing' state.
 	// Used to prevent an integrator from initiating a second concurrent payout.
 	CountInProgressPayouts(ctx context.Context, integratorID uuid.UUID) (int64, error)
+	CountVirtualAccountsByIntegrator(ctx context.Context, integratorID uuid.UUID) (int64, error)
 	CreateApiCredential(ctx context.Context, arg CreateApiCredentialParams) (ApiCredential, error)
 	CreateApiIntegrator(ctx context.Context, arg CreateApiIntegratorParams) (ApiIntegrator, error)
 	CreateIdentity(ctx context.Context, arg CreateIdentityParams) (Identity, error)
@@ -22,6 +23,7 @@ type Querier interface {
 	// Payout lifecycle
 	// ---------------------------------------------------------------------------
 	CreatePayout(ctx context.Context, arg CreatePayoutParams) (ConsolePayout, error)
+	CreateRequestLog(ctx context.Context, arg CreateRequestLogParams) (RequestLog, error)
 	CreateVirtualAccount(ctx context.Context, arg CreateVirtualAccountParams) (VirtualAccount, error)
 	// Reversal: re-credits the balance when a payout fails after deduction.
 	// Also used by the webhook handler to reverse a failed transfer.
@@ -49,6 +51,7 @@ type Querier interface {
 	GetBillingRecords(ctx context.Context, integratorID uuid.UUID) ([]ConsoleBillingRecord, error)
 	GetConsoleSession(ctx context.Context, id string) (GetConsoleSessionRow, error)
 	GetDefaultPaymentMethod(ctx context.Context, integratorID uuid.UUID) (ConsolePaymentMethod, error)
+	GetErrorRate(ctx context.Context, integratorID uuid.UUID) (float64, error)
 	GetExceptionByID(ctx context.Context, arg GetExceptionByIDParams) (Exception, error)
 	GetIdempotencyKey(ctx context.Context, nombaReference string) (IdempotencyKey, error)
 	GetIdentityByExternalReference(ctx context.Context, arg GetIdentityByExternalReferenceParams) (Identity, error)
@@ -59,9 +62,12 @@ type Querier interface {
 	GetIntegratorWalletBalance(ctx context.Context, id uuid.UUID) (int64, error)
 	// Calculates the sum of all 'inbound' matched transactions before the given time
 	GetLedgerOpeningBalance(ctx context.Context, arg GetLedgerOpeningBalanceParams) (int64, error)
+	GetP99Latency(ctx context.Context, integratorID uuid.UUID) (float64, error)
 	GetPayoutByID(ctx context.Context, id uuid.UUID) (ConsolePayout, error)
 	GetPayoutByMerchantTxRef(ctx context.Context, merchantTxRef string) (ConsolePayout, error)
 	GetPendingInvoices(ctx context.Context) ([]ConsoleInvoice, error)
+	GetRecentRequestLogs(ctx context.Context, integratorID uuid.UUID) ([]RequestLog, error)
+	GetTotalApiRequests(ctx context.Context, integratorID uuid.UUID) (int64, error)
 	GetVirtualAccountByAccountNumber(ctx context.Context, accountNumber pgtype.Text) (VirtualAccount, error)
 	GetVirtualAccountByID(ctx context.Context, id uuid.UUID) (VirtualAccount, error)
 	InsertException(ctx context.Context, arg InsertExceptionParams) (Exception, error)
