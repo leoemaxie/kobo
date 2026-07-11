@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/leoemaxie/kobo/internal/api/errors"
+	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
@@ -48,15 +49,10 @@ type AnalyticsResponse struct {
 
 func (h *AnalyticsHandler) GetAnalytics(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	integratorID, ok := ctx.Value("integrator_id").(string)
-	if !ok {
+	session := middleware.GetConsoleSessionContext(ctx)
+	integratorUUID := session.IntegratorID
+	if integratorUUID == uuid.Nil {
 		errors.WriteError(w, http.StatusUnauthorized, "unauthorized", "Integrator ID missing from context")
-		return
-	}
-
-	integratorUUID, err := uuid.Parse(integratorID)
-	if err != nil {
-		errors.WriteError(w, http.StatusInternalServerError, "internal_error", "Invalid integrator ID")
 		return
 	}
 
@@ -90,23 +86,36 @@ func (h *AnalyticsHandler) GetAnalytics(w http.ResponseWriter, r *http.Request) 
 			Label: "API Requests",
 			Value: strconv.FormatInt(totalRequests, 10),
 			Sub:   "Last 30 days",
+			Trend: "neutral",
+			Delta: "0%",
+			Bar:   0,
 		},
 		{
 			Key:   "virtual_accounts",
 			Label: "Virtual Accounts",
 			Value: strconv.FormatInt(virtualAccounts, 10),
+			Sub:   "Total",
+			Trend: "neutral",
+			Delta: "0",
+			Bar:   0,
 		},
 		{
 			Key:   "error_rate",
 			Label: "Error Rate",
 			Value: strconv.FormatFloat(errorRate, 'f', 2, 64) + "%",
 			Sub:   "Last 30 days",
+			Trend: "neutral",
+			Delta: "0%",
+			Bar:   0,
 		},
 		{
 			Key:   "p99_latency",
 			Label: "p99 Latency",
 			Value: strconv.FormatFloat(p99Latency, 'f', 0, 64) + "ms",
 			Sub:   "Last 30 days",
+			Trend: "neutral",
+			Delta: "0ms",
+			Bar:   0,
 		},
 	}
 

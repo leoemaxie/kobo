@@ -17,7 +17,7 @@ import (
 	"log/slog"
 )
 
-func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, adminBillingHandler *handlers.AdminBillingHandler, payoutHandler *handlers.PayoutHandler, analyticsHandler *handlers.AnalyticsHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
+func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityHandler *handlers.IdentityHandler, ledgerHandler *handlers.LedgerHandler, exceptionsHandler *handlers.ExceptionsHandler, adminHandler *handlers.AdminHandler, adminBillingHandler *handlers.AdminBillingHandler, payoutHandler *handlers.PayoutHandler, analyticsHandler *handlers.AnalyticsHandler, logsHandler *handlers.LogsHandler, engine reconciliation.Engine, webhookSecret string) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.NotFound(func(w http.ResponseWriter, req *http.Request) {
@@ -94,6 +94,7 @@ func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityH
 		r.Use(middleware.Recoverer)
 		r.Use(middleware.ConsoleAuthMiddleware(q))
 		r.Get("/analytics", analyticsHandler.GetAnalytics)
+		r.Get("/logs", logsHandler.GetLogs)
 
 		r.Route("/payouts", func(r chi.Router) {
 			r.Use(middleware.ConsoleOwnerAuthMiddleware())

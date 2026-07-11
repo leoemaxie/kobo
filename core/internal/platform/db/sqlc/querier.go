@@ -15,6 +15,7 @@ type Querier interface {
 	// Returns the number of payouts currently in 'pending' or 'processing' state.
 	// Used to prevent an integrator from initiating a second concurrent payout.
 	CountInProgressPayouts(ctx context.Context, integratorID uuid.UUID) (int64, error)
+	CountRequestLogs(ctx context.Context, arg CountRequestLogsParams) (int64, error)
 	CountVirtualAccountsByIntegrator(ctx context.Context, integratorID uuid.UUID) (int64, error)
 	CreateApiCredential(ctx context.Context, arg CreateApiCredentialParams) (ApiCredential, error)
 	CreateApiIntegrator(ctx context.Context, arg CreateApiIntegratorParams) (ApiIntegrator, error)
@@ -63,6 +64,7 @@ type Querier interface {
 	// Calculates the sum of all 'inbound' matched transactions before the given time
 	GetLedgerOpeningBalance(ctx context.Context, arg GetLedgerOpeningBalanceParams) (int64, error)
 	GetP99Latency(ctx context.Context, integratorID uuid.UUID) (float64, error)
+	GetPaginatedRequestLogs(ctx context.Context, arg GetPaginatedRequestLogsParams) ([]RequestLog, error)
 	GetPayoutByID(ctx context.Context, id uuid.UUID) (ConsolePayout, error)
 	GetPayoutByMerchantTxRef(ctx context.Context, merchantTxRef string) (ConsolePayout, error)
 	GetPendingInvoices(ctx context.Context) ([]ConsoleInvoice, error)

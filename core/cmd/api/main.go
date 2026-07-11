@@ -65,8 +65,9 @@ func main() {
 	payoutHandler := handlers.NewPayoutHandler(payoutSvc, nombaClient)
 
 	analyticsHandler := handlers.NewAnalyticsHandler(q)
+	logsHandler := handlers.NewLogsHandler(q)
 
-	router := api.NewRouter(q, healthHandler, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, adminBillingHandler, payoutHandler, analyticsHandler, reconEngine, cfg.NombaWebhookSecret)
+	router := api.NewRouter(q, healthHandler, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, adminBillingHandler, payoutHandler, analyticsHandler, logsHandler, reconEngine, cfg.NombaWebhookSecret)
 
 	log.Printf("Starting Kobo server on port %s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {
