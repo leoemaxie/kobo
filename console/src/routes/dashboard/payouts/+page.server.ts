@@ -88,7 +88,10 @@ export const actions: Actions = {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ accountNumber, bankCode }),
+      body: JSON.stringify({
+        account_number: accountNumber,
+        bank_code: bankCode,
+      }),
     });
 
     if (!lookupRes.ok) {
@@ -105,10 +108,9 @@ export const actions: Actions = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        accountNumber,
-        bankCode,
-        bankName: data.get('bankName')?.toString() || '',
-        accountName: lookupData.accountName,
+        account_number: accountNumber,
+        bank_code: bankCode,
+        bank_name: data.get('bankName')?.toString() || '',
       }),
     });
 
@@ -135,7 +137,7 @@ export const actions: Actions = {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ requestedAmountKobo: amount * 100 }),
+      body: JSON.stringify({ amount_kobo: amount * 100 }),
     });
 
     if (!res.ok) {

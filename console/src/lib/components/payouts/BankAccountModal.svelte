@@ -16,8 +16,20 @@
 
   let loading = $state(false);
   let selectedBank = $state('');
+  let accountNumber = $state('');
+  let submitError = $state('');
+
+  $effect(() => {
+    // Automatically strip non-digits and enforce 10 chars
+    const cleaned = accountNumber.replace(/\D/g, '').slice(0, 10);
+    if (accountNumber !== cleaned) {
+      accountNumber = cleaned;
+    }
+  });
   let bankName = $derived(banks.find((b: Bank) => b.code === selectedBank)?.name || '');
-  let bankOptions = $derived(banks.map((b: Bank): SelectOption => ({ value: b.code, label: b.name })));
+  let bankOptions = $derived(
+    banks.map((b: Bank): SelectOption => ({ value: b.code, label: b.name })),
+  );
 </script>
 
 {#if isOpen}
@@ -38,16 +50,38 @@
         </button>
       </div>
 
+      {#if submitError}
+        <div class="mb-4 p-3 rounded-lg bg-[var(--error-bg)] border border-[var(--error-color)] text-[var(--error-color)] text-[13px] font-medium">
+          {submitError}
+        </div>
+      {/if}
+
       <form
         method="POST"
         action="?/saveBankAccount"
         class="flex flex-col gap-4"
-        use:enhance={() => {
+        use:enhance={({ cancel }) => {
+          submitError = '';
+
+          if (!selectedBank) {
+            submitError = 'Please select a bank from the list.';
+            cancel();
+            return;
+          }
+
+          if (accountNumber.length !== 10) {
+            submitError = 'Account number must be exactly 10 digits.';
+            cancel();
+            return;
+          }
+
           loading = true;
           return async ({ result, update }) => {
             loading = false;
             if (result.type === 'success') {
               onClose();
+            } else if (result.type === 'failure') {
+              submitError = result.data?.error?.toString() || 'Invalid bank account details.';
             }
             update();
           };
@@ -61,9 +95,7 @@
             bind:value={selectedBank}
             options={bankOptions}
             placeholder="Select a bank"
-            required={true}
-          />
-          <input type="hidden" name="bankName" value={bankName} />
+          /><input type="hidden" name="bankName" value={bankName} />
         </div>
 
         <div class="flex flex-col gap-1.5">
@@ -74,10 +106,10 @@
             id="accountNumber"
             name="accountNumber"
             required
-            pattern="[0-9]{10}"
-            title="Must be 10 digits"
+            minlength="10"
             maxlength="10"
             placeholder="0123456789"
+            bind:value={accountNumber}
             class="w-full h-9 px-3 rounded-lg border border-[var(--border-color)] bg-transparent text-[13px] text-main outline-none focus:border-[var(--accent)] placeholder:text-muted"
           />
         </div>

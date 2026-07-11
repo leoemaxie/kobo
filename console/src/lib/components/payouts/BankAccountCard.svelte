@@ -21,9 +21,9 @@
         <Landmark size={24} />
       </div>
       <div>
-        <p class="text-[15px] font-semibold text-main m-0">{bankAccount.accountName}</p>
+        <p class="text-[15px] font-semibold text-main m-0">{bankAccount.account_name}</p>
         <p class="text-[13px] text-muted m-0">
-          {bankAccount.accountNumber} • {bankAccount.bankName}
+          {bankAccount.account_number} • {bankAccount.bank_name}
         </p>
       </div>
     </div>
