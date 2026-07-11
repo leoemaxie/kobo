@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PageHeader from '$lib/components/common/PageHeader.svelte';
+
   let { data } = $props();
   let students = $derived(data.students);
 </script>
@@ -8,12 +10,10 @@
 </svelte:head>
 
 <div class="space-y-8 w-full">
-  <div class="flex items-center justify-between border-b border-iron pb-6">
-    <div>
-      <h1 class="text-3xl font-bold text-pure-white tracking-tight">Dashboard</h1>
-      <p class="text-smoke mt-1">Welcome back. Here are your linked students.</p>
-    </div>
-  </div>
+  <PageHeader
+    title="Dashboard"
+    subtitle="Welcome back. Here are your linked students."
+  />
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     {#each students as student}

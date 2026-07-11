@@ -28,17 +28,26 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
     const student = result[0].student;
 
-    let statement;
-    let transactions;
-    let identity;
+    let statement: any = { closing_balance_kobo: 0 };
+    let transactions: any = { data: [] };
+    let identity: any = {};
 
     try {
         identity = await kobo.identities.get(student.koboIdentityId);
+    } catch (e) {
+        console.error("Failed to fetch Kobo identity:", e);
+    }
+
+    try {
         statement = await kobo.accounts.getStatement(student.koboIdentityId);
+    } catch (e) {
+        console.error("Failed to fetch Kobo statement:", e);
+    }
+
+    try {
         transactions = await kobo.accounts.listTransactions(student.koboIdentityId);
     } catch (e) {
-        console.error("Failed to fetch Kobo data:", e);
-        throw error(500, 'Failed to fetch financial records from Kobo');
+        console.error("Failed to fetch Kobo transactions:", e);
     }
 
     return {
