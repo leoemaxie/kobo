@@ -2,8 +2,10 @@
   import { page } from '$app/state';
   import { Bell, Search, Menu } from '@lucide/svelte';
   import { ui } from '$lib/state.svelte';
+  import SearchModal from './SearchModal.svelte';
   
   let env = $state('Parent Portal');
+  let searchOpen = $state(false);
 
   // Reactively switch environment badge text based on route
   $effect(() => {
@@ -13,7 +15,16 @@
       env = 'Parent Portal';
     }
   });
+
+  function handleKeydown(e: KeyboardEvent) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      searchOpen = true;
+    }
+  }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <header class="h-16 border-b border-iron bg-void-black/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 sm:px-8 flex-shrink-0">
   <div class="flex items-center gap-4">
@@ -26,17 +37,15 @@
       <Menu size={24} />
     </button>
     
-    <!-- Search Bar -->
-    <div class="relative hidden sm:block">
-      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Search size={14} class="text-fog" />
-      </div>
-      <input 
-        type="text" 
-        placeholder="Search..." 
-        class="block w-48 lg:w-64 rounded-full border border-iron bg-carbon pl-9 pr-4 py-1.5 text-xs text-paper placeholder-fog focus:border-electric-lime focus:outline-none focus:ring-1 focus:ring-electric-lime transition-colors"
-      />
-    </div>
+    <!-- Search Bar Button -->
+    <button 
+      class="relative hidden sm:flex items-center w-48 lg:w-64 rounded-full border border-iron bg-carbon pl-3 pr-2 py-1.5 text-xs text-fog hover:border-electric-lime hover:text-paper transition-colors text-left focus:outline-none focus:ring-1 focus:ring-electric-lime"
+      onclick={() => searchOpen = true}
+    >
+      <Search size={14} class="mr-2" />
+      <span class="flex-1">Search...</span>
+      <kbd class="hidden lg:inline-block bg-void-black border border-iron px-1.5 py-0.5 rounded text-[10px] font-mono shadow-sm">⌘K</kbd>
+    </button>
   </div>
 
   <div class="flex items-center gap-3 sm:gap-5">
@@ -65,3 +74,5 @@
     </div>
   </div>
 </header>
+
+<SearchModal bind:isOpen={searchOpen} />
