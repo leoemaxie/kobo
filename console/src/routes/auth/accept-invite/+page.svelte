@@ -27,7 +27,7 @@
         </div>
         <h3 class="text-lg font-semibold text-main mb-2">Invalid Invitation</h3>
         <p class="text-sm text-subtle mb-6">{data.error}</p>
-        <Button href="/auth/login" variant="secondary" size="md">Go to Login</Button>
+        <Button href="/auth/login" variant="neutral" size="md">Go to Login</Button>
       </div>
     {:else}
       <div class="flex flex-col items-center text-center">
@@ -39,10 +39,10 @@
         <h3 class="text-lg font-semibold text-main mb-2">You've been invited!</h3>
         <p class="text-[14px] text-muted mb-6 leading-relaxed">
           You have been invited to join the <strong class="text-main font-semibold"
-            >{data.invite.workspaceName}</strong
+            >{data.invite?.workspaceName}</strong
           >
           workspace as a
-          <strong class="text-main font-semibold capitalize">{data.invite.role}</strong>.
+          <strong class="text-main font-semibold capitalize">{data.invite?.role}</strong>.
         </p>
 
         {#if !data.user}
@@ -55,7 +55,7 @@
               <Button href="/auth/signup" variant="primary" size="md" class="w-full">
                 Create Account
               </Button>
-              <Button href="/auth/login" variant="secondary" size="md" class="w-full">
+              <Button href="/auth/login" variant="neutral" size="md" class="w-full">
                 Log In
               </Button>
             </div>
@@ -80,7 +80,7 @@
                 before joining a new one.
               </p>
             </div>
-            <Button href="/dashboard" variant="secondary" size="md" class="w-full">
+            <Button href="/dashboard" variant="neutral" size="md" class="w-full">
               Go to Dashboard
             </Button>
           {:else}
@@ -98,7 +98,7 @@
                 };
               }}
             >
-              <input type="hidden" name="token" value={data.invite.id} />
+              <input type="hidden" name="token" value={data.invite?.id} />
               <Button
                 type="submit"
                 variant="primary"

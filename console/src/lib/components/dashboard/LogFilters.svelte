@@ -2,14 +2,12 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
 
-  let { filters } = $props<{ filters: { method: string; statusCode: string } }>();
-
-  let method = $state(filters.method);
-  let statusCode = $state(filters.statusCode);
+  let method = $state(page.url.searchParams.get('method') || '');
+  let statusCode = $state(page.url.searchParams.get('status_code') || '');
 
   $effect(() => {
-    method = filters.method;
-    statusCode = filters.statusCode;
+    method = page.url.searchParams.get('method') || '';
+    statusCode = page.url.searchParams.get('status_code') || '';
   });
 
   function applyFilters() {
