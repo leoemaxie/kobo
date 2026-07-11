@@ -18,11 +18,14 @@
 <div class="space-y-8 w-full pb-10">
   <!-- Navigation and Header -->
   <div>
-    <a href="/admin/students" class="inline-flex items-center gap-2 text-sm text-smoke hover:text-pure-white transition-colors mb-6">
+    <a
+      href="/admin/students"
+      class="inline-flex items-center gap-2 text-sm text-smoke hover:text-pure-white transition-colors mb-6"
+    >
       <ArrowLeft size={16} />
       Back to Students
     </a>
-    
+
     <PageHeader
       title={student.name}
       subtitle="Student ID: {student.id} &bull; Class: {student.class}"
@@ -30,7 +33,9 @@
   </div>
 
   {#if form?.success}
-    <div class="bg-dark-olive/20 border border-electric-lime/50 text-electric-lime text-sm p-4 rounded-lg shadow-sm">
+    <div
+      class="bg-dark-olive/20 border border-electric-lime/50 text-electric-lime text-sm p-4 rounded-lg shadow-sm"
+    >
       {form.message || 'Operation successful'}
     </div>
   {/if}
@@ -43,7 +48,7 @@
   <!-- Top Section: Summaries and Actions -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     <FinancialSummary account={student.virtualAccount} statement={student.statement} />
-    <LinkedParents linkedParents={student.linkedParents} availableParents={availableParents} />
+    <LinkedParents linkedParents={student.linkedParents} {availableParents} />
     <StudentActions studentId={student.id} currentClass={student.class} />
   </div>
 

@@ -10,20 +10,28 @@
 
 <div class="bg-carbon border border-iron rounded-xl p-8 shadow-sm">
   {#if form?.error}
-    <div class="bg-danger/10 border border-danger/50 text-danger text-sm p-4 rounded-lg mb-6 shadow-sm">
+    <div
+      class="bg-danger/10 border border-danger/50 text-danger text-sm p-4 rounded-lg mb-6 shadow-sm"
+    >
       {form.error}
     </div>
   {/if}
 
-  <form class="space-y-5" method="POST" use:enhance={() => {
-    isSubmitting = true;
-    return async ({ update }) => {
-      await update();
-      isSubmitting = false;
-    };
-  }}>
+  <form
+    class="space-y-5"
+    method="POST"
+    use:enhance={() => {
+      isSubmitting = true;
+      return async ({ update }) => {
+        await update();
+        isSubmitting = false;
+      };
+    }}
+  >
     <div class="space-y-1.5">
-      <label for="email" class="block text-xs font-semibold text-smoke uppercase tracking-widest">Email Address</label>
+      <label for="email" class="block text-xs font-semibold text-smoke uppercase tracking-widest"
+        >Email Address</label
+      >
       <input
         id="email"
         name="email"
@@ -36,7 +44,9 @@
     </div>
 
     <div class="space-y-1.5">
-      <label for="password" class="block text-xs font-semibold text-smoke uppercase tracking-widest">Password</label>
+      <label for="password" class="block text-xs font-semibold text-smoke uppercase tracking-widest"
+        >Password</label
+      >
       <input
         id="password"
         name="password"

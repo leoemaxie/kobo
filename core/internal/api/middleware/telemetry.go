@@ -15,15 +15,15 @@ func RequestTelemetryMiddleware(q *sqlc.Queries) func(next http.Handler) http.Ha
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
-			
+
 			// Wrap the response writer to capture status code
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
-			
+
 			next.ServeHTTP(ww, r)
-			
+
 			latencyMs := time.Since(start).Milliseconds()
 			reqID := middleware.GetReqID(r.Context())
-			
+
 			// We only want to log requests that have an integrator_id in the context (authenticated API requests)
 			ctx := r.Context()
 			integratorIDStr, ok := ctx.Value("integrator_id").(string)

@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
 
-  let { 
-    title, 
-    subtitle, 
-    rightSection 
+  let {
+    title,
+    subtitle,
+    rightSection,
   }: {
     title: string;
     subtitle?: string;

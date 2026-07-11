@@ -17,7 +17,6 @@ type BankInfo struct {
 	Logo    string `json:"logo"`
 }
 
-
 type LookupBankAccountResponse struct {
 	AccountNumber string `json:"accountNumber"`
 	AccountName   string `json:"accountName"`

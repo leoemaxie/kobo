@@ -9,7 +9,10 @@
     scope: string;
   }
 
-  let { admins, form }: {
+  let {
+    admins,
+    form,
+  }: {
     admins: Admin[];
     form: any;
   } = $props();
@@ -17,7 +20,9 @@
 
 <div class="space-y-6">
   {#if form?.success}
-    <div class="bg-dark-olive/20 border border-electric-lime/50 text-electric-lime text-sm p-4 rounded-lg shadow-sm">
+    <div
+      class="bg-dark-olive/20 border border-electric-lime/50 text-electric-lime text-sm p-4 rounded-lg shadow-sm"
+    >
       Operation successful!
     </div>
   {/if}
@@ -32,31 +37,66 @@
       <table class="min-w-full">
         <thead>
           <tr class="border-b border-iron/50 bg-void-black/50">
-            <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke">Name</th>
-            <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke">Email</th>
-            <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke">Status</th>
-            <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke">Scope</th>
-            <th class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-smoke">Actions</th>
+            <th
+              class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke"
+              >Name</th
+            >
+            <th
+              class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke"
+              >Email</th
+            >
+            <th
+              class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke"
+              >Status</th
+            >
+            <th
+              class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-smoke"
+              >Scope</th
+            >
+            <th
+              class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-smoke"
+              >Actions</th
+            >
           </tr>
         </thead>
         <tbody class="divide-y divide-iron/50">
           {#each admins as admin}
             <tr class="hover:bg-graphite/30 transition-colors">
-              <td class="px-6 py-4 text-sm font-medium text-pure-white whitespace-nowrap">{admin.name}</td>
+              <td class="px-6 py-4 text-sm font-medium text-pure-white whitespace-nowrap"
+                >{admin.name}</td
+              >
               <td class="px-6 py-4 text-sm text-smoke whitespace-nowrap">{admin.email}</td>
               <td class="px-6 py-4 text-sm whitespace-nowrap">
                 {#if admin.status === 'active'}
-                  <span class="inline-flex items-center rounded-full bg-dark-olive/20 border border-electric-lime/30 px-2.5 py-0.5 text-[10px] font-bold text-electric-lime uppercase tracking-wider">Active</span>
+                  <span
+                    class="inline-flex items-center rounded-full bg-dark-olive/20 border border-electric-lime/30 px-2.5 py-0.5 text-[10px] font-bold text-electric-lime uppercase tracking-wider"
+                    >Active</span
+                  >
                 {:else if admin.status === 'pending'}
-                  <span class="inline-flex items-center rounded-full bg-paper/10 border border-fog/30 px-2.5 py-0.5 text-[10px] font-bold text-paper uppercase tracking-wider">Pending</span>
+                  <span
+                    class="inline-flex items-center rounded-full bg-paper/10 border border-fog/30 px-2.5 py-0.5 text-[10px] font-bold text-paper uppercase tracking-wider"
+                    >Pending</span
+                  >
                 {:else}
-                  <span class="inline-flex items-center rounded-full bg-danger/10 border border-danger/30 px-2.5 py-0.5 text-[10px] font-bold text-danger uppercase tracking-wider">Revoked</span>
+                  <span
+                    class="inline-flex items-center rounded-full bg-danger/10 border border-danger/30 px-2.5 py-0.5 text-[10px] font-bold text-danger uppercase tracking-wider"
+                    >Revoked</span
+                  >
                 {/if}
               </td>
               <td class="px-6 py-4 text-sm whitespace-nowrap">
-                <form method="POST" action="?/updateScope" use:enhance class="flex items-center gap-2">
+                <form
+                  method="POST"
+                  action="?/updateScope"
+                  use:enhance
+                  class="flex items-center gap-2"
+                >
                   <input type="hidden" name="adminId" value={admin.id} />
-                  <select name="scope" class="bg-void-black border border-iron rounded text-xs text-paper px-2 py-1 outline-none focus:border-electric-lime" onchange={(e) => e.currentTarget.form?.requestSubmit()}>
+                  <select
+                    name="scope"
+                    class="bg-void-black border border-iron rounded text-xs text-paper px-2 py-1 outline-none focus:border-electric-lime"
+                    onchange={(e) => e.currentTarget.form?.requestSubmit()}
+                  >
                     <option value="read" selected={admin.scope === 'read'}>Read</option>
                     <option value="write" selected={admin.scope === 'write'}>Write</option>
                     <option value="full" selected={admin.scope === 'full'}>Full Access</option>
@@ -68,7 +108,10 @@
                   <form method="POST" action="?/updateStatus" use:enhance>
                     <input type="hidden" name="adminId" value={admin.id} />
                     <input type="hidden" name="status" value="active" />
-                    <button type="submit" class="text-[11px] font-bold bg-electric-lime text-void-black hover:bg-lime-glow px-3 py-1.5 rounded transition-all shadow-sm">
+                    <button
+                      type="submit"
+                      class="text-[11px] font-bold bg-electric-lime text-void-black hover:bg-lime-glow px-3 py-1.5 rounded transition-all shadow-sm"
+                    >
                       Grant Access
                     </button>
                   </form>
@@ -77,7 +120,10 @@
                   <form method="POST" action="?/updateStatus" use:enhance>
                     <input type="hidden" name="adminId" value={admin.id} />
                     <input type="hidden" name="status" value="revoked" />
-                    <button type="submit" class="text-[11px] font-bold text-danger border border-danger/30 hover:bg-danger/10 px-3 py-1.5 rounded transition-colors">
+                    <button
+                      type="submit"
+                      class="text-[11px] font-bold text-danger border border-danger/30 hover:bg-danger/10 px-3 py-1.5 rounded transition-colors"
+                    >
                       Revoke
                     </button>
                   </form>

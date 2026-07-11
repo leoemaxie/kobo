@@ -21,13 +21,19 @@
 </script>
 
 {#if isNavigating}
-  <div class="fixed top-0 left-0 w-full h-1 z-[100] bg-void-black overflow-hidden pointer-events-none">
-    <div class="h-full bg-electric-lime w-1/3 animate-progress origin-left rounded-r-full shadow-[0_0_10px_rgba(204,255,0,0.8)]"></div>
+  <div
+    class="fixed top-0 left-0 w-full h-1 z-[100] bg-void-black overflow-hidden pointer-events-none"
+  >
+    <div
+      class="h-full bg-electric-lime w-1/3 animate-progress origin-left rounded-r-full shadow-[0_0_10px_rgba(204,255,0,0.8)]"
+    ></div>
   </div>
 {/if}
 
 {#if !isAuthRoute}
-  <div class="flex h-[100dvh] w-screen overflow-hidden bg-void-black text-paper font-inter antialiased">
+  <div
+    class="flex h-[100dvh] w-screen overflow-hidden bg-void-black text-paper font-inter antialiased"
+  >
     <Sidebar />
     <div class="flex flex-col flex-1 min-w-0 overflow-hidden relative">
       <Header />
@@ -48,9 +54,17 @@
 
 <style>
   @keyframes progress {
-    0% { transform: translateX(-100%); width: 30%; }
-    50% { width: 40%; }
-    100% { transform: translateX(300%); width: 10%; }
+    0% {
+      transform: translateX(-100%);
+      width: 30%;
+    }
+    50% {
+      width: 40%;
+    }
+    100% {
+      transform: translateX(300%);
+      width: 10%;
+    }
   }
   .animate-progress {
     animation: progress 1.5s infinite linear;

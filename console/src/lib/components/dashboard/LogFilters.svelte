@@ -31,8 +31,15 @@
 
 <div class="flex flex-wrap gap-4 mb-6 items-end">
   <div class="flex flex-col gap-1.5">
-    <label for="method-filter" class="text-xs font-semibold text-[var(--text-subtle)] uppercase tracking-wider">Method</label>
-    <select id="method-filter" bind:value={method} class="h-9 px-3 rounded-lg border border-[var(--border-color)] bg-transparent text-[13px] text-[var(--text-main)] outline-none focus:border-[var(--accent)] cursor-pointer">
+    <label
+      for="method-filter"
+      class="text-xs font-semibold text-[var(--text-subtle)] uppercase tracking-wider">Method</label
+    >
+    <select
+      id="method-filter"
+      bind:value={method}
+      class="h-9 px-3 rounded-lg border border-[var(--border-color)] bg-transparent text-[13px] text-[var(--text-main)] outline-none focus:border-[var(--accent)] cursor-pointer"
+    >
       <option value="">All Methods</option>
       <option value="GET">GET</option>
       <option value="POST">POST</option>
@@ -43,16 +50,32 @@
   </div>
 
   <div class="flex flex-col gap-1.5">
-    <label for="status-filter" class="text-xs font-semibold text-[var(--text-subtle)] uppercase tracking-wider">Status Code</label>
-    <input id="status-filter" type="number" bind:value={statusCode} placeholder="e.g. 200, 404, 500" class="h-9 px-3 w-40 rounded-lg border border-[var(--border-color)] bg-transparent text-[13px] text-[var(--text-main)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-muted)]" />
+    <label
+      for="status-filter"
+      class="text-xs font-semibold text-[var(--text-subtle)] uppercase tracking-wider"
+      >Status Code</label
+    >
+    <input
+      id="status-filter"
+      type="number"
+      bind:value={statusCode}
+      placeholder="e.g. 200, 404, 500"
+      class="h-9 px-3 w-40 rounded-lg border border-[var(--border-color)] bg-transparent text-[13px] text-[var(--text-main)] outline-none focus:border-[var(--accent)] placeholder:text-[var(--text-muted)]"
+    />
   </div>
 
-  <button onclick={applyFilters} class="h-9 px-4 rounded-lg bg-[var(--accent)] text-white text-[13px] font-semibold transition-transform hover:scale-[1.02] active:scale-[0.98]">
+  <button
+    onclick={applyFilters}
+    class="h-9 px-4 rounded-lg bg-[var(--accent)] text-white text-[13px] font-semibold transition-transform hover:scale-[1.02] active:scale-[0.98]"
+  >
     Apply Filters
   </button>
 
   {#if method || statusCode}
-    <button onclick={clearFilters} class="h-9 px-4 rounded-lg bg-transparent border border-[var(--border-color)] text-[var(--text-main)] text-[13px] font-semibold hover:bg-[var(--bg-element)] transition-colors">
+    <button
+      onclick={clearFilters}
+      class="h-9 px-4 rounded-lg bg-transparent border border-[var(--border-color)] text-[var(--text-main)] text-[13px] font-semibold hover:bg-[var(--bg-element)] transition-colors"
+    >
       Clear
     </button>
   {/if}

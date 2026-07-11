@@ -2,7 +2,7 @@
   let { children, class: className = '', title = '', ...rest } = $props();
 </script>
 
-<div 
+<div
   class="bg-carbon border border-iron rounded-radius-cards p-6 sm:p-8 shadow-sm {className}"
   {...rest}
 >

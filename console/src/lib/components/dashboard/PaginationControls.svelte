@@ -3,7 +3,9 @@
   import { page } from '$app/state';
   import { ChevronLeft, ChevronRight } from '@lucide/svelte';
 
-  let { meta } = $props<{ meta: { total: number; page: number; limit: number; totalPages: number } }>();
+  let { meta } = $props<{
+    meta: { total: number; page: number; limit: number; totalPages: number };
+  }>();
 
   function setPage(p: number) {
     if (p < 1 || p > meta.totalPages || p === meta.page) return;

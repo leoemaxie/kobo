@@ -11,7 +11,9 @@
 </svelte:head>
 
 {#snippet superBadge()}
-  <div class="bg-carbon border border-electric-lime text-electric-lime text-xs font-bold px-3 py-1.5 rounded-full tracking-widest uppercase shadow-[0_0_10px_rgba(204,255,0,0.2)]">
+  <div
+    class="bg-carbon border border-electric-lime text-electric-lime text-xs font-bold px-3 py-1.5 rounded-full tracking-widest uppercase shadow-[0_0_10px_rgba(204,255,0,0.2)]"
+  >
     Superadmin
   </div>
 {/snippet}

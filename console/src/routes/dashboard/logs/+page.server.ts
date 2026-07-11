@@ -40,6 +40,6 @@ export const load: PageServerLoad = async ({ url, cookies, locals }) => {
   return {
     paginatedLogs: logs,
     meta,
-    filters: { method, statusCode }
+    filters: { method, statusCode },
   };
 };

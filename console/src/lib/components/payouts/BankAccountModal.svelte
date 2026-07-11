@@ -51,7 +51,9 @@
       </div>
 
       {#if submitError}
-        <div class="mb-4 p-3 rounded-lg bg-[var(--error-bg)] border border-[var(--error-color)] text-[var(--error-color)] text-[13px] font-medium">
+        <div
+          class="mb-4 p-3 rounded-lg bg-[var(--error-bg)] border border-[var(--error-color)] text-[var(--error-color)] text-[13px] font-medium"
+        >
           {submitError}
         </div>
       {/if}

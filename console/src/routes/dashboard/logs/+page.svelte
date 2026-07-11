@@ -23,7 +23,10 @@
 
 <div class="max-w-6xl mx-auto">
   <div class="mb-8">
-    <a href="/dashboard" class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-colors mb-4">
+    <a
+      href="/dashboard"
+      class="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--text-subtle)] hover:text-[var(--text-main)] transition-colors mb-4"
+    >
       <ArrowLeft size={14} />
       Back to Dashboard
     </a>
@@ -34,8 +37,8 @@
   </div>
 
   <LogFilters />
-  
+
   <LogTable {logs} />
-  
+
   <PaginationControls {meta} />
 </div>

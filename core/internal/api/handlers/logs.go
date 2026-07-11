@@ -21,7 +21,7 @@ func NewLogsHandler(q *sqlc.Queries) *LogsHandler {
 }
 
 type PaginatedLogsResponse struct {
-	Data []LogEntry `json:"data"`
+	Data []LogEntry     `json:"data"`
 	Meta PaginationMeta `json:"meta"`
 }
 

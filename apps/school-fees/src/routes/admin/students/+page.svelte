@@ -13,7 +13,9 @@
 </svelte:head>
 
 {#snippet adminBadge()}
-  <div class="bg-carbon border border-electric-lime/30 text-electric-lime text-xs font-semibold px-3 py-1.5 rounded-full tracking-widest uppercase">
+  <div
+    class="bg-carbon border border-electric-lime/30 text-electric-lime text-xs font-semibold px-3 py-1.5 rounded-full tracking-widest uppercase"
+  >
     Admin Mode
   </div>
 {/snippet}

@@ -55,9 +55,7 @@
               <Button href="/auth/signup" variant="primary" size="md" class="w-full">
                 Create Account
               </Button>
-              <Button href="/auth/login" variant="neutral" size="md" class="w-full">
-                Log In
-              </Button>
+              <Button href="/auth/login" variant="neutral" size="md" class="w-full">Log In</Button>
             </div>
           </div>
         {:else}

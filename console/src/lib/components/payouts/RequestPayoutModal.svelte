@@ -34,7 +34,13 @@
 
 {#if isOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-    <div class="fixed inset-0 bg-[var(--bg-sidebar)] opacity-80" role="button" tabindex="0" onclick={onClose} onkeydown={(e) => e.key === 'Escape' && onClose()}></div>
+    <div
+      class="fixed inset-0 bg-[var(--bg-sidebar)] opacity-80"
+      role="button"
+      tabindex="0"
+      onclick={onClose}
+      onkeydown={(e) => e.key === 'Escape' && onClose()}
+    ></div>
     <div
       class="relative bg-[var(--bg-main)] border border-[var(--border-color)] rounded-xl shadow-lg w-full max-w-md p-6 overflow-hidden"
     >

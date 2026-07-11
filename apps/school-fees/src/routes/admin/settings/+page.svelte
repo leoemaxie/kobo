@@ -10,10 +10,10 @@
 </svelte:head>
 
 {#snippet getKeysBtn()}
-  <a 
-    href={data.consoleUrl} 
-    target="_blank" 
-    rel="noopener noreferrer" 
+  <a
+    href={data.consoleUrl}
+    target="_blank"
+    rel="noopener noreferrer"
     class="bg-electric-lime/20 border border-electric-lime/50 text-electric-lime hover:bg-electric-lime hover:text-void-black text-xs font-bold px-4 py-2 rounded-lg transition-all shadow-sm flex items-center gap-1 whitespace-nowrap"
   >
     Get Keys in Console ↗
