@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ locals }) => {
             name: a.name,
             email: a.email,
             status: a.status,
-            scope: a.scope,
+            scope: a.scope || '',
             date: a.createdAt.toLocaleDateString()
         }))
     };
@@ -31,7 +31,7 @@ export const actions: Actions = {
 
         const data = await request.formData();
         const adminId = data.get('adminId') as string;
-        const status = data.get('status') as string;
+        const status = data.get('status') as "pending" | "active" | "revoked";
 
         if (!['pending', 'active', 'revoked'].includes(status)) {
             return fail(400, { error: 'Invalid status' });

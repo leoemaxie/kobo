@@ -24,7 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     // If root, redirect based on role or to login
     if (event.url.pathname === '/') {
         if (event.locals.user) {
-            throw redirect(302, event.locals.user.isAdmin ? '/admin/students' : '/dashboard');
+            throw redirect(302, (event.locals.user.role === 'admin' || event.locals.user.role === 'superadmin') ? '/admin/students' : '/dashboard');
         } else {
             throw redirect(302, '/login');
         }
@@ -35,7 +35,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     }
 
     if (isPublic && event.locals.user) {
-        throw redirect(302, event.locals.user.isAdmin ? '/admin/students' : '/dashboard');
+        throw redirect(302, (event.locals.user.role === 'admin' || event.locals.user.role === 'superadmin') ? '/admin/students' : '/dashboard');
     }
 
     return resolve(event);

@@ -12,11 +12,11 @@
   let isSearching = $state(false);
   let debounceTimer: ReturnType<typeof setTimeout>;
 
-  let inputElement: HTMLInputElement;
+  let inputElement: HTMLInputElement | undefined = $state();
 
   $effect(() => {
     if (isOpen && inputElement) {
-      setTimeout(() => inputElement.focus(), 50);
+      setTimeout(() => inputElement?.focus(), 50);
     } else if (!isOpen) {
       query = '';
       results = null;

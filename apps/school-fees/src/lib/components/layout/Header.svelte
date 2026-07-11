@@ -65,7 +65,7 @@
     
     <div class="flex items-center gap-3">
       <div class="w-8 h-8 rounded-full bg-carbon border border-iron flex items-center justify-center text-sm font-bold text-smoke flex-shrink-0">
-        {page.data.user?.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
+        {page.data.user?.name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() || 'U'}
       </div>
       <div class="hidden md:block">
         <p class="text-xs font-semibold text-pure-white leading-none">{page.data.user?.name || 'User'}</p>
