@@ -29,7 +29,7 @@
       Recent Requests
     </p>
     <a
-      href="/logs"
+      href="/dashboard/logs"
       style="
       font-size: 12px; font-weight: 600; color: var(--text-subtle); text-decoration: none;
       display: flex; align-items: center; gap: 4px; transition: color 0.2s;

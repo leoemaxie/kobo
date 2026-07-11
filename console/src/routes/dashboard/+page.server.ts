@@ -42,13 +42,18 @@ export const load: PageServerLoad = async ({ locals, setHeaders, cookies, fetch 
   let logs = [];
 
   try {
-    const res = await fetch(`${env.CORE_URL}/console/analytics`, { headers });
+    const url = `${env.CORE_URL}/console/analytics`;
+    console.log(`Fetching analytics from: ${url}`);
+    const res = await fetch(url, { headers });
+    console.log(`Analytics response status: ${res.status}`);
     if (res.ok) {
       const data = await res.json();
+      console.log(`Analytics data:`, data);
       metrics = data.metrics || [];
       logs = data.logs || [];
     } else {
       console.error(`Failed to fetch analytics: ${res.status} ${res.statusText}`);
+      console.error(`Response body: ${await res.text()}`);
     }
   } catch (err) {
     console.error('Error fetching analytics:', err);
