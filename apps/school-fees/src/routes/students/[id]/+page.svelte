@@ -2,9 +2,10 @@
   let { data } = $props();
   let student = $derived(data.student);
 
-  function formatCurrency(amount: string) {
-    const num = parseInt(amount.replace(/[^0-9]/g, ''));
-    return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(num);
+  function formatCurrency(kobo: number | string | undefined) {
+    if (kobo === undefined || kobo === null) return '₦0.00';
+    const num = typeof kobo === 'string' ? parseInt(kobo.replace(/[^0-9]/g, '')) : kobo;
+    return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(num / 100);
   }
   
   function formatDate(isoString: string) {
@@ -82,7 +83,7 @@
                   </div>
                 </div>
                 <div class="text-right">
-                  <p class="text-sm font-bold font-mono text-electric-lime">{formatCurrency(tx.amount)}</p>
+                  <p class="text-sm font-bold font-mono text-electric-lime">{formatCurrency(tx.amount_kobo ?? tx.amount)}</p>
                   <p class="text-[10px] text-smoke uppercase font-bold tracking-widest mt-1">{tx.status}</p>
                 </div>
               </div>
