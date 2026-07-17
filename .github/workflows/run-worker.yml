@@ -28,9 +28,9 @@ jobs:
     - name: Run Worker
       env:
         DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        NOMBA_CLIENT_ID: ${{ secrets.NOMBA_CLIENT_ID }}
-        NOMBA_CLIENT_SECRET: ${{ secrets.NOMBA_CLIENT_SECRET }}
-        NOMBA_ACCOUNT_ID: ${{ secrets.NOMBA_ACCOUNT_ID }}
-        NOMBA_WEBHOOK_SECRET: ${{ secrets.NOMBA_WEBHOOK_SECRET }}
-        NOMBA_BASE_URL: ${{ vars.NOMBA_BASE_URL || 'https://api.nomba.com/v1' }}
+        MONNIFY_CLIENT_ID: ${{ secrets.MONNIFY_CLIENT_ID }}
+        MONNIFY_CLIENT_SECRET: ${{ secrets.MONNIFY_CLIENT_SECRET }}
+        MONNIFY_ACCOUNT_ID: ${{ secrets.MONNIFY_ACCOUNT_ID }}
+        MONNIFY_WEBHOOK_SECRET: ${{ secrets.MONNIFY_WEBHOOK_SECRET }}
+        MONNIFY_BASE_URL: ${{ vars.MONNIFY_BASE_URL || 'https://api.monnify.com/v1' }}
       run: go run cmd/worker/main.go
