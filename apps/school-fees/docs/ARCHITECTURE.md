@@ -10,7 +10,7 @@ that demonstrates Kobo core end-to-end.
 **It is:** a small, real, working demonstration that an outside team can
 integrate against the Kobo API using nothing but a sandbox API key and the
 public `openapi.yaml` contract, and get a working fee-collection product
-without touching Kobo's internals, database, or Nomba credentials directly.
+without touching Kobo's internals, database, or Monnify credentials directly.
 
 ---
 
@@ -124,7 +124,7 @@ generated student ID and `display_name` set to the student's name, per the
 `CreateIdentityRequest` shape in `core/openapi.yaml`. Store the returned
 `kobo_identity_id` on the local `students` row. That's the entire
 provisioning flow from this app's side — everything else (virtual account
-creation, Nomba call, lifecycle state) is Kobo's problem, not this app's,
+creation, Monnify call, lifecycle state) is Kobo's problem, not this app's,
 which is exactly the point being demonstrated.
 
 ### 2. Parent dashboard → student account view
@@ -159,8 +159,8 @@ worth stating why explicitly rather than just as a rule:
    implementation gets this basic thing wrong.
 2. **It matches how Kobo's own auth is designed.** Per `openapi.yaml`,
    Kobo requests are authenticated with an API key plus an HMAC signature
-   over the request body and a timestamp (see `core/docs/NOMBA_INTEGRATION.md`
-   for the pattern this mirrors on the Nomba side, and `openapi.yaml`'s
+   over the request body and a timestamp (see `core/docs/MONNIFY_INTEGRATION.md`
+   for the pattern this mirrors on the Monnify side, and `openapi.yaml`'s
    `HmacSignature` security scheme for Kobo's own equivalent). HMAC signing
    requires the API secret to compute the signature — that secret cannot
    exist in browser-delivered JavaScript under any circumstance.

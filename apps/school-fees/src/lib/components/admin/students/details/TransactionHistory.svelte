@@ -6,7 +6,7 @@
     amount_kobo: number;
     direction: 'inbound' | 'outbound';
     status: 'matched' | 'partial' | 'overpayment' | 'pending' | 'failed';
-    nomba_reference: string;
+    monnify_reference: string;
     occurred_at: string;
   }
 
@@ -60,7 +60,7 @@
               >{formatDate(tx.occurred_at)}</td
             >
             <td class="px-6 py-3 text-xs font-mono text-smoke whitespace-nowrap"
-              >{tx.nomba_reference || tx.id.slice(0, 8)}</td
+              >{tx.monnify_reference || tx.id.slice(0, 8)}</td
             >
             <td class="px-6 py-3 whitespace-nowrap">
               <div
