@@ -1,8 +1,8 @@
 ---
-id: receive-nomba-webhook
-title: "Internal endpoint Nomba calls into. Not used by Kobo integrators."
-description: "Documented for completeness and for engineers implementing the reconciliation engine. Verifies the Nomba signature header before processing. Every event includes a transaction reference used as the idempotency key; duplicate deliveries are accepted (200) but produce no additional ledger writes."
-sidebar_label: "Internal endpoint Nomba calls into. Not used by Kobo integrators."
+id: receive-monnify-webhook
+title: "Internal endpoint Monnify calls into. Not used by Kobo integrators."
+description: "Documented for completeness and for engineers implementing the reconciliation engine. Verifies the Monnify signature header before processing. Every event includes a transaction reference used as the idempotency key; duplicate deliveries are accepted (200) but produce no additional ledger writes."
+sidebar_label: "Internal endpoint Monnify calls into. Not used by Kobo integrators."
 hide_title: true
 hide_table_of_contents: true
 api: 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
@@ -23,13 +23,13 @@ import Translate from "@docusaurus/Translate";
 <Heading
   as={"h1"}
   className={"openapi__heading"}
-  children={"Internal endpoint Nomba calls into. Not used by Kobo integrators."}
+  children={"Internal endpoint Monnify calls into. Not used by Kobo integrators."}
 >
 </Heading>
 
 <MethodEndpoint
   method={"post"}
-  path={"/webhooks/nomba"}
+  path={"/webhooks/monnify"}
   context={"endpoint"}
 >
   
@@ -37,7 +37,7 @@ import Translate from "@docusaurus/Translate";
 
 
 
-Documented for completeness and for engineers implementing the reconciliation engine. Verifies the Nomba signature header before processing. Every event includes a transaction reference used as the idempotency key; duplicate deliveries are accepted (200) but produce no additional ledger writes.
+Documented for completeness and for engineers implementing the reconciliation engine. Verifies the Monnify signature header before processing. Every event includes a transaction reference used as the idempotency key; duplicate deliveries are accepted (200) but produce no additional ledger writes.
 
 
 <Heading
@@ -53,13 +53,13 @@ Documented for completeness and for engineers implementing the reconciliation en
 </ParamsDetails>
 
 <RequestSchema
-  {...require("./receive-nomba-webhook.RequestSchema.json")}
+  {...require("./receive-monnify-webhook.RequestSchema.json")}
 >
   
 </RequestSchema>
 
 <StatusCodes
-  {...require("./receive-nomba-webhook.StatusCodes.json")}
+  {...require("./receive-monnify-webhook.StatusCodes.json")}
 >
   
 </StatusCodes>

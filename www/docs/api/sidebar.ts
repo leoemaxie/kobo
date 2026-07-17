@@ -100,8 +100,8 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "api/receive-nomba-webhook",
-          label: "Internal endpoint Nomba calls into. Not used by Kobo integrators.",
+          id: "api/receive-monnify-webhook",
+          label: "Internal endpoint Monnify calls into. Not used by Kobo integrators.",
           className: "api-method post",
         },
       ],

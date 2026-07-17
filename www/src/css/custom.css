@@ -589,7 +589,7 @@
 }
 
 /* ========================================================
-   MCP "Open in Claude" Split Button — Nomba-style
+   MCP "Open in Claude" Split Button — Monnify-style
    ======================================================== */
 
 /* Wrapper: the dropdown container */
@@ -743,7 +743,158 @@
   gap: 3px;
 }
 
-/* Beautiful HTTP Method Badges in Sidebar (Nomba-style) */
+/* Wrapper: the dropdown container */
+.monnify-mcp-btn {
+  position: relative;
+}
+
+/* The main trigger button */
+.monnify-mcp-btn .mcp-install-dropdown__button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  background-color: #CCA300 !important;
+  border: 1.5px solid #B08C00 !important;
+  border-radius: 12px !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden;
+  text-shadow: none !important;
+  line-height: 1 !important;
+}
+
+.monnify-mcp-btn .mcp-install-dropdown__button:hover {
+  background-color: #B89400 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* MCP spark icon */
+.monnify-mcp-btn .mcp-install-dropdown__button > svg:first-child {
+  margin: 0 0 0 12px;
+  flex-shrink: 0;
+}
+
+/* "Open in Claude" label text */
+.monnify-mcp-btn .mcp-install-dropdown__button > span {
+  padding: 7px 10px 7px 8px;
+  letter-spacing: 0.01em;
+}
+
+/* Chevron icon — visually separated as the "dropdown trigger" half */
+.monnify-mcp-btn .mcp-install-dropdown__button > svg:last-child {
+  margin: 0;
+  padding: 7px 10px;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  height: 100%;
+  box-sizing: content-box;
+  background-color: rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.monnify-mcp-btn .mcp-install-dropdown__button:hover > svg:last-child {
+  background-color: rgba(0, 0, 0, 0.14);
+}
+
+/* Dropdown menu panel */
+.monnify-mcp-btn .mcp-install-dropdown__menu {
+  min-width: 340px !important;
+  max-width: 520px !important;
+  width: max-content !important;
+  border-radius: 16px !important;
+  border: 1px solid var(--kobo-sidebar-border) !important;
+  background: var(--ifm-background-color) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  padding: 6px !important;
+  overflow: hidden;
+  top: calc(100% + 6px) !important;
+}
+
+[data-theme='dark'] .monnify-mcp-btn .mcp-install-dropdown__menu {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Dropdown header ("Choose your AI tool:") */
+.monnify-mcp-btn .mcp-install-dropdown__header {
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: var(--ifm-color-emphasis-600) !important;
+  padding: 8px 12px 6px !important;
+  border-bottom: none !important;
+  background: none !important;
+}
+
+/* Each client row */
+.monnify-mcp-btn .mcp-install-dropdown__item {
+  border-radius: 10px !important;
+  border-bottom: none !important;
+  padding: 10px 12px !important;
+  transition: background-color 0.12s ease;
+}
+
+.monnify-mcp-btn .mcp-install-dropdown__item:hover {
+  background-color: rgba(0, 0, 0, 0.045) !important;
+}
+
+[data-theme='dark'] .monnify-mcp-btn .mcp-install-dropdown__item:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Client name */
+.monnify-mcp-btn .mcp-install-dropdown__client-name {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+}
+
+/* CLI badge */
+.monnify-mcp-btn .badge--success {
+  font-size: 0.65rem !important;
+  padding: 0.15rem 0.4rem !important;
+  border-radius: 6px !important;
+}
+
+/* Code block inside dropdown */
+.monnify-mcp-btn .mcp-code-block {
+  border-radius: 8px !important;
+  border: 1px solid var(--kobo-sidebar-border);
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.monnify-mcp-btn .mcp-code-block__content {
+  padding: 8px 12px !important;
+}
+
+.monnify-mcp-btn .mcp-code-block__content code {
+  font-size: 0.78rem !important;
+}
+
+.monnify-mcp-btn .mcp-code-block__copy {
+  width: 2.25rem !important;
+  background-color: var(--ifm-color-emphasis-100) !important;
+}
+
+/* Footer "Learn more about MCP" */
+.monnify-mcp-btn .mcp-install-dropdown__footer {
+  padding: 6px 12px 8px !important;
+  background: none !important;
+  border-top: 1px solid var(--kobo-sidebar-border);
+  margin-top: 2px;
+}
+
+.monnify-mcp-btn .mcp-install-dropdown__learn-more {
+  font-size: 0.78rem !important;
+  gap: 3px;
+}
+
+/* Beautiful HTTP Method Badges in Sidebar (Monnify-style) */
 .menu__link.api-method {
   display: flex !important;
   align-items: center;

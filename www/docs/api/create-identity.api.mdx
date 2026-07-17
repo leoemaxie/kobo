@@ -1,7 +1,7 @@
 ---
 id: create-identity
 title: "Register a new identity and provision its virtual account."
-description: "Creates an Identity record in PENDING state and asynchronously provisions a Nomba virtual account against it. The response returns immediately with the identity in PENDING state; integrators should either poll GET /identities/{id} or listen for the `identity.activated` webhook to know when the account is ready."
+description: "Creates an Identity record in PENDING state and asynchronously provisions a Monnify virtual account against it. The response returns immediately with the identity in PENDING state; integrators should either poll GET /identities/{id} or listen for the `identity.activated` webhook to know when the account is ready."
 sidebar_label: "Register a new identity and provision its virtual account."
 hide_title: true
 hide_table_of_contents: true
@@ -37,7 +37,7 @@ import Translate from "@docusaurus/Translate";
 
 
 
-Creates an Identity record in PENDING state and asynchronously provisions a Nomba virtual account against it. The response returns immediately with the identity in PENDING state; integrators should either poll GET /identities/\{id\} or listen for the `identity.activated` webhook to know when the account is ready.
+Creates an Identity record in PENDING state and asynchronously provisions a Monnify virtual account against it. The response returns immediately with the identity in PENDING state; integrators should either poll GET /identities/\{id\} or listen for the `identity.activated` webhook to know when the account is ready.
 
 <Heading
   id={"request"}

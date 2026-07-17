@@ -12,7 +12,7 @@ An `Identity` is the root entity in Kobo. It represents an end-user, a business,
 Identities have a strictly managed lifecycle (Pending, Active, Limited, Closing, Closed) that controls what financial operations are permitted.
 
 ## Virtual Accounts
-Every Identity is backed by a `Virtual Account`. These are real, dedicated NUBAN accounts provisioned via Nomba. 
+Every Identity is backed by a `Virtual Account`. These are real, dedicated NUBAN accounts provisioned via Monnify. 
 - **1-to-1 Mapping**: An identity has exactly one active virtual account at a time.
 - **Auto-Provisioning**: When an identity is created, Kobo automatically orchestrates the provisioning of the virtual account.
 

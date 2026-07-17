@@ -1,7 +1,7 @@
 ---
 id: kobo-api
 title: "Kobo API"
-description: "Kobo provisions and manages persistent, identity-linked virtual accounts. Integrators register identities, receive a dedicated virtual account per identity, and consume reconciled transactions, statements, and lifecycle events through this API. Integrators never call Nomba directly."
+description: "Kobo provisions and manages persistent, identity-linked virtual accounts. Integrators register identities, receive a dedicated virtual account per identity, and consume reconciled transactions, statements, and lifecycle events through this API. Integrators never call Monnify directly."
 sidebar_label: Introduction
 sidebar_position: 0
 hide_title: true
@@ -29,7 +29,7 @@ import Export from "@theme/ApiExplorer/Export";
 
 
 
-Kobo provisions and manages persistent, identity-linked virtual accounts. Integrators register identities, receive a dedicated virtual account per identity, and consume reconciled transactions, statements, and lifecycle events through this API. Integrators never call Nomba directly.
+Kobo provisions and manages persistent, identity-linked virtual accounts. Integrators register identities, receive a dedicated virtual account per identity, and consume reconciled transactions, statements, and lifecycle events through this API. Integrators never call Monnify directly.
 Conventions for implementers: - All monetary amounts are integers in kobo (the smallest Naira unit), never floats. - All timestamps are ISO 8601 / RFC 3339 in UTC, e.g. "2026-06-30T14:00:00Z". - All resource IDs are UUIDv4 strings. - Pagination uses cursor-based `page[cursor]` and `page[limit]` query params, response includes `next_cursor` (nullable). - Every error response uses the shared Error schema with a stable `code` field; integrators should branch on `code`, not on the human-readable `message`.
 
 
@@ -101,12 +101,12 @@ Conventions for implementers: - All monetary amounts are integers in kobo (the s
         </table>
       </div>
     </TabItem><TabItem
-      label={"API Key: NombaWebhookSignature"}
-      value={"NombaWebhookSignature"}
+      label={"API Key: MonnifyWebhookSignature"}
+      value={"MonnifyWebhookSignature"}
     >
       
       
-      Signature provided by Nomba on outbound webhook calls, verified against the shared webhook secret.
+      Signature provided by Monnify on outbound webhook calls, verified against the shared webhook secret.
       
       <div>
         <table>
@@ -121,7 +121,7 @@ Conventions for implementers: - All monetary amounts are integers in kobo (the s
               <th>
                 Header parameter name:
               </th><td>
-                nomba-signature
+                monnify-signature
               </td>
             </tr>
           </tbody>
