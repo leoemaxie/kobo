@@ -21,7 +21,7 @@ Four responsibilities, and nothing beyond them for v1:
 1. **Identity & access** — integrator signup, email verification, login, superadmin oversight.
 2. **API credential management** — generate, view (once), rotate, and revoke API key/secret pairs, separately for sandbox and production.
 3. **Billing visibility** — view usage, transaction volume, and charges tied to the pricing model in the concept note (provisioning fee, per-transaction fee, platform fee).
-4. **Sandbox environment** — a fully isolated test mode with its own keys, its own data, and no path for sandbox activity to touch production data or real Nomba transactions.
+4. **Sandbox environment** — a fully isolated test mode with its own keys, its own data, and no path for sandbox activity to touch production data or real Monnify transactions.
 
 The Console is **not** where reconciliation, ledger, or lifecycle logic
 lives. It reads from and writes to its own tables (integrators, API
@@ -103,7 +103,7 @@ relationships:
 - **`integrators`** — one row per organization/team using Kobo. Holds
   company name, billing plan, and a flag for sandbox-only vs
   production-enabled (production access likely gated until Kobo core's own
-  KYC/certification step is complete, per Nomba's "Post-certification, after
+  KYC/certification step is complete, per Monnify's "Post-certification, after
   KYC" note on the production environment).
 - **`users`** — individual people who can log into the console, belonging to
   one `integrator` (or, for superadmins, belonging to none — see below).
@@ -147,13 +147,13 @@ query layer should ever mix the two.** Concretely:
   (color-coded, per the brand styling work still to be finalized).
 - Sandbox keys map to Kobo core's sandbox environment
   (`sandbox.api.kobo.dev`, per the earlier ARCHITECTURE.md/openapi.yaml
-  work) and, transitively, to Nomba's sandbox
-  (`sandbox.api.nomba.com/v1`). Production keys map to the production
-  equivalents. The console itself does not talk to Nomba directly — it only
+  work) and, transitively, to Monnify's sandbox
+  (`sandbox.api.monnify.com/v1`). Production keys map to the production
+  equivalents. The console itself does not talk to Monnify directly — it only
   manages the Kobo-side credentials that will, in turn, let Kobo core talk
-  to the correct Nomba environment.
+  to the correct Monnify environment.
 - Billing records should be queryable filtered by environment, since
-  sandbox usage is free/unmetered by definition (per the Nomba hackathon's
+  sandbox usage is free/unmetered by definition (per the Monnify hackathon's
   own sandbox-for-all-hackathon-work model) and only production usage should
   ever generate a real billing record.
 - A new integrator gets sandbox access immediately upon email verification.

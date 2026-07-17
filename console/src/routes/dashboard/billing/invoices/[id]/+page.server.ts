@@ -35,7 +35,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
       period: dbInvoice.period,
       amount: `₦${(dbInvoice.amountKobo / 100).toLocaleString()}`,
       status: dbInvoice.status,
-      nombaOrderRef: dbInvoice.nombaOrderRef,
+      monnifyOrderRef: dbInvoice.monnifyOrderRef,
     },
     integrator: dbIntegrator?.name || 'Unknown Workspace',
     details: dbRecord

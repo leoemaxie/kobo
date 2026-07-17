@@ -78,7 +78,7 @@
               Available for Payout: ₦{(maxAvailableKobo / 100).toLocaleString()}
             </p>
             <p class="text-[12px] text-muted m-0">
-              ₦{(transferFeeBufferKobo / 100).toLocaleString()} is reserved for Nomba transfer fees.
+              ₦{(transferFeeBufferKobo / 100).toLocaleString()} is reserved for Monnify transfer fees.
             </p>
           </div>
         </div>

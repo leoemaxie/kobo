@@ -172,7 +172,7 @@ export const paymentMethods = consoleSchema.table('payment_methods', {
   integratorId: uuid('integrator_id')
     .notNull()
     .references(() => apiIntegrators.id),
-  nombaTokenKey: text('nomba_token_key').notNull(),
+  monnifyTokenKey: text('monnify_token_key').notNull(),
   cardLast4: text('card_last4').notNull(),
   cardBrand: text('card_brand').notNull(),
   isDefault: boolean('is_default').notNull().default(false),
@@ -197,7 +197,7 @@ export const invoices = consoleSchema.table('invoices', {
   period: text('period').notNull(),
   amountKobo: bigint('amount_kobo', { mode: 'number' }).notNull(),
   status: invoiceStatusEnum('status').notNull().default('open'),
-  nombaOrderRef: text('nomba_order_ref'),
+  monnifyOrderRef: text('monnify_order_ref'),
   paidAt: timestamp('paid_at', { withTimezone: true }),
   retryCount: bigint('retry_count', { mode: 'number' }).notNull().default(0),
   nextRetryAt: timestamp('next_retry_at', { withTimezone: true }),
