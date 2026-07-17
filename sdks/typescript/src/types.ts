@@ -63,7 +63,7 @@ export interface Transaction {
   amount_kobo: number;
   direction: TransactionDirection;
   status: TransactionStatus;
-  nomba_reference: string;
+  monnify_reference: string;
   occurred_at: string;
 }
 
@@ -85,7 +85,7 @@ export interface Exception {
   id: string;
   type: ExceptionType;
   amount_kobo: number;
-  nomba_reference: string;
+  monnify_reference: string;
   related_account_id?: string | null;
   status: ExceptionStatus;
   resolution?: ExceptionResolution | null;

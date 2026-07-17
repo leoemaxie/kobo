@@ -100,7 +100,7 @@ type Transaction struct {
 	AmountKobo     int64                `json:"amount_kobo"`
 	Direction      TransactionDirection `json:"direction"`
 	Status         TransactionStatus    `json:"status"`
-	NombaReference string               `json:"nomba_reference"`
+	MonnifyReference string               `json:"monnify_reference"`
 	OccurredAt     time.Time            `json:"occurred_at"`
 }
 
@@ -125,7 +125,7 @@ type Exception struct {
 	ID               string               `json:"id"`
 	Type             ExceptionType        `json:"type"`
 	AmountKobo       int64                `json:"amount_kobo"`
-	NombaReference   string               `json:"nomba_reference"`
+	MonnifyReference   string               `json:"monnify_reference"`
 	RelatedAccountID *string              `json:"related_account_id,omitempty"`
 	Status           ExceptionStatus      `json:"status"`
 	Resolution       *ExceptionResolution `json:"resolution,omitempty"`

@@ -13,7 +13,7 @@ public final class Exception_ {
     private final String id;
     private final ExceptionType type;
     private final long amountKobo;
-    private final String nombaReference;
+    private final String monnifyReference;
     private final String relatedAccountId;
     private final ExceptionStatus status;
     private final ExceptionResolution resolution;
@@ -24,7 +24,7 @@ public final class Exception_ {
             String id,
             ExceptionType type,
             long amountKobo,
-            String nombaReference,
+            String monnifyReference,
             String relatedAccountId,
             ExceptionStatus status,
             ExceptionResolution resolution,
@@ -33,7 +33,7 @@ public final class Exception_ {
         this.id = id;
         this.type = type;
         this.amountKobo = amountKobo;
-        this.nombaReference = nombaReference;
+        this.monnifyReference = monnifyReference;
         this.relatedAccountId = relatedAccountId;
         this.status = status;
         this.resolution = resolution;
@@ -45,7 +45,7 @@ public final class Exception_ {
     public ExceptionType getType() { return type; }
     public long getAmountKobo() { return amountKobo; }
     public double getAmountNaira() { return amountKobo / 100.0; }
-    public String getNombaReference() { return nombaReference; }
+    public String getMonnifyReference() { return monnifyReference; }
     public String getRelatedAccountId() { return relatedAccountId; }
     public ExceptionStatus getStatus() { return status; }
     public ExceptionResolution getResolution() { return resolution; }

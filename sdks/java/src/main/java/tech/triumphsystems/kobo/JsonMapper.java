@@ -67,7 +67,7 @@ final class JsonMapper {
             longVal(m, "amount_kobo"),
             str(m, "direction"),
             TransactionStatus.of(str(m, "status")),
-            str(m, "nomba_reference"),
+            str(m, "monnify_reference"),
             instant(m, "occurred_at")
         );
     }
@@ -117,7 +117,7 @@ final class JsonMapper {
             str(m, "id"),
             ExceptionType.of(str(m, "type")),
             longVal(m, "amount_kobo"),
-            str(m, "nomba_reference"),
+            str(m, "monnify_reference"),
             str(m, "related_account_id"),
             ExceptionStatus.of(str(m, "status")),
             resolution,

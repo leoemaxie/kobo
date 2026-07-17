@@ -15,7 +15,7 @@ public final class Transaction {
     private final long amountKobo;
     private final String direction;
     private final TransactionStatus status;
-    private final String nombaReference;
+    private final String monnifyReference;
     private final Instant occurredAt;
 
     public Transaction(
@@ -24,14 +24,14 @@ public final class Transaction {
             long amountKobo,
             String direction,
             TransactionStatus status,
-            String nombaReference,
+            String monnifyReference,
             Instant occurredAt) {
         this.id = id;
         this.accountId = accountId;
         this.amountKobo = amountKobo;
         this.direction = direction;
         this.status = status;
-        this.nombaReference = nombaReference;
+        this.monnifyReference = monnifyReference;
         this.occurredAt = occurredAt;
     }
 
@@ -43,7 +43,7 @@ public final class Transaction {
     public double getAmountNaira() { return amountKobo / 100.0; }
     public String getDirection() { return direction; }
     public TransactionStatus getStatus() { return status; }
-    public String getNombaReference() { return nombaReference; }
+    public String getMonnifyReference() { return monnifyReference; }
     public Instant getOccurredAt() { return occurredAt; }
 
     @Override
