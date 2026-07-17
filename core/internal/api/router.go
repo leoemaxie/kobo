@@ -81,7 +81,7 @@ func NewRouter(q *sqlc.Queries, healthHandler *handlers.HealthHandler, identityH
 
 		// Public Webhooks
 		webhookHandler := handlers.NewWebhookHandler(engine, payoutHandler.Svc(), webhookSecret)
-		r.Post("/webhooks/nomba", webhookHandler.HandleNombaWebhook)
+		r.Post("/webhooks/monnify", webhookHandler.HandleMonnifyWebhook)
 	})
 
 	// Console-only routes

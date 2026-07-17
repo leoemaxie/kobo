@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/leoemaxie/kobo/internal/billing"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 	"github.com/stretchr/testify/assert"
 )
@@ -87,28 +87,28 @@ func (m *mockIdempotencyRepo) CheckOrSetIdempotency(ctx context.Context, referen
 	return false, errors.New("unimplemented CheckOrSetIdempotency")
 }
 
-// mockNombaClient
-type mockNombaClient struct {
-	FetchSingleTransactionFunc func(ctx context.Context, transactionRef string) (*nomba.TransactionResult, error)
+// mockMonnifyClient
+type mockMonnifyClient struct {
+	FetchSingleTransactionFunc func(ctx context.Context, transactionRef string) (*monnify.TransactionResult, error)
 }
 
-func (m *mockNombaClient) FetchSingleTransaction(ctx context.Context, transactionRef string) (*nomba.TransactionResult, error) {
+func (m *mockMonnifyClient) FetchSingleTransaction(ctx context.Context, transactionRef string) (*monnify.TransactionResult, error) {
 	if m.FetchSingleTransactionFunc != nil {
 		return m.FetchSingleTransactionFunc(ctx, transactionRef)
 	}
-	return &nomba.TransactionResult{Status: "SUCCESS"}, nil
+	return &monnify.TransactionResult{Status: "SUCCESS"}, nil
 }
 
 func TestProcessWebhook_IgnoreNonPaymentSuccess(t *testing.T) {
 	eng := NewEngine(nil, nil, nil, nil)
-	payload := &nomba.WebhookPayload{EventType: "some_other_event"}
+	payload := &monnify.WebhookPayload{EventType: "some_other_event"}
 	err := eng.ProcessWebhook(context.Background(), payload)
 	assert.NoError(t, err)
 }
 
 func TestProcessWebhook_IgnoreNonVirtual(t *testing.T) {
 	eng := NewEngine(nil, nil, nil, nil)
-	payload := &nomba.WebhookPayload{EventType: "payment_success"}
+	payload := &monnify.WebhookPayload{EventType: "payment_success"}
 	payload.Data.Transaction.AliasAccountType = "CARD"
 	err := eng.ProcessWebhook(context.Background(), payload)
 	assert.NoError(t, err)
@@ -122,7 +122,7 @@ func TestProcessWebhook_AccountNotFound(t *testing.T) {
 	}
 	eng := NewEngine(mq, nil, nil, nil)
 
-	payload := &nomba.WebhookPayload{EventType: "payment_success"}
+	payload := &monnify.WebhookPayload{EventType: "payment_success"}
 	payload.Data.Transaction.AliasAccountType = "VIRTUAL"
 	payload.Data.Transaction.AliasAccountNumber = "12345"
 
@@ -146,7 +146,7 @@ func TestProcessWebhook_Success(t *testing.T) {
 		InsertLedgerEntryFunc: func(ctx context.Context, arg sqlc.InsertLedgerEntryParams) (sqlc.LedgerEntry, error) {
 			assert.Equal(t, accID, arg.VirtualAccountID)
 			assert.Equal(t, int64(15000), arg.AmountKobo) // 150.0 * 100
-			assert.Equal(t, "txn-123", arg.NombaReference)
+			assert.Equal(t, "txn-123", arg.MonnifyReference)
 			return sqlc.LedgerEntry{ID: arg.ID}, nil
 		},
 		GetIdentityByVirtualAccountIDFunc: func(ctx context.Context, id uuid.UUID) (sqlc.GetIdentityByVirtualAccountIDRow, error) {
@@ -168,16 +168,16 @@ func TestProcessWebhook_Success(t *testing.T) {
 		},
 	}
 
-	mNomba := &mockNombaClient{
-		FetchSingleTransactionFunc: func(ctx context.Context, transactionRef string) (*nomba.TransactionResult, error) {
-			return &nomba.TransactionResult{Status: "SUCCESS"}, nil
+	mMonnify := &mockMonnifyClient{
+		FetchSingleTransactionFunc: func(ctx context.Context, transactionRef string) (*monnify.TransactionResult, error) {
+			return &monnify.TransactionResult{Status: "SUCCESS"}, nil
 		},
 	}
 
 	recorder := billing.NewUsageRecorder(mq)
-	eng := NewEngine(mq, mIdem, recorder, mNomba)
+	eng := NewEngine(mq, mIdem, recorder, mMonnify)
 
-	payload := &nomba.WebhookPayload{EventType: "payment_success"}
+	payload := &monnify.WebhookPayload{EventType: "payment_success"}
 	payload.Data.Transaction.AliasAccountType = "VIRTUAL"
 	payload.Data.Transaction.AliasAccountNumber = "12345"
 	payload.Data.Transaction.TransactionAmount = 150.0
@@ -201,7 +201,7 @@ func TestProcessWebhook_CheckoutSuccess(t *testing.T) {
 		},
 		InsertPaymentMethodFunc: func(ctx context.Context, arg sqlc.InsertPaymentMethodParams) (sqlc.ConsolePaymentMethod, error) {
 			assert.Equal(t, integratorID, arg.IntegratorID)
-			assert.Equal(t, "token_123", arg.NombaTokenKey)
+			assert.Equal(t, "token_123", arg.MonnifyTokenKey)
 			assert.Equal(t, "1111", arg.CardLast4.String)
 			assert.Equal(t, "Visa", arg.CardBrand.String)
 			assert.True(t, arg.IsDefault)
@@ -213,10 +213,10 @@ func TestProcessWebhook_CheckoutSuccess(t *testing.T) {
 	recorder := billing.NewUsageRecorder(mq)
 	eng := NewEngine(mq, nil, recorder, nil)
 
-	payload := &nomba.WebhookPayload{EventType: "payment_success"}
+	payload := &monnify.WebhookPayload{EventType: "payment_success"}
 	payload.Data.Transaction.Type = "online_checkout"
 	payload.Data.Order.CustomerId = integratorID.String()
-	payload.Data.TokenizedCardData = &nomba.TokenizedCardData{
+	payload.Data.TokenizedCardData = &monnify.TokenizedCardData{
 		TokenKey: "token_123",
 		CardType: "Visa",
 		CardPan:  "4***45**** ****1111",

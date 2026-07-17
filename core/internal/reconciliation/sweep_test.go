@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 	"github.com/stretchr/testify/assert"
 )
@@ -52,7 +52,7 @@ func TestRunSweep_Success(t *testing.T) {
 	server := httptest.NewServer(mux)
 	defer server.Close()
 
-	client := nomba.NewClient(server.URL, "client", "secret", "account", "subaccount", server.Client())
+	client := monnify.NewClient(server.URL, "client", "secret", "account", "subaccount", server.Client())
 
 	accID := uuid.New()
 
@@ -68,7 +68,7 @@ func TestRunSweep_Success(t *testing.T) {
 		InsertLedgerEntryFunc: func(ctx context.Context, arg sqlc.InsertLedgerEntryParams) (sqlc.LedgerEntry, error) {
 			assert.Equal(t, accID, arg.VirtualAccountID)
 			assert.Equal(t, int64(20050), arg.AmountKobo) // 200.50 * 100
-			assert.Equal(t, "txn-sweep-1", arg.NombaReference)
+			assert.Equal(t, "txn-sweep-1", arg.MonnifyReference)
 			assert.Equal(t, "sweep", arg.Source)
 			return sqlc.LedgerEntry{ID: arg.ID}, nil
 		},

@@ -1,4 +1,4 @@
-package nomba
+package monnify
 
 import (
 	"bytes"
@@ -200,7 +200,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 	}
 
 	if baseResp.Code != "00" {
-		return fmt.Errorf("nomba API error %s: %s | RAW BODY: %s", baseResp.Code, baseResp.Description, string(bodyBytes))
+		return fmt.Errorf("monnify API error %s: %s | RAW BODY: %s", baseResp.Code, baseResp.Description, string(bodyBytes))
 	}
 
 	if response != nil && len(baseResp.Data) > 0 {
@@ -216,7 +216,7 @@ type createVAData struct {
 	BankAccountName   string `json:"bankAccountName"`
 }
 
-func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountName, bvn string) (account.NombaAccountResponse, error) {
+func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountName, bvn string) (account.MonnifyAccountResponse, error) {
 	reqBody := map[string]interface{}{
 		"accountRef":  accountRef,
 		"accountName": accountName,
@@ -234,10 +234,10 @@ func (c *Client) CreateVirtualAccount(ctx context.Context, accountRef, accountNa
 
 	var data createVAData
 	if err := c.doRequest(ctx, http.MethodPost, path, reqBody, &data, idempotencyKey); err != nil {
-		return account.NombaAccountResponse{}, err
+		return account.MonnifyAccountResponse{}, err
 	}
 
-	return account.NombaAccountResponse{
+	return account.MonnifyAccountResponse{
 		AccountNumber:   data.BankAccountNumber,
 		BankName:        data.BankName,
 		BankAccountName: data.BankAccountName,

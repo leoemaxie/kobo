@@ -7,19 +7,19 @@ import (
 
 	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/payout"
 )
 
 type PayoutHandler struct {
 	svc         *payout.Service
-	nombaClient *nomba.Client
+	monnifyClient *monnify.Client
 }
 
-func NewPayoutHandler(svc *payout.Service, nombaClient *nomba.Client) *PayoutHandler {
+func NewPayoutHandler(svc *payout.Service, monnifyClient *monnify.Client) *PayoutHandler {
 	return &PayoutHandler{
 		svc:         svc,
-		nombaClient: nombaClient,
+		monnifyClient: monnifyClient,
 	}
 }
 
@@ -28,7 +28,7 @@ func (h *PayoutHandler) Svc() *payout.Service {
 }
 
 func (h *PayoutHandler) ListBanks(w http.ResponseWriter, r *http.Request) {
-	banks, err := h.nombaClient.ListBanks(r.Context())
+	banks, err := h.monnifyClient.ListBanks(r.Context())
 	if err != nil {
 		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "Failed to list banks", err)
 		return
@@ -54,7 +54,7 @@ func (h *PayoutHandler) LookupBankAccount(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	resp, err := h.nombaClient.LookupBankAccount(r.Context(), req.AccountNumber, req.BankCode)
+	resp, err := h.monnifyClient.LookupBankAccount(r.Context(), req.AccountNumber, req.BankCode)
 	if err != nil {
 		apierrors.WriteError(w, http.StatusUnprocessableEntity, "invalid_account", "Bank account verification failed")
 		return

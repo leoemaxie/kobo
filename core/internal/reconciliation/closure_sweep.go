@@ -28,8 +28,8 @@ func (s *ClosureSweeper) Run(ctx context.Context) error {
 
 	for _, ident := range identities {
 		// Mock sweeping logic:
-		// 1. We would check the Nomba virtual account balance.
-		// 2. If > 0, we'd trigger a Nomba payout to the sweep_destination.
+		// 1. We would check the Monnify virtual account balance.
+		// 2. If > 0, we'd trigger a Monnify payout to the sweep_destination.
 		// 3. Since this is Kobo v1 and outbound API is not integrated, we simulate
 		//    that the funds were swept by transitioning the identity to CLOSED.
 

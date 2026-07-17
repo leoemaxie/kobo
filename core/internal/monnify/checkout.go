@@ -1,4 +1,4 @@
-package nomba
+package monnify
 
 import (
 	"context"

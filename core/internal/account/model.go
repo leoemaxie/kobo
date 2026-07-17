@@ -19,7 +19,7 @@ const (
 type VirtualAccount struct {
 	ID              uuid.UUID `json:"id"`
 	IdentityID      uuid.UUID `json:"identity_id"`
-	NombaAccountRef string    `json:"nomba_account_ref"`
+	MonnifyAccountRef string    `json:"monnify_account_ref"`
 	AccountNumber   *string   `json:"account_number,omitempty"`
 	BankName        *string   `json:"bank_name,omitempty"`
 	AccountName     *string   `json:"account_name,omitempty"`

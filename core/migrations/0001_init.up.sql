@@ -71,7 +71,7 @@ CREATE INDEX idx_identity_events_identity ON identity_events(identity_id, create
 
 -- ---------------------------------------------------------------------------
 -- Virtual accounts: 1:1 with identities at any point in time. An identity
--- can have more than one row over its lifetime only if Nomba requires a new
+-- can have more than one row over its lifetime only if Monnify requires a new
 -- accountRef on reopen (see NOMBA_INTEGRATION.md open item #2) — modeled as
 -- a table rather than a single column on identities so that history survives
 -- a reprovision.
@@ -79,8 +79,8 @@ CREATE INDEX idx_identity_events_identity ON identity_events(identity_id, create
 CREATE TABLE virtual_accounts (
     id                  UUID PRIMARY KEY,
     identity_id         UUID NOT NULL REFERENCES identities(id),
-    nomba_account_ref   TEXT NOT NULL,           -- the accountRef Kobo sent to Nomba (= identity.id in the common case)
-    account_number      TEXT,                    -- Nomba's bankAccountNumber, null until provisioning succeeds
+    monnify_account_ref   TEXT NOT NULL,           -- the accountRef Kobo sent to Monnify (= identity.id in the common case)
+    account_number      TEXT,                    -- Monnify's bankAccountNumber, null until provisioning succeeds
     bank_name            TEXT,
     account_name        TEXT,
     is_active           BOOLEAN NOT NULL DEFAULT TRUE,  -- false once superseded by a reprovisioned account
@@ -101,7 +101,7 @@ CREATE UNIQUE INDEX idx_virtual_accounts_account_number
 -- ---------------------------------------------------------------------------
 -- Ledger entries: the reconciled record of every inbound transfer.
 -- One row per matched transaction. Statements are derived by summing these,
--- never by re-querying Nomba live.
+-- never by re-querying Monnify live.
 -- ---------------------------------------------------------------------------
 CREATE TABLE ledger_entries (
     id                  UUID PRIMARY KEY,
@@ -110,11 +110,11 @@ CREATE TABLE ledger_entries (
     amount_kobo         BIGINT NOT NULL CHECK (amount_kobo > 0),
     direction           TEXT NOT NULL DEFAULT 'inbound' CHECK (direction = 'inbound'),
     status              TEXT NOT NULL CHECK (status IN ('matched', 'partial', 'overpayment')),
-    nomba_reference      TEXT NOT NULL,           -- idempotency key, see idempotency_keys table
+    monnify_reference      TEXT NOT NULL,           -- idempotency key, see idempotency_keys table
     source               TEXT NOT NULL CHECK (source IN ('webhook', 'sweep')),
     narration            TEXT,
     sender_name           TEXT,
-    occurred_at          TIMESTAMPTZ NOT NULL,    -- Nomba's transaction time, not our insert time
+    occurred_at          TIMESTAMPTZ NOT NULL,    -- Monnify's transaction time, not our insert time
     created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -123,12 +123,12 @@ CREATE INDEX idx_ledger_entries_identity_period ON ledger_entries(identity_id, o
 
 -- ---------------------------------------------------------------------------
 -- Idempotency keys: dedup table for both webhook deliveries and sweep
--- backfills. A unique constraint on nomba_reference is what makes
+-- backfills. A unique constraint on monnify_reference is what makes
 -- reconciliation/idempotency.go's "check before write" logic atomic and safe
 -- under concurrent webhook + sweep processing.
 -- ---------------------------------------------------------------------------
 CREATE TABLE idempotency_keys (
-    nomba_reference  TEXT PRIMARY KEY,
+    monnify_reference  TEXT PRIMARY KEY,
     ledger_entry_id  UUID NOT NULL REFERENCES ledger_entries(id),
     first_seen_via   TEXT NOT NULL CHECK (first_seen_via IN ('webhook', 'sweep')),
     created_at       TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -147,7 +147,7 @@ CREATE TABLE exceptions (
                              'payment_during_closing'
                          )),
     amount_kobo          BIGINT NOT NULL,
-    nomba_reference       TEXT NOT NULL,
+    monnify_reference       TEXT NOT NULL,
     related_account_id   UUID REFERENCES virtual_accounts(id),  -- nullable: unknown-account case has no match
     status               TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'resolved')),
     resolution_action    TEXT CHECK (resolution_action IN ('return_to_sender', 'redirect_to_successor', 'manual_override')),
@@ -160,7 +160,7 @@ CREATE TABLE exceptions (
 
 CREATE INDEX idx_exceptions_integrator_status ON exceptions(integrator_id, status, detected_at);
 
--- nomba_reference should not be double-flagged as an exception once resolved
+-- monnify_reference should not be double-flagged as an exception once resolved
 -- and reprocessed; enforce at the application layer in exceptions/service.go
 -- (not a DB constraint, since a reference could legitimately appear once as
 -- an exception and, after a redirect resolution, later as a normal ledger

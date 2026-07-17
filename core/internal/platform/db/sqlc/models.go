@@ -93,7 +93,7 @@ type ConsoleInvoice struct {
 	Period          string             `json:"period"`
 	AmountKobo      int64              `json:"amount_kobo"`
 	Status          string             `json:"status"`
-	NombaOrderRef   pgtype.Text        `json:"nomba_order_ref"`
+	MonnifyOrderRef   pgtype.Text        `json:"monnify_order_ref"`
 	PaidAt          pgtype.Timestamptz `json:"paid_at"`
 	RetryCount      int32              `json:"retry_count"`
 	NextRetryAt     pgtype.Timestamptz `json:"next_retry_at"`
@@ -111,7 +111,7 @@ type ConsolePasswordResetToken struct {
 type ConsolePaymentMethod struct {
 	ID            uuid.UUID   `json:"id"`
 	IntegratorID  uuid.UUID   `json:"integrator_id"`
-	NombaTokenKey string      `json:"nomba_token_key"`
+	MonnifyTokenKey string      `json:"monnify_token_key"`
 	CardLast4     pgtype.Text `json:"card_last4"`
 	CardBrand     pgtype.Text `json:"card_brand"`
 	IsDefault     bool        `json:"is_default"`
@@ -130,7 +130,7 @@ type ConsolePayout struct {
 	Status                string      `json:"status"`
 	FailureReason         pgtype.Text `json:"failure_reason"`
 	MerchantTxRef         string      `json:"merchant_tx_ref"`
-	NombaTransferID       pgtype.Text `json:"nomba_transfer_id"`
+	MonnifyTransferID       pgtype.Text `json:"monnify_transfer_id"`
 	InitiatedBy           uuid.UUID   `json:"initiated_by"`
 	CreatedAt             time.Time   `json:"created_at"`
 	UpdatedAt             time.Time   `json:"updated_at"`
@@ -194,7 +194,7 @@ type Exception struct {
 	IntegratorID        uuid.UUID          `json:"integrator_id"`
 	Type                string             `json:"type"`
 	AmountKobo          int64              `json:"amount_kobo"`
-	NombaReference      string             `json:"nomba_reference"`
+	MonnifyReference      string             `json:"monnify_reference"`
 	RelatedAccountID    pgtype.UUID        `json:"related_account_id"`
 	Status              string             `json:"status"`
 	ResolutionAction    pgtype.Text        `json:"resolution_action"`
@@ -206,7 +206,7 @@ type Exception struct {
 }
 
 type IdempotencyKey struct {
-	NombaReference string    `json:"nomba_reference"`
+	MonnifyReference string    `json:"monnify_reference"`
 	LedgerEntryID  uuid.UUID `json:"ledger_entry_id"`
 	FirstSeenVia   string    `json:"first_seen_via"`
 	CreatedAt      time.Time `json:"created_at"`
@@ -241,7 +241,7 @@ type LedgerEntry struct {
 	AmountKobo       int64       `json:"amount_kobo"`
 	Direction        string      `json:"direction"`
 	Status           string      `json:"status"`
-	NombaReference   string      `json:"nomba_reference"`
+	MonnifyReference   string      `json:"monnify_reference"`
 	Source           string      `json:"source"`
 	Narration        pgtype.Text `json:"narration"`
 	SenderName       pgtype.Text `json:"sender_name"`
@@ -263,7 +263,7 @@ type RequestLog struct {
 type VirtualAccount struct {
 	ID                 uuid.UUID   `json:"id"`
 	IdentityID         uuid.UUID   `json:"identity_id"`
-	NombaAccountRef    string      `json:"nomba_account_ref"`
+	MonnifyAccountRef    string      `json:"monnify_account_ref"`
 	AccountNumber      pgtype.Text `json:"account_number"`
 	BankName           pgtype.Text `json:"bank_name"`
 	AccountName        pgtype.Text `json:"account_name"`

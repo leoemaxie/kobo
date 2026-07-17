@@ -13,15 +13,15 @@ import (
 )
 
 const createVirtualAccount = `-- name: CreateVirtualAccount :one
-INSERT INTO virtual_accounts (id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active)
+INSERT INTO virtual_accounts (id, identity_id, monnify_account_ref, account_number, bank_name, account_name, is_active)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired
+RETURNING id, identity_id, monnify_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired
 `
 
 type CreateVirtualAccountParams struct {
 	ID              uuid.UUID   `json:"id"`
 	IdentityID      uuid.UUID   `json:"identity_id"`
-	NombaAccountRef string      `json:"nomba_account_ref"`
+	MonnifyAccountRef string      `json:"monnify_account_ref"`
 	AccountNumber   pgtype.Text `json:"account_number"`
 	BankName        pgtype.Text `json:"bank_name"`
 	AccountName     pgtype.Text `json:"account_name"`
@@ -32,7 +32,7 @@ func (q *Queries) CreateVirtualAccount(ctx context.Context, arg CreateVirtualAcc
 	row := q.db.QueryRow(ctx, createVirtualAccount,
 		arg.ID,
 		arg.IdentityID,
-		arg.NombaAccountRef,
+		arg.MonnifyAccountRef,
 		arg.AccountNumber,
 		arg.BankName,
 		arg.AccountName,
@@ -42,7 +42,7 @@ func (q *Queries) CreateVirtualAccount(ctx context.Context, arg CreateVirtualAcc
 	err := row.Scan(
 		&i.ID,
 		&i.IdentityID,
-		&i.NombaAccountRef,
+		&i.MonnifyAccountRef,
 		&i.AccountNumber,
 		&i.BankName,
 		&i.AccountName,
@@ -69,7 +69,7 @@ func (q *Queries) DeactivateVirtualAccount(ctx context.Context, identityID uuid.
 }
 
 const getActiveVirtualAccountByIdentityID = `-- name: GetActiveVirtualAccountByIdentityID :one
-SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
+SELECT id, identity_id, monnify_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
 WHERE identity_id = $1 AND is_active = true
 `
 
@@ -79,7 +79,7 @@ func (q *Queries) GetActiveVirtualAccountByIdentityID(ctx context.Context, ident
 	err := row.Scan(
 		&i.ID,
 		&i.IdentityID,
-		&i.NombaAccountRef,
+		&i.MonnifyAccountRef,
 		&i.AccountNumber,
 		&i.BankName,
 		&i.AccountName,
@@ -93,7 +93,7 @@ func (q *Queries) GetActiveVirtualAccountByIdentityID(ctx context.Context, ident
 }
 
 const getVirtualAccountByAccountNumber = `-- name: GetVirtualAccountByAccountNumber :one
-SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
+SELECT id, identity_id, monnify_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
 WHERE account_number = $1
 `
 
@@ -103,7 +103,7 @@ func (q *Queries) GetVirtualAccountByAccountNumber(ctx context.Context, accountN
 	err := row.Scan(
 		&i.ID,
 		&i.IdentityID,
-		&i.NombaAccountRef,
+		&i.MonnifyAccountRef,
 		&i.AccountNumber,
 		&i.BankName,
 		&i.AccountName,
@@ -117,7 +117,7 @@ func (q *Queries) GetVirtualAccountByAccountNumber(ctx context.Context, accountN
 }
 
 const getVirtualAccountByID = `-- name: GetVirtualAccountByID :one
-SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
+SELECT id, identity_id, monnify_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
 WHERE id = $1
 `
 
@@ -127,7 +127,7 @@ func (q *Queries) GetVirtualAccountByID(ctx context.Context, id uuid.UUID) (Virt
 	err := row.Scan(
 		&i.ID,
 		&i.IdentityID,
-		&i.NombaAccountRef,
+		&i.MonnifyAccountRef,
 		&i.AccountNumber,
 		&i.BankName,
 		&i.AccountName,
@@ -141,7 +141,7 @@ func (q *Queries) GetVirtualAccountByID(ctx context.Context, id uuid.UUID) (Virt
 }
 
 const listActiveVirtualAccounts = `-- name: ListActiveVirtualAccounts :many
-SELECT id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
+SELECT id, identity_id, monnify_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired FROM virtual_accounts
 WHERE is_active = true
 ORDER BY id ASC
 `
@@ -158,7 +158,7 @@ func (q *Queries) ListActiveVirtualAccounts(ctx context.Context) ([]VirtualAccou
 		if err := rows.Scan(
 			&i.ID,
 			&i.IdentityID,
-			&i.NombaAccountRef,
+			&i.MonnifyAccountRef,
 			&i.AccountNumber,
 			&i.BankName,
 			&i.AccountName,
@@ -185,7 +185,7 @@ SET account_number = $2,
     account_name = $4,
     updated_at = now()
 WHERE id = $1
-RETURNING id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired
+RETURNING id, identity_id, monnify_account_ref, account_number, bank_name, account_name, is_active, created_at, updated_at, expected_amount_kobo, is_expired
 `
 
 type UpdateVirtualAccountProvisioningParams struct {
@@ -207,7 +207,7 @@ func (q *Queries) UpdateVirtualAccountProvisioning(ctx context.Context, arg Upda
 	err := row.Scan(
 		&i.ID,
 		&i.IdentityID,
-		&i.NombaAccountRef,
+		&i.MonnifyAccountRef,
 		&i.AccountNumber,
 		&i.BankName,
 		&i.AccountName,

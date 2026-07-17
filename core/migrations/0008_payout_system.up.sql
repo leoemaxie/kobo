@@ -1,6 +1,6 @@
 -- 0008_payout_system.up.sql
 -- Payout system: allows integrators to withdraw their Kobo ledger balance
--- to a registered Nigerian bank account via Nomba's transfer API.
+-- to a registered Nigerian bank account via Monnify's transfer API.
 --
 -- Conventions:
 --   - Tables live in the `console` schema (integrator-facing dashboard data).
@@ -11,13 +11,13 @@
 -- ---------------------------------------------------------------------------
 -- console.payout_bank_accounts
 -- One active bank account per integrator at any time.
--- Account name is resolved via Nomba lookup at save time and stored for audit.
+-- Account name is resolved via Monnify lookup at save time and stored for audit.
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS console.payout_bank_accounts (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     integrator_id   UUID NOT NULL REFERENCES public.api_integrators(id) ON DELETE CASCADE,
     account_number  TEXT NOT NULL,
-    account_name    TEXT NOT NULL,  -- resolved by Nomba /v1/transfers/bank/lookup; stored for audit
+    account_name    TEXT NOT NULL,  -- resolved by Monnify /v1/transfers/bank/lookup; stored for audit
     bank_code       TEXT NOT NULL,
     bank_name       TEXT NOT NULL,  -- human-readable e.g. "Guaranty Trust Bank"
     is_active       BOOLEAN NOT NULL DEFAULT TRUE,
@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS console.payouts (
     -- Amount fields (all in kobo)
     requested_amount_kobo       BIGINT NOT NULL CHECK (requested_amount_kobo > 0),
     platform_fee_kobo           BIGINT NOT NULL DEFAULT 0,     -- Kobo's cut; reserved for future pricing
-    transfer_fee_buffer_kobo    BIGINT NOT NULL DEFAULT 5000,  -- 50 NGN held back to cover Nomba's fee
-    actual_transfer_fee_kobo    BIGINT,                        -- populated from Nomba response; NULL until resolved
+    transfer_fee_buffer_kobo    BIGINT NOT NULL DEFAULT 5000,  -- 50 NGN held back to cover Monnify's fee
+    actual_transfer_fee_kobo    BIGINT,                        -- populated from Monnify response; NULL until resolved
     net_amount_kobo             BIGINT NOT NULL,               -- amount actually sent to bank = requested - platform_fee
 
     -- State machine
@@ -63,12 +63,12 @@ CREATE TABLE IF NOT EXISTS console.payouts (
                         CHECK (status IN ('pending', 'processing', 'successful', 'failed')),
     failure_reason  TEXT,
 
-    -- merchantTxRef sent to Nomba — doubles as our idempotency key.
+    -- merchantTxRef sent to Monnify — doubles as our idempotency key.
     -- Always prefixed 'payout_' so webhook handler can route it correctly.
     merchant_tx_ref TEXT NOT NULL UNIQUE,
 
-    -- Populated after Nomba confirms the transfer (200 sync or webhook).
-    nomba_transfer_id   TEXT,
+    -- Populated after Monnify confirms the transfer (200 sync or webhook).
+    monnify_transfer_id   TEXT,
 
     initiated_by    UUID NOT NULL REFERENCES console.users(id),
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),

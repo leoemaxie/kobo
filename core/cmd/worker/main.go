@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/leoemaxie/kobo/internal/billing"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/platform/config"
 	"github.com/leoemaxie/kobo/internal/platform/db"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
@@ -29,18 +29,18 @@ func main() {
 	q := sqlc.New(pool)
 	idemRepo := reconciliation.NewIdempotencyRepository(q)
 
-	nombaClient := nomba.NewClient(
-		cfg.NombaBaseURL,
-		cfg.NombaClientID,
-		cfg.NombaClientSecret,
-		cfg.NombaAccountID,
-		cfg.NombaSubAccountID,
+	monnifyClient := monnify.NewClient(
+		cfg.MonnifyBaseURL,
+		cfg.MonnifyClientID,
+		cfg.MonnifyClientSecret,
+		cfg.MonnifyAccountID,
+		cfg.MonnifySubAccountID,
 		nil,
 	)
 
-	sweeper := reconciliation.NewSweeper(q, idemRepo, nombaClient)
+	sweeper := reconciliation.NewSweeper(q, idemRepo, monnifyClient)
 	closureSweeper := reconciliation.NewClosureSweeper(q)
-	invoiceJob := billing.NewInvoiceJob(q, nombaClient)
+	invoiceJob := billing.NewInvoiceJob(q, monnifyClient)
 
 	log.Println("Starting Kobo one-off background sweep...")
 

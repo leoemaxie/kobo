@@ -39,7 +39,7 @@ INSERT INTO console.payouts (
     initiated_by
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8
-) RETURNING id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, nomba_transfer_id, initiated_by, created_at, updated_at
+) RETURNING id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, monnify_transfer_id, initiated_by, created_at, updated_at
 `
 
 type CreatePayoutParams struct {
@@ -80,7 +80,7 @@ func (q *Queries) CreatePayout(ctx context.Context, arg CreatePayoutParams) (Con
 		&i.Status,
 		&i.FailureReason,
 		&i.MerchantTxRef,
-		&i.NombaTransferID,
+		&i.MonnifyTransferID,
 		&i.InitiatedBy,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -179,7 +179,7 @@ func (q *Queries) GetActivePayoutBankAccount(ctx context.Context, integratorID u
 }
 
 const getPayoutByID = `-- name: GetPayoutByID :one
-SELECT id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, nomba_transfer_id, initiated_by, created_at, updated_at FROM console.payouts
+SELECT id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, monnify_transfer_id, initiated_by, created_at, updated_at FROM console.payouts
 WHERE id = $1
 `
 
@@ -198,7 +198,7 @@ func (q *Queries) GetPayoutByID(ctx context.Context, id uuid.UUID) (ConsolePayou
 		&i.Status,
 		&i.FailureReason,
 		&i.MerchantTxRef,
-		&i.NombaTransferID,
+		&i.MonnifyTransferID,
 		&i.InitiatedBy,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -207,7 +207,7 @@ func (q *Queries) GetPayoutByID(ctx context.Context, id uuid.UUID) (ConsolePayou
 }
 
 const getPayoutByMerchantTxRef = `-- name: GetPayoutByMerchantTxRef :one
-SELECT id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, nomba_transfer_id, initiated_by, created_at, updated_at FROM console.payouts
+SELECT id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, monnify_transfer_id, initiated_by, created_at, updated_at FROM console.payouts
 WHERE merchant_tx_ref = $1
 `
 
@@ -226,7 +226,7 @@ func (q *Queries) GetPayoutByMerchantTxRef(ctx context.Context, merchantTxRef st
 		&i.Status,
 		&i.FailureReason,
 		&i.MerchantTxRef,
-		&i.NombaTransferID,
+		&i.MonnifyTransferID,
 		&i.InitiatedBy,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -277,7 +277,7 @@ func (q *Queries) InsertPayoutBankAccount(ctx context.Context, arg InsertPayoutB
 }
 
 const listPayoutsForIntegrator = `-- name: ListPayoutsForIntegrator :many
-SELECT id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, nomba_transfer_id, initiated_by, created_at, updated_at FROM console.payouts
+SELECT id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, monnify_transfer_id, initiated_by, created_at, updated_at FROM console.payouts
 WHERE integrator_id = $1
 ORDER BY created_at DESC
 LIMIT $2 OFFSET $3
@@ -310,7 +310,7 @@ func (q *Queries) ListPayoutsForIntegrator(ctx context.Context, arg ListPayoutsF
 			&i.Status,
 			&i.FailureReason,
 			&i.MerchantTxRef,
-			&i.NombaTransferID,
+			&i.MonnifyTransferID,
 			&i.InitiatedBy,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -351,18 +351,18 @@ UPDATE console.payouts
 SET
     status                   = $2,
     failure_reason           = $3,
-    nomba_transfer_id        = $4,
+    monnify_transfer_id        = $4,
     actual_transfer_fee_kobo = $5,
     updated_at               = now()
 WHERE id = $1
-RETURNING id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, nomba_transfer_id, initiated_by, created_at, updated_at
+RETURNING id, integrator_id, bank_account_id, requested_amount_kobo, platform_fee_kobo, transfer_fee_buffer_kobo, actual_transfer_fee_kobo, net_amount_kobo, status, failure_reason, merchant_tx_ref, monnify_transfer_id, initiated_by, created_at, updated_at
 `
 
 type UpdatePayoutStatusParams struct {
 	ID                    uuid.UUID   `json:"id"`
 	Status                string      `json:"status"`
 	FailureReason         pgtype.Text `json:"failure_reason"`
-	NombaTransferID       pgtype.Text `json:"nomba_transfer_id"`
+	MonnifyTransferID       pgtype.Text `json:"monnify_transfer_id"`
 	ActualTransferFeeKobo pgtype.Int8 `json:"actual_transfer_fee_kobo"`
 }
 
@@ -371,7 +371,7 @@ func (q *Queries) UpdatePayoutStatus(ctx context.Context, arg UpdatePayoutStatus
 		arg.ID,
 		arg.Status,
 		arg.FailureReason,
-		arg.NombaTransferID,
+		arg.MonnifyTransferID,
 		arg.ActualTransferFeeKobo,
 	)
 	var i ConsolePayout
@@ -387,7 +387,7 @@ func (q *Queries) UpdatePayoutStatus(ctx context.Context, arg UpdatePayoutStatus
 		&i.Status,
 		&i.FailureReason,
 		&i.MerchantTxRef,
-		&i.NombaTransferID,
+		&i.MonnifyTransferID,
 		&i.InitiatedBy,
 		&i.CreatedAt,
 		&i.UpdatedAt,

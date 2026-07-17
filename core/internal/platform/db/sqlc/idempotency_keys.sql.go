@@ -12,15 +12,15 @@ import (
 )
 
 const getIdempotencyKey = `-- name: GetIdempotencyKey :one
-SELECT nomba_reference, ledger_entry_id, first_seen_via, created_at FROM idempotency_keys
-WHERE nomba_reference = $1
+SELECT monnify_reference, ledger_entry_id, first_seen_via, created_at FROM idempotency_keys
+WHERE monnify_reference = $1
 `
 
-func (q *Queries) GetIdempotencyKey(ctx context.Context, nombaReference string) (IdempotencyKey, error) {
-	row := q.db.QueryRow(ctx, getIdempotencyKey, nombaReference)
+func (q *Queries) GetIdempotencyKey(ctx context.Context, monnifyReference string) (IdempotencyKey, error) {
+	row := q.db.QueryRow(ctx, getIdempotencyKey, monnifyReference)
 	var i IdempotencyKey
 	err := row.Scan(
-		&i.NombaReference,
+		&i.MonnifyReference,
 		&i.LedgerEntryID,
 		&i.FirstSeenVia,
 		&i.CreatedAt,
@@ -29,22 +29,22 @@ func (q *Queries) GetIdempotencyKey(ctx context.Context, nombaReference string) 
 }
 
 const insertIdempotencyKey = `-- name: InsertIdempotencyKey :one
-INSERT INTO idempotency_keys (nomba_reference, ledger_entry_id, first_seen_via)
+INSERT INTO idempotency_keys (monnify_reference, ledger_entry_id, first_seen_via)
 VALUES ($1, $2, $3)
-RETURNING nomba_reference, ledger_entry_id, first_seen_via, created_at
+RETURNING monnify_reference, ledger_entry_id, first_seen_via, created_at
 `
 
 type InsertIdempotencyKeyParams struct {
-	NombaReference string    `json:"nomba_reference"`
+	MonnifyReference string    `json:"monnify_reference"`
 	LedgerEntryID  uuid.UUID `json:"ledger_entry_id"`
 	FirstSeenVia   string    `json:"first_seen_via"`
 }
 
 func (q *Queries) InsertIdempotencyKey(ctx context.Context, arg InsertIdempotencyKeyParams) (IdempotencyKey, error) {
-	row := q.db.QueryRow(ctx, insertIdempotencyKey, arg.NombaReference, arg.LedgerEntryID, arg.FirstSeenVia)
+	row := q.db.QueryRow(ctx, insertIdempotencyKey, arg.MonnifyReference, arg.LedgerEntryID, arg.FirstSeenVia)
 	var i IdempotencyKey
 	err := row.Scan(
-		&i.NombaReference,
+		&i.MonnifyReference,
 		&i.LedgerEntryID,
 		&i.FirstSeenVia,
 		&i.CreatedAt,

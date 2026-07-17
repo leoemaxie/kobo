@@ -1,6 +1,6 @@
-package nomba
+package monnify
 
-// WebhookPayload represents the Kobo-relevant subset of the Nomba webhook payload.
+// WebhookPayload represents the Kobo-relevant subset of the Monnify webhook payload.
 type WebhookPayload struct {
 	EventType string `json:"event_type"`
 	RequestID string `json:"requestId"`

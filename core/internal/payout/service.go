@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
@@ -30,20 +30,20 @@ var (
 type Service struct {
 	pool        *pgxpool.Pool
 	q           sqlc.Querier
-	nombaClient *nomba.Client
+	monnifyClient *monnify.Client
 }
 
-func NewService(pool *pgxpool.Pool, q sqlc.Querier, nombaClient *nomba.Client) *Service {
+func NewService(pool *pgxpool.Pool, q sqlc.Querier, monnifyClient *monnify.Client) *Service {
 	return &Service{
 		pool:        pool,
 		q:           q,
-		nombaClient: nombaClient,
+		monnifyClient: monnifyClient,
 	}
 }
 
 func (s *Service) SaveBankAccount(ctx context.Context, integratorID, userID uuid.UUID, accountNumber, bankCode, bankName string) (sqlc.ConsolePayoutBankAccount, error) {
-	// 1. Verify via Nomba
-	lookupResp, err := s.nombaClient.LookupBankAccount(ctx, accountNumber, bankCode)
+	// 1. Verify via Monnify
+	lookupResp, err := s.monnifyClient.LookupBankAccount(ctx, accountNumber, bankCode)
 	if err != nil {
 		return sqlc.ConsolePayoutBankAccount{}, fmt.Errorf("bank account verification failed: %w", err)
 	}
@@ -154,7 +154,7 @@ func (s *Service) RequestPayout(ctx context.Context, integratorID, initiatedByUs
 		return sqlc.ConsolePayout{}, fmt.Errorf("failed to commit tx: %w", err)
 	}
 
-	req := nomba.TransferToBankRequest{
+	req := monnify.TransferToBankRequest{
 		Amount:        float64(netAmountKobo) / 100,
 		AccountNumber: bankAccount.AccountNumber,
 		AccountName:   bankAccount.AccountName,
@@ -164,17 +164,17 @@ func (s *Service) RequestPayout(ctx context.Context, integratorID, initiatedByUs
 		Narration:     "Kobo Payout",
 	}
 
-	resp, transferErr := s.nombaClient.TransferToBank(ctx, req)
+	resp, transferErr := s.monnifyClient.TransferToBank(ctx, req)
 
 	if transferErr != nil {
 		// REVERSAL
-		log.Printf("payout request to nomba failed, reversing... %v", transferErr)
+		log.Printf("payout request to monnify failed, reversing... %v", transferErr)
 		err := s.q.CreditIntegratorBalance(ctx, sqlc.CreditIntegratorBalanceParams{
 			ID:                integratorID,
 			WalletBalanceKobo: totalDeduction,
 		})
 		if err != nil {
-			log.Printf("CRITICAL: failed to credit integrator balance after nomba transfer error: %v", err)
+			log.Printf("CRITICAL: failed to credit integrator balance after monnify transfer error: %v", err)
 		}
 
 		failureReasonStr := transferErr.Error()
@@ -188,14 +188,14 @@ func (s *Service) RequestPayout(ctx context.Context, integratorID, initiatedByUs
 	}
 
 	var newStatus string
-	var nombaTransferID pgtype.Text
+	var monnifyTransferID pgtype.Text
 	var actualFee pgtype.Int8
 
 	if resp.IsAsync {
 		newStatus = "processing"
 	} else {
 		newStatus = "successful"
-		nombaTransferID = pgtype.Text{String: resp.NombaTransferID, Valid: true}
+		monnifyTransferID = pgtype.Text{String: resp.MonnifyTransferID, Valid: true}
 		feeKobo := int64(resp.FeeNaira * 100)
 		actualFee = pgtype.Int8{Int64: feeKobo, Valid: true}
 	}
@@ -203,7 +203,7 @@ func (s *Service) RequestPayout(ctx context.Context, integratorID, initiatedByUs
 	payout, err = s.q.UpdatePayoutStatus(ctx, sqlc.UpdatePayoutStatusParams{
 		ID:                    payout.ID,
 		Status:                newStatus,
-		NombaTransferID:       nombaTransferID,
+		MonnifyTransferID:       monnifyTransferID,
 		ActualTransferFeeKobo: actualFee,
 	})
 
@@ -214,7 +214,7 @@ func (s *Service) RequestPayout(ctx context.Context, integratorID, initiatedByUs
 	return payout, nil
 }
 
-func (s *Service) HandleTransferWebhook(ctx context.Context, merchantTxRef, nombaStatus, nombaTransferID string) error {
+func (s *Service) HandleTransferWebhook(ctx context.Context, merchantTxRef, monnifyStatus, monnifyTransferID string) error {
 	payout, err := s.q.GetPayoutByMerchantTxRef(ctx, merchantTxRef)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -227,11 +227,11 @@ func (s *Service) HandleTransferWebhook(ctx context.Context, merchantTxRef, nomb
 		return nil
 	}
 
-	if nombaStatus == "SUCCESS" {
+	if monnifyStatus == "SUCCESS" {
 		_, err := s.q.UpdatePayoutStatus(ctx, sqlc.UpdatePayoutStatusParams{
 			ID:              payout.ID,
 			Status:          "successful",
-			NombaTransferID: pgtype.Text{String: nombaTransferID, Valid: true},
+			MonnifyTransferID: pgtype.Text{String: monnifyTransferID, Valid: true},
 		})
 		return err
 	}
@@ -251,7 +251,7 @@ func (s *Service) HandleTransferWebhook(ctx context.Context, merchantTxRef, nomb
 	_, err = s.q.UpdatePayoutStatus(ctx, sqlc.UpdatePayoutStatusParams{
 		ID:            payout.ID,
 		Status:        "failed",
-		FailureReason: pgtype.Text{String: nombaStatus, Valid: true},
+		FailureReason: pgtype.Text{String: monnifyStatus, Valid: true},
 	})
 	return err
 }

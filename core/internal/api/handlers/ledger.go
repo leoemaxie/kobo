@@ -12,16 +12,16 @@ import (
 	apierrors "github.com/leoemaxie/kobo/internal/api/errors"
 	"github.com/leoemaxie/kobo/internal/api/middleware"
 	"github.com/leoemaxie/kobo/internal/ledger"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 )
 
 type LedgerHandler struct {
 	svc         *ledger.Service
-	nombaClient *nomba.Client
+	monnifyClient *monnify.Client
 }
 
-func NewLedgerHandler(svc *ledger.Service, nombaClient *nomba.Client) *LedgerHandler {
-	return &LedgerHandler{svc: svc, nombaClient: nombaClient}
+func NewLedgerHandler(svc *ledger.Service, monnifyClient *monnify.Client) *LedgerHandler {
+	return &LedgerHandler{svc: svc, monnifyClient: monnifyClient}
 }
 
 func (h *LedgerHandler) GetTransactions(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +59,7 @@ func (h *LedgerHandler) GetTransactions(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	txns, err := h.nombaClient.FetchTransactions(r.Context(), va.AccountNumber.String, dateFrom, dateTo)
+	txns, err := h.monnifyClient.FetchTransactions(r.Context(), va.AccountNumber.String, dateFrom, dateTo)
 	if err != nil {
 		apierrors.LogAndWriteError(w, http.StatusInternalServerError, "internal_error", "failed to fetch transactions", err)
 		return

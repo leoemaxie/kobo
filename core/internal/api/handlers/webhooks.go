@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/payout"
 	"github.com/leoemaxie/kobo/internal/reconciliation"
 )
@@ -28,9 +28,9 @@ func NewWebhookHandler(engine reconciliation.Engine, payoutSvc *payout.Service, 
 	}
 }
 
-func (h *WebhookHandler) HandleNombaWebhook(w http.ResponseWriter, r *http.Request) {
-	sigHeader := r.Header.Get("nomba-signature")
-	timeHeader := r.Header.Get("nomba-timestamp")
+func (h *WebhookHandler) HandleMonnifyWebhook(w http.ResponseWriter, r *http.Request) {
+	sigHeader := r.Header.Get("monnify-signature")
+	timeHeader := r.Header.Get("monnify-timestamp")
 
 	if sigHeader == "" || timeHeader == "" {
 		http.Error(w, "missing signature or timestamp", http.StatusUnauthorized)
@@ -50,13 +50,13 @@ func (h *WebhookHandler) HandleNombaWebhook(w http.ResponseWriter, r *http.Reque
 	}
 	r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 
-	var payload nomba.WebhookPayload
+	var payload monnify.WebhookPayload
 	if err := json.Unmarshal(bodyBytes, &payload); err != nil {
 		http.Error(w, "invalid payload", http.StatusBadRequest)
 		return
 	}
 
-	if !nomba.VerifyWebhookSignature(&payload, sigHeader, timeHeader, h.webhookSecret) {
+	if !monnify.VerifyWebhookSignature(&payload, sigHeader, timeHeader, h.webhookSecret) {
 		http.Error(w, "invalid signature", http.StatusUnauthorized)
 		return
 	}
@@ -84,7 +84,7 @@ func (h *WebhookHandler) HandleNombaWebhook(w http.ResponseWriter, r *http.Reque
 
 	err = h.engine.ProcessWebhook(r.Context(), &payload)
 	if err != nil {
-		// Log error, but return 200 so Nomba doesn't retry infinitely on business logic errors,
+		// Log error, but return 200 so Monnify doesn't retry infinitely on business logic errors,
 		// but wait: "do not return non-2XX for business-logic reasons, only for genuine processing failures"
 		// If it's a database failure we should probably 500, but let's just 200 and log for now or 500 if err is systemic.
 		// For simplicity, we return 200 to acknowledge receipt if it's a business error (e.g. account not found)

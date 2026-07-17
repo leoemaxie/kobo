@@ -21,7 +21,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o /app/bin/worker ./cmd/w
 # Start a new stage from a minimal alpine image
 FROM alpine:latest
 
-# Add ca-certificates for HTTPS requests (Nomba API) and tzdata for timezones
+# Add ca-certificates for HTTPS requests (Monnify API) and tzdata for timezones
 RUN apk --no-cache add ca-certificates tzdata
 
 WORKDIR /app

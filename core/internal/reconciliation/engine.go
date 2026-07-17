@@ -9,30 +9,30 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/leoemaxie/kobo/internal/billing"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
 type Engine interface {
-	ProcessWebhook(ctx context.Context, payload *nomba.WebhookPayload) error
+	ProcessWebhook(ctx context.Context, payload *monnify.WebhookPayload) error
 }
 
-type NombaTransactionFetcher interface {
-	FetchSingleTransaction(ctx context.Context, transactionRef string) (*nomba.TransactionResult, error)
+type MonnifyTransactionFetcher interface {
+	FetchSingleTransaction(ctx context.Context, transactionRef string) (*monnify.TransactionResult, error)
 }
 
 type engine struct {
 	q           sqlc.Querier
 	idemRepo    IdempotencyRepository
 	recorder    *billing.UsageRecorder
-	nombaClient NombaTransactionFetcher
+	monnifyClient MonnifyTransactionFetcher
 }
 
-func NewEngine(q sqlc.Querier, idemRepo IdempotencyRepository, recorder *billing.UsageRecorder, nombaClient NombaTransactionFetcher) Engine {
-	return &engine{q: q, idemRepo: idemRepo, recorder: recorder, nombaClient: nombaClient}
+func NewEngine(q sqlc.Querier, idemRepo IdempotencyRepository, recorder *billing.UsageRecorder, monnifyClient MonnifyTransactionFetcher) Engine {
+	return &engine{q: q, idemRepo: idemRepo, recorder: recorder, monnifyClient: monnifyClient}
 }
 
-func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPayload) error {
+func (e *engine) ProcessWebhook(ctx context.Context, payload *monnify.WebhookPayload) error {
 	if payload.EventType != "payment_success" {
 		return nil // Ignore other events
 	}
@@ -60,13 +60,13 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 
 	transactionID := payload.Data.Transaction.TransactionID
 
-	if e.nombaClient != nil {
-		txn, err := e.nombaClient.FetchSingleTransaction(ctx, transactionID)
+	if e.monnifyClient != nil {
+		txn, err := e.monnifyClient.FetchSingleTransaction(ctx, transactionID)
 		if err != nil {
-			return fmt.Errorf("failed to verify transaction %s with Nomba: %w", transactionID, err)
+			return fmt.Errorf("failed to verify transaction %s with Monnify: %w", transactionID, err)
 		}
 		if txn.Status != "SUCCESS" && txn.Status != "PAYMENT_SUCCESSFUL" {
-			return fmt.Errorf("transaction %s is not successful according to Nomba, status: %s", transactionID, txn.Status)
+			return fmt.Errorf("transaction %s is not successful according to Monnify, status: %s", transactionID, txn.Status)
 		}
 	}
 
@@ -100,7 +100,7 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 			AmountKobo:       amountKobo,
 			Direction:        "inbound",
 			Status:           "matched",
-			NombaReference:   transactionID,
+			MonnifyReference:   transactionID,
 			Source:           "webhook",
 			Narration:        pgNarration,
 			SenderName:       pgSenderName,
@@ -129,7 +129,7 @@ func (e *engine) ProcessWebhook(ctx context.Context, payload *nomba.WebhookPaylo
 	return nil
 }
 
-func (e *engine) handleCheckoutWebhook(ctx context.Context, payload *nomba.WebhookPayload) error {
+func (e *engine) handleCheckoutWebhook(ctx context.Context, payload *monnify.WebhookPayload) error {
 	if payload.Data.TokenizedCardData != nil && payload.Data.TokenizedCardData.TokenKey != "" && payload.Data.TokenizedCardData.TokenKey != "N/A" {
 		integratorID, err := uuid.Parse(payload.Data.Order.CustomerId)
 		if err != nil {
@@ -150,7 +150,7 @@ func (e *engine) handleCheckoutWebhook(ctx context.Context, payload *nomba.Webho
 		// 2. Insert the new payment method
 		_, err = e.q.InsertPaymentMethod(ctx, sqlc.InsertPaymentMethodParams{
 			IntegratorID:  integratorID,
-			NombaTokenKey: payload.Data.TokenizedCardData.TokenKey,
+			MonnifyTokenKey: payload.Data.TokenizedCardData.TokenKey,
 			CardLast4:     pgtype.Text{String: cardLast4, Valid: cardLast4 != ""},
 			CardBrand:     pgtype.Text{String: payload.Data.TokenizedCardData.CardType, Valid: payload.Data.TokenizedCardData.CardType != ""},
 			IsDefault:     true,

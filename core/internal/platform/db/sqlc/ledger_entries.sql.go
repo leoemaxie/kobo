@@ -35,9 +35,9 @@ func (q *Queries) GetLedgerOpeningBalance(ctx context.Context, arg GetLedgerOpen
 }
 
 const insertLedgerEntry = `-- name: InsertLedgerEntry :one
-INSERT INTO ledger_entries (id, virtual_account_id, identity_id, amount_kobo, direction, status, nomba_reference, source, narration, sender_name, occurred_at)
+INSERT INTO ledger_entries (id, virtual_account_id, identity_id, amount_kobo, direction, status, monnify_reference, source, narration, sender_name, occurred_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-RETURNING id, virtual_account_id, identity_id, amount_kobo, direction, status, nomba_reference, source, narration, sender_name, occurred_at, created_at
+RETURNING id, virtual_account_id, identity_id, amount_kobo, direction, status, monnify_reference, source, narration, sender_name, occurred_at, created_at
 `
 
 type InsertLedgerEntryParams struct {
@@ -47,7 +47,7 @@ type InsertLedgerEntryParams struct {
 	AmountKobo       int64       `json:"amount_kobo"`
 	Direction        string      `json:"direction"`
 	Status           string      `json:"status"`
-	NombaReference   string      `json:"nomba_reference"`
+	MonnifyReference   string      `json:"monnify_reference"`
 	Source           string      `json:"source"`
 	Narration        pgtype.Text `json:"narration"`
 	SenderName       pgtype.Text `json:"sender_name"`
@@ -62,7 +62,7 @@ func (q *Queries) InsertLedgerEntry(ctx context.Context, arg InsertLedgerEntryPa
 		arg.AmountKobo,
 		arg.Direction,
 		arg.Status,
-		arg.NombaReference,
+		arg.MonnifyReference,
 		arg.Source,
 		arg.Narration,
 		arg.SenderName,
@@ -76,7 +76,7 @@ func (q *Queries) InsertLedgerEntry(ctx context.Context, arg InsertLedgerEntryPa
 		&i.AmountKobo,
 		&i.Direction,
 		&i.Status,
-		&i.NombaReference,
+		&i.MonnifyReference,
 		&i.Source,
 		&i.Narration,
 		&i.SenderName,
@@ -87,7 +87,7 @@ func (q *Queries) InsertLedgerEntry(ctx context.Context, arg InsertLedgerEntryPa
 }
 
 const listLedgerEntriesByAccount = `-- name: ListLedgerEntriesByAccount :many
-SELECT id, virtual_account_id, identity_id, amount_kobo, direction, status, nomba_reference, source, narration, sender_name, occurred_at, created_at FROM ledger_entries
+SELECT id, virtual_account_id, identity_id, amount_kobo, direction, status, monnify_reference, source, narration, sender_name, occurred_at, created_at FROM ledger_entries
 WHERE virtual_account_id = $1
 ORDER BY occurred_at DESC
 LIMIT $2 OFFSET $3
@@ -115,7 +115,7 @@ func (q *Queries) ListLedgerEntriesByAccount(ctx context.Context, arg ListLedger
 			&i.AmountKobo,
 			&i.Direction,
 			&i.Status,
-			&i.NombaReference,
+			&i.MonnifyReference,
 			&i.Source,
 			&i.Narration,
 			&i.SenderName,
@@ -133,7 +133,7 @@ func (q *Queries) ListLedgerEntriesByAccount(ctx context.Context, arg ListLedger
 }
 
 const listLedgerEntriesByIdentityAndPeriod = `-- name: ListLedgerEntriesByIdentityAndPeriod :many
-SELECT id, virtual_account_id, identity_id, amount_kobo, direction, status, nomba_reference, source, narration, sender_name, occurred_at, created_at FROM ledger_entries
+SELECT id, virtual_account_id, identity_id, amount_kobo, direction, status, monnify_reference, source, narration, sender_name, occurred_at, created_at FROM ledger_entries
 WHERE identity_id = $1
   AND occurred_at >= $2
   AND occurred_at < $3
@@ -162,7 +162,7 @@ func (q *Queries) ListLedgerEntriesByIdentityAndPeriod(ctx context.Context, arg 
 			&i.AmountKobo,
 			&i.Direction,
 			&i.Status,
-			&i.NombaReference,
+			&i.MonnifyReference,
 			&i.Source,
 			&i.Narration,
 			&i.SenderName,

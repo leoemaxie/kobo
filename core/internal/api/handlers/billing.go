@@ -8,17 +8,17 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
 type AdminBillingHandler struct {
-	nombaClient *nomba.Client
+	monnifyClient *monnify.Client
 	q           sqlc.Querier
 }
 
-func NewAdminBillingHandler(nombaClient *nomba.Client, q sqlc.Querier) *AdminBillingHandler {
-	return &AdminBillingHandler{nombaClient: nombaClient, q: q}
+func NewAdminBillingHandler(monnifyClient *monnify.Client, q sqlc.Querier) *AdminBillingHandler {
+	return &AdminBillingHandler{monnifyClient: monnifyClient, q: q}
 }
 
 type CreateCheckoutRequest struct {
@@ -66,8 +66,8 @@ func (h *AdminBillingHandler) CreateCheckout(w http.ResponseWriter, r *http.Requ
 		tokenizeCard = true
 	}
 
-	checkoutReq := nomba.CheckoutOrderRequest{
-		Order: nomba.OrderInfo{
+	checkoutReq := monnify.CheckoutOrderRequest{
+		Order: monnify.OrderInfo{
 			OrderReference: orderRef,
 			Amount:         amount,
 			Currency:       "NGN",
@@ -79,9 +79,9 @@ func (h *AdminBillingHandler) CreateCheckout(w http.ResponseWriter, r *http.Requ
 	}
 
 	b, _ := json.Marshal(checkoutReq)
-	slog.Info("Sending to Nomba", "payload", string(b))
+	slog.Info("Sending to Monnify", "payload", string(b))
 
-	resp, err := h.nombaClient.CreateCheckoutOrder(r.Context(), checkoutReq)
+	resp, err := h.monnifyClient.CreateCheckoutOrder(r.Context(), checkoutReq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -114,9 +114,9 @@ func (h *AdminBillingHandler) VerifyCheckout(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	resp, err := h.nombaClient.VerifyTransaction(r.Context(), req.OrderRef)
+	resp, err := h.monnifyClient.VerifyTransaction(r.Context(), req.OrderRef)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("failed to verify transaction with Nomba: %v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("failed to verify transaction with Monnify: %v", err), http.StatusInternalServerError)
 		return
 	}
 

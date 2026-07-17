@@ -17,11 +17,11 @@ CREATE TABLE console.usage_events (
 );
 CREATE INDEX ON console.usage_events(integrator_id, occurred_at);
 
--- Saved payment methods (Nomba card tokens)
+-- Saved payment methods (Monnify card tokens)
 CREATE TABLE console.payment_methods (
     id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     integrator_id  UUID NOT NULL REFERENCES public.api_integrators(id),
-    nomba_token_key TEXT NOT NULL,    -- returned by Nomba after first checkout
+    monnify_token_key TEXT NOT NULL,    -- returned by Monnify after first checkout
     card_last4     TEXT,
     card_brand     TEXT,              -- 'visa' / 'mastercard'
     is_default     BOOLEAN NOT NULL DEFAULT TRUE,
@@ -38,7 +38,7 @@ CREATE TABLE console.invoices (
     amount_kobo        BIGINT NOT NULL,
     status             TEXT NOT NULL DEFAULT 'open'
                            CHECK (status IN ('open','paid','failed','void')),
-    nomba_order_ref    TEXT,                      -- Nomba checkout/charge reference
+    monnify_order_ref    TEXT,                      -- Monnify checkout/charge reference
     paid_at            TIMESTAMPTZ,
     retry_count        INT NOT NULL DEFAULT 0,
     next_retry_at      TIMESTAMPTZ,

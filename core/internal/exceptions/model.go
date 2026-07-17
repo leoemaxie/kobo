@@ -11,7 +11,7 @@ type Exception struct {
 	IntegratorID        uuid.UUID  `json:"integrator_id"`
 	Type                string     `json:"type"`
 	AmountKobo          int64      `json:"amount_kobo"`
-	NombaReference      string     `json:"nomba_reference"`
+	MonnifyReference      string     `json:"monnify_reference"`
 	RelatedAccountID    *uuid.UUID `json:"related_account_id,omitempty"`
 	Status              string     `json:"status"`
 	ResolutionAction    *string    `json:"resolution_action,omitempty"`

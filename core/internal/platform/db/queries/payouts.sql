@@ -48,7 +48,7 @@ UPDATE console.payouts
 SET
     status                   = $2,
     failure_reason           = $3,
-    nomba_transfer_id        = $4,
+    monnify_transfer_id        = $4,
     actual_transfer_fee_kobo = $5,
     updated_at               = now()
 WHERE id = $1

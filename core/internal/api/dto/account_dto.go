@@ -13,7 +13,7 @@ type LedgerEntryResponse struct {
 	AmountKobo       int64     `json:"amount_kobo"`
 	Direction        string    `json:"direction"`
 	Status           string    `json:"status"`
-	NombaReference   string    `json:"nomba_reference"`
+	MonnifyReference   string    `json:"monnify_reference"`
 	Source           string    `json:"source"`
 	Narration        string    `json:"narration,omitempty"`
 	SenderName       string    `json:"sender_name,omitempty"`

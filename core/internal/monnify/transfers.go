@@ -1,4 +1,4 @@
-package nomba
+package monnify
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ type TransferToBankRequest struct {
 }
 
 type TransferToBankResponse struct {
-	NombaTransferID string
+	MonnifyTransferID string
 	Status          string
 	FeeNaira        float64
 	IsAsync         bool
@@ -65,7 +65,7 @@ func (c *Client) LookupBankAccount(ctx context.Context, accountNumber, bankCode 
 	return data, nil
 }
 
-// TransferToBank initiates a bank transfer from Kobo's Nomba wallet.
+// TransferToBank initiates a bank transfer from Kobo's Monnify wallet.
 // Calls: POST /v2/transfers/bank or POST /v2/transfers/bank/{subAccountId}
 func (c *Client) TransferToBank(ctx context.Context, req TransferToBankRequest) (TransferToBankResponse, error) {
 	token, err := c.tokenManager.GetValidToken(ctx)
@@ -125,7 +125,7 @@ func (c *Client) TransferToBank(ctx context.Context, req TransferToBankRequest) 
 
 	// Accept "00" (V1 success code), "200" (V2 success code), and "201" (V2 processing code)
 	if baseResp.Code != "00" && baseResp.Code != "200" && baseResp.Code != "201" {
-		return TransferToBankResponse{}, fmt.Errorf("nomba API error %s: %s | RAW BODY: %s", baseResp.Code, baseResp.Description, string(bodyBytes))
+		return TransferToBankResponse{}, fmt.Errorf("monnify API error %s: %s | RAW BODY: %s", baseResp.Code, baseResp.Description, string(bodyBytes))
 	}
 
 	if baseResp.Code == "201" {
@@ -149,7 +149,7 @@ func (c *Client) TransferToBank(ctx context.Context, req TransferToBankRequest) 
 	isAsync := transferData.Status == "PENDING_BILLING" || transferData.Status == "PROCESSING"
 
 	return TransferToBankResponse{
-		NombaTransferID: transferData.ID,
+		MonnifyTransferID: transferData.ID,
 		Status:          transferData.Status,
 		FeeNaira:        transferData.Fee,
 		IsAsync:         isAsync,

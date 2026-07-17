@@ -1,4 +1,4 @@
-package nomba
+package monnify
 
 import (
 	"context"
@@ -31,8 +31,8 @@ func TestCreateVirtualAccount(t *testing.T) {
 			"description": "Success",
 			"data": {
 				"bankAccountNumber": "1234567890",
-				"bankName": "Nomba MFB",
-				"bankAccountName": "Nomba/Test User"
+				"bankName": "Monnify MFB",
+				"bankAccountName": "Monnify/Test User"
 			}
 		}`))
 	})
@@ -45,5 +45,5 @@ func TestCreateVirtualAccount(t *testing.T) {
 	resp, err := client.CreateVirtualAccount(context.Background(), "ref-123", "Test User", "")
 	assert.NoError(t, err)
 	assert.Equal(t, "1234567890", resp.AccountNumber)
-	assert.Equal(t, "Nomba MFB", resp.BankName)
+	assert.Equal(t, "Monnify MFB", resp.BankName)
 }

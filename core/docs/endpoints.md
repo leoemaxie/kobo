@@ -40,4 +40,4 @@ These routes require authentication, a valid request ID, and client IP tracking.
 
 ### Webhooks
 
-- `POST /v1/webhooks/nomba`: Handle incoming Nomba webhooks.
+- `POST /v1/webhooks/monnify`: Handle incoming Monnify webhooks.

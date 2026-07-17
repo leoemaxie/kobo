@@ -69,7 +69,7 @@ func (q *Queries) GetBillingRecords(ctx context.Context, integratorID uuid.UUID)
 }
 
 const getDefaultPaymentMethod = `-- name: GetDefaultPaymentMethod :one
-SELECT id, integrator_id, nomba_token_key, card_last4, card_brand, is_default, created_at FROM console.payment_methods
+SELECT id, integrator_id, monnify_token_key, card_last4, card_brand, is_default, created_at FROM console.payment_methods
 WHERE integrator_id = $1 AND is_default = TRUE
 LIMIT 1
 `
@@ -80,7 +80,7 @@ func (q *Queries) GetDefaultPaymentMethod(ctx context.Context, integratorID uuid
 	err := row.Scan(
 		&i.ID,
 		&i.IntegratorID,
-		&i.NombaTokenKey,
+		&i.MonnifyTokenKey,
 		&i.CardLast4,
 		&i.CardBrand,
 		&i.IsDefault,
@@ -130,7 +130,7 @@ func (q *Queries) GetIdentityByVirtualAccountID(ctx context.Context, id uuid.UUI
 }
 
 const getIntegratorInvoices = `-- name: GetIntegratorInvoices :many
-SELECT id, integrator_id, billing_record_id, period, amount_kobo, status, nomba_order_ref, paid_at, retry_count, next_retry_at, created_at FROM console.invoices
+SELECT id, integrator_id, billing_record_id, period, amount_kobo, status, monnify_order_ref, paid_at, retry_count, next_retry_at, created_at FROM console.invoices
 WHERE integrator_id = $1
 ORDER BY created_at DESC
 `
@@ -151,7 +151,7 @@ func (q *Queries) GetIntegratorInvoices(ctx context.Context, integratorID uuid.U
 			&i.Period,
 			&i.AmountKobo,
 			&i.Status,
-			&i.NombaOrderRef,
+			&i.MonnifyOrderRef,
 			&i.PaidAt,
 			&i.RetryCount,
 			&i.NextRetryAt,
@@ -225,7 +225,7 @@ func (q *Queries) GetIntegratorWalletBalance(ctx context.Context, id uuid.UUID) 
 }
 
 const getPendingInvoices = `-- name: GetPendingInvoices :many
-SELECT id, integrator_id, billing_record_id, period, amount_kobo, status, nomba_order_ref, paid_at, retry_count, next_retry_at, created_at FROM console.invoices
+SELECT id, integrator_id, billing_record_id, period, amount_kobo, status, monnify_order_ref, paid_at, retry_count, next_retry_at, created_at FROM console.invoices
 WHERE status = 'open' OR status = 'failed' AND retry_count < 3 AND (next_retry_at IS NULL OR next_retry_at <= now())
 `
 
@@ -245,7 +245,7 @@ func (q *Queries) GetPendingInvoices(ctx context.Context) ([]ConsoleInvoice, err
 			&i.Period,
 			&i.AmountKobo,
 			&i.Status,
-			&i.NombaOrderRef,
+			&i.MonnifyOrderRef,
 			&i.PaidAt,
 			&i.RetryCount,
 			&i.NextRetryAt,
@@ -266,7 +266,7 @@ INSERT INTO console.invoices (
     integrator_id, billing_record_id, period, amount_kobo, status
 ) VALUES (
     $1, $2, $3, $4, $5
-) RETURNING id, integrator_id, billing_record_id, period, amount_kobo, status, nomba_order_ref, paid_at, retry_count, next_retry_at, created_at
+) RETURNING id, integrator_id, billing_record_id, period, amount_kobo, status, monnify_order_ref, paid_at, retry_count, next_retry_at, created_at
 `
 
 type InsertInvoiceParams struct {
@@ -293,7 +293,7 @@ func (q *Queries) InsertInvoice(ctx context.Context, arg InsertInvoiceParams) (C
 		&i.Period,
 		&i.AmountKobo,
 		&i.Status,
-		&i.NombaOrderRef,
+		&i.MonnifyOrderRef,
 		&i.PaidAt,
 		&i.RetryCount,
 		&i.NextRetryAt,
@@ -304,15 +304,15 @@ func (q *Queries) InsertInvoice(ctx context.Context, arg InsertInvoiceParams) (C
 
 const insertPaymentMethod = `-- name: InsertPaymentMethod :one
 INSERT INTO console.payment_methods (
-    integrator_id, nomba_token_key, card_last4, card_brand, is_default
+    integrator_id, monnify_token_key, card_last4, card_brand, is_default
 ) VALUES (
     $1, $2, $3, $4, $5
-) RETURNING id, integrator_id, nomba_token_key, card_last4, card_brand, is_default, created_at
+) RETURNING id, integrator_id, monnify_token_key, card_last4, card_brand, is_default, created_at
 `
 
 type InsertPaymentMethodParams struct {
 	IntegratorID  uuid.UUID   `json:"integrator_id"`
-	NombaTokenKey string      `json:"nomba_token_key"`
+	MonnifyTokenKey string      `json:"monnify_token_key"`
 	CardLast4     pgtype.Text `json:"card_last4"`
 	CardBrand     pgtype.Text `json:"card_brand"`
 	IsDefault     bool        `json:"is_default"`
@@ -321,7 +321,7 @@ type InsertPaymentMethodParams struct {
 func (q *Queries) InsertPaymentMethod(ctx context.Context, arg InsertPaymentMethodParams) (ConsolePaymentMethod, error) {
 	row := q.db.QueryRow(ctx, insertPaymentMethod,
 		arg.IntegratorID,
-		arg.NombaTokenKey,
+		arg.MonnifyTokenKey,
 		arg.CardLast4,
 		arg.CardBrand,
 		arg.IsDefault,
@@ -330,7 +330,7 @@ func (q *Queries) InsertPaymentMethod(ctx context.Context, arg InsertPaymentMeth
 	err := row.Scan(
 		&i.ID,
 		&i.IntegratorID,
-		&i.NombaTokenKey,
+		&i.MonnifyTokenKey,
 		&i.CardLast4,
 		&i.CardBrand,
 		&i.IsDefault,
@@ -433,14 +433,14 @@ func (q *Queries) UpdateIntegratorWalletBalance(ctx context.Context, arg UpdateI
 
 const updateInvoiceStatus = `-- name: UpdateInvoiceStatus :exec
 UPDATE console.invoices
-SET status = $2, nomba_order_ref = $3, paid_at = $4, retry_count = $5, next_retry_at = $6
+SET status = $2, monnify_order_ref = $3, paid_at = $4, retry_count = $5, next_retry_at = $6
 WHERE id = $1
 `
 
 type UpdateInvoiceStatusParams struct {
 	ID            uuid.UUID          `json:"id"`
 	Status        string             `json:"status"`
-	NombaOrderRef pgtype.Text        `json:"nomba_order_ref"`
+	MonnifyOrderRef pgtype.Text        `json:"monnify_order_ref"`
 	PaidAt        pgtype.Timestamptz `json:"paid_at"`
 	RetryCount    int32              `json:"retry_count"`
 	NextRetryAt   pgtype.Timestamptz `json:"next_retry_at"`
@@ -450,7 +450,7 @@ func (q *Queries) UpdateInvoiceStatus(ctx context.Context, arg UpdateInvoiceStat
 	_, err := q.db.Exec(ctx, updateInvoiceStatus,
 		arg.ID,
 		arg.Status,
-		arg.NombaOrderRef,
+		arg.MonnifyOrderRef,
 		arg.PaidAt,
 		arg.RetryCount,
 		arg.NextRetryAt,

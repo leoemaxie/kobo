@@ -13,7 +13,7 @@ import (
 )
 
 const getExceptionByID = `-- name: GetExceptionByID :one
-SELECT id, integrator_id, type, amount_kobo, nomba_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at FROM exceptions
+SELECT id, integrator_id, type, amount_kobo, monnify_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at FROM exceptions
 WHERE id = $1 AND integrator_id = $2
 `
 
@@ -30,7 +30,7 @@ func (q *Queries) GetExceptionByID(ctx context.Context, arg GetExceptionByIDPara
 		&i.IntegratorID,
 		&i.Type,
 		&i.AmountKobo,
-		&i.NombaReference,
+		&i.MonnifyReference,
 		&i.RelatedAccountID,
 		&i.Status,
 		&i.ResolutionAction,
@@ -44,9 +44,9 @@ func (q *Queries) GetExceptionByID(ctx context.Context, arg GetExceptionByIDPara
 }
 
 const insertException = `-- name: InsertException :one
-INSERT INTO exceptions (id, integrator_id, type, amount_kobo, nomba_reference, related_account_id, status, detected_at)
+INSERT INTO exceptions (id, integrator_id, type, amount_kobo, monnify_reference, related_account_id, status, detected_at)
 VALUES ($1, $2, $3, $4, $5, $6, 'open', now())
-RETURNING id, integrator_id, type, amount_kobo, nomba_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at
+RETURNING id, integrator_id, type, amount_kobo, monnify_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at
 `
 
 type InsertExceptionParams struct {
@@ -54,7 +54,7 @@ type InsertExceptionParams struct {
 	IntegratorID     uuid.UUID   `json:"integrator_id"`
 	Type             string      `json:"type"`
 	AmountKobo       int64       `json:"amount_kobo"`
-	NombaReference   string      `json:"nomba_reference"`
+	MonnifyReference   string      `json:"monnify_reference"`
 	RelatedAccountID pgtype.UUID `json:"related_account_id"`
 }
 
@@ -64,7 +64,7 @@ func (q *Queries) InsertException(ctx context.Context, arg InsertExceptionParams
 		arg.IntegratorID,
 		arg.Type,
 		arg.AmountKobo,
-		arg.NombaReference,
+		arg.MonnifyReference,
 		arg.RelatedAccountID,
 	)
 	var i Exception
@@ -73,7 +73,7 @@ func (q *Queries) InsertException(ctx context.Context, arg InsertExceptionParams
 		&i.IntegratorID,
 		&i.Type,
 		&i.AmountKobo,
-		&i.NombaReference,
+		&i.MonnifyReference,
 		&i.RelatedAccountID,
 		&i.Status,
 		&i.ResolutionAction,
@@ -87,7 +87,7 @@ func (q *Queries) InsertException(ctx context.Context, arg InsertExceptionParams
 }
 
 const listExceptionsByStatus = `-- name: ListExceptionsByStatus :many
-SELECT id, integrator_id, type, amount_kobo, nomba_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at FROM exceptions
+SELECT id, integrator_id, type, amount_kobo, monnify_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at FROM exceptions
 WHERE integrator_id = $1 AND status = $2
 ORDER BY detected_at DESC
 LIMIT $3 OFFSET $4
@@ -119,7 +119,7 @@ func (q *Queries) ListExceptionsByStatus(ctx context.Context, arg ListExceptions
 			&i.IntegratorID,
 			&i.Type,
 			&i.AmountKobo,
-			&i.NombaReference,
+			&i.MonnifyReference,
 			&i.RelatedAccountID,
 			&i.Status,
 			&i.ResolutionAction,
@@ -140,7 +140,7 @@ func (q *Queries) ListExceptionsByStatus(ctx context.Context, arg ListExceptions
 }
 
 const listOpenExceptions = `-- name: ListOpenExceptions :many
-SELECT id, integrator_id, type, amount_kobo, nomba_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at FROM exceptions
+SELECT id, integrator_id, type, amount_kobo, monnify_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at FROM exceptions
 WHERE integrator_id = $1 AND status = 'open'
 ORDER BY detected_at ASC
 LIMIT $2 OFFSET $3
@@ -166,7 +166,7 @@ func (q *Queries) ListOpenExceptions(ctx context.Context, arg ListOpenExceptions
 			&i.IntegratorID,
 			&i.Type,
 			&i.AmountKobo,
-			&i.NombaReference,
+			&i.MonnifyReference,
 			&i.RelatedAccountID,
 			&i.Status,
 			&i.ResolutionAction,
@@ -194,7 +194,7 @@ SET status = 'resolved',
     successor_identity_id = $5,
     resolved_at = now()
 WHERE id = $1 AND integrator_id = $2 AND status = 'open'
-RETURNING id, integrator_id, type, amount_kobo, nomba_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at
+RETURNING id, integrator_id, type, amount_kobo, monnify_reference, related_account_id, status, resolution_action, resolution_notes, successor_identity_id, detected_at, resolved_at, created_at
 `
 
 type ResolveExceptionParams struct {
@@ -219,7 +219,7 @@ func (q *Queries) ResolveException(ctx context.Context, arg ResolveExceptionPara
 		&i.IntegratorID,
 		&i.Type,
 		&i.AmountKobo,
-		&i.NombaReference,
+		&i.MonnifyReference,
 		&i.RelatedAccountID,
 		&i.Status,
 		&i.ResolutionAction,

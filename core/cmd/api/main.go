@@ -13,7 +13,7 @@ import (
 	"github.com/leoemaxie/kobo/internal/identity"
 	"github.com/leoemaxie/kobo/internal/integrator"
 	"github.com/leoemaxie/kobo/internal/ledger"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/payout"
 	"github.com/leoemaxie/kobo/internal/platform/config"
 	"github.com/leoemaxie/kobo/internal/platform/db"
@@ -41,8 +41,8 @@ func main() {
 	identitySvc := identity.NewService(identityRepo)
 
 	accountRepo := account.NewRepository(q)
-	nombaClient := nomba.NewClient(cfg.NombaBaseURL, cfg.NombaClientID, cfg.NombaClientSecret, cfg.NombaAccountID, cfg.NombaSubAccountID, nil)
-	accountSvc := account.NewService(accountRepo, nombaClient)
+	monnifyClient := monnify.NewClient(cfg.MonnifyBaseURL, cfg.MonnifyClientID, cfg.MonnifyClientSecret, cfg.MonnifyAccountID, cfg.MonnifySubAccountID, nil)
+	accountSvc := account.NewService(accountRepo, monnifyClient)
 
 	ledgerRepo := ledger.NewRepository(q)
 	ledgerSvc := ledger.NewService(ledgerRepo)
@@ -53,21 +53,21 @@ func main() {
 
 	idemRepo := reconciliation.NewIdempotencyRepository(q)
 	usageRecorder := billing.NewUsageRecorder(q)
-	reconEngine := reconciliation.NewEngine(q, idemRepo, usageRecorder, nombaClient)
-	payoutSvc := payout.NewService(pool, q, nombaClient)
+	reconEngine := reconciliation.NewEngine(q, idemRepo, usageRecorder, monnifyClient)
+	payoutSvc := payout.NewService(pool, q, monnifyClient)
 
 	healthHandler := handlers.NewHealthHandler(pool)
 	identityHandler := handlers.NewIdentityHandler(identitySvc, accountSvc, usageRecorder)
-	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc, nombaClient)
+	ledgerHandler := handlers.NewLedgerHandler(ledgerSvc, monnifyClient)
 	exceptionsHandler := handlers.NewExceptionsHandler(exceptionsSvc)
 	adminHandler := handlers.NewAdminHandler(integratorSvc)
-	adminBillingHandler := handlers.NewAdminBillingHandler(nombaClient, q)
-	payoutHandler := handlers.NewPayoutHandler(payoutSvc, nombaClient)
+	adminBillingHandler := handlers.NewAdminBillingHandler(monnifyClient, q)
+	payoutHandler := handlers.NewPayoutHandler(payoutSvc, monnifyClient)
 
 	analyticsHandler := handlers.NewAnalyticsHandler(q)
 	logsHandler := handlers.NewLogsHandler(q)
 
-	router := api.NewRouter(q, healthHandler, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, adminBillingHandler, payoutHandler, analyticsHandler, logsHandler, reconEngine, cfg.NombaWebhookSecret)
+	router := api.NewRouter(q, healthHandler, identityHandler, ledgerHandler, exceptionsHandler, adminHandler, adminBillingHandler, payoutHandler, analyticsHandler, logsHandler, reconEngine, cfg.MonnifyWebhookSecret)
 
 	log.Printf("Starting Kobo server on port %s", cfg.Port)
 	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {

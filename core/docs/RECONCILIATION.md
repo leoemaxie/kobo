@@ -1,19 +1,19 @@
 # Reconciliation Engine
 
-This document is the canonical reference for how Kobo matches Nomba inbound
+This document is the canonical reference for how Kobo matches Monnify inbound
 transfer events to identity ledger entries. It is kept in sync with
 `core/internal/reconciliation/engine.go`, `sweep.go`, and
 `idempotency.go`. If code and document disagree, treat this as the spec.
 
 Reconciliation accuracy is one of the four named judging criteria for the
-Nomba Hackathon Infrastructure Track. Every edge case below has a defined,
+Monnify Hackathon Infrastructure Track. Every edge case below has a defined,
 tested behavior. There is no "we'll handle it manually" path.
 
 ---
 
 ## The core matching insight
 
-Because each identity has its own dedicated Nomba virtual account number,
+Because each identity has its own dedicated Monnify virtual account number,
 matching an inbound transfer to an identity is trivial by design:
 
 ```
@@ -39,36 +39,36 @@ Everything below addresses that.
 Kobo's reconciliation engine has two sources of truth for inbound transfers,
 used in a primary/fallback relationship. Both sources eventually describe the
 same underlying bank events. Kobo never double-counts because idempotency is
-enforced at the `nomba_reference` level before any ledger write regardless
+enforced at the `monnify_reference` level before any ledger write regardless
 of which source produced the event.
 
-### Primary: Nomba webhooks
+### Primary: Monnify webhooks
 
-Nomba calls `POST /webhooks/nomba` on Kobo's server for each `payment_success`
+Monnify calls `POST /webhooks/monnify` on Kobo's server for each `payment_success`
 event. This is the fastest path from a real-world bank transfer to a Kobo
 ledger entry — typically seconds after the transfer clears.
 
 The webhook handler (`core/internal/api/handlers/webhooks.go`) must:
-1. Verify the Nomba signature before touching any business logic. See
-   `docs/NOMBA_INTEGRATION.md` for the exact HMAC construction — it is a
+1. Verify the Monnify signature before touching any business logic. See
+   `docs/MONNIFY_INTEGRATION.md` for the exact HMAC construction — it is a
    specific concatenated-field hash, not a generic body hash.
 2. Immediately return `200 OK` once the event is durably written to the
    processing queue or directly processed. Do not return non-2XX for
    business-logic failures (account not found, duplicate, etc.) — return 200
-   and handle those cases in code. Returning non-2XX causes Nomba to retry
+   and handle those cases in code. Returning non-2XX causes Monnify to retry
    up to 5 times over ~53 minutes, which makes legitimate failures and late
    retries indistinguishable.
 3. Check idempotency before any ledger write.
 4. Route to the reconciliation engine.
 
-### Fallback: Nomba Transactions API polling (sweep)
+### Fallback: Monnify Transactions API polling (sweep)
 
 `core/internal/reconciliation/sweep.go` runs as a background job in
 `cmd/worker`, polling `GET /transactions/virtual?virtual_account=<number>`
 for accounts that have no matching webhook event within a configurable
 window.
 
-The sweep window should be at least 60 minutes — slightly wider than Nomba's
+The sweep window should be at least 60 minutes — slightly wider than Monnify's
 ~53-minute maximum webhook retry interval — to avoid the sweep backfilling
 transfers that a late webhook delivery is still going to cover. Setting it
 too narrow causes harmless double-processing attempts (caught by idempotency);
@@ -76,16 +76,16 @@ setting it too wide means a genuinely missing webhook goes unnoticed longer
 than it should.
 
 The sweep does not replace webhooks. It is a safety net for events that
-Nomba's webhook delivery dropped entirely, which the retry mechanism cannot
-recover from because Nomba's retries only fire on Kobo's non-2XX responses,
-not on Nomba's own internal delivery failures.
+Monnify's webhook delivery dropped entirely, which the retry mechanism cannot
+recover from because Monnify's retries only fire on Kobo's non-2XX responses,
+not on Monnify's own internal delivery failures.
 
 ---
 
 ## Full reconciliation flow
 
 ```
-Nomba event arrives (webhook) OR sweep job runs
+Monnify event arrives (webhook) OR sweep job runs
              │
              ▼
     ┌─────────────────┐
@@ -94,13 +94,13 @@ Nomba event arrives (webhook) OR sweep job runs
              │ fail → 401, stop
              │ pass ↓
     ┌─────────────────────────────────────┐
-    │ Parse nomba_reference + account_number│
+    │ Parse monnify_reference + account_number│
     │ Convert amount: Naira × 100 → kobo  │
     └────────┬────────────────────────────┘
              │
              ▼
     ┌───────────────────────┐
-    │  Idempotency check    │  SELECT FROM idempotency_keys WHERE nomba_reference = ?
+    │  Idempotency check    │  SELECT FROM idempotency_keys WHERE monnify_reference = ?
     └────────┬──────────────┘
              │ found → return existing ledger entry, stop (deduplicated)
              │ not found ↓
@@ -121,7 +121,7 @@ Nomba event arrives (webhook) OR sweep job runs
     ┌─────────────────────────────────────────────────────────────┐
     │  Within a single DB transaction:                            │
     │    1. INSERT INTO ledger_entries (...)                      │
-    │    2. INSERT INTO idempotency_keys (nomba_reference, ...)   │
+    │    2. INSERT INTO idempotency_keys (monnify_reference, ...)   │
     │  If idempotency INSERT fails on unique violation:           │
     │    → another concurrent worker beat us to it, treat as      │
     │      duplicate, roll back, return existing entry            │
@@ -144,23 +144,23 @@ exception row — there is no silent discard path.
 
 ### 1. Duplicate webhook delivery
 
-**What happens:** Nomba retries a webhook after a network blip, sending the
+**What happens:** Monnify retries a webhook after a network blip, sending the
 same `payment_success` event twice with the same `transactionId`.
 
 **Kobo's behaviour:** The second delivery hits the idempotency check, finds
-the `nomba_reference` already in `idempotency_keys`, and returns the original
+the `monnify_reference` already in `idempotency_keys`, and returns the original
 `ledger_entry_id` without writing anything. The webhook handler returns `200`
-to Nomba. No duplicate ledger entry is created.
+to Monnify. No duplicate ledger entry is created.
 
-**Implementation:** The `idempotency_keys.nomba_reference` column is a
+**Implementation:** The `idempotency_keys.monnify_reference` column is a
 `PRIMARY KEY` (unique constraint). The insert in step 2 of the DB transaction
 fails with a unique violation if the reference was already processed. The
 engine must catch this specific error and treat it as a success, not as an
 application error.
 
-**Idempotency key:** Use Nomba's `transactionId` field from the webhook
+**Idempotency key:** Use Monnify's `transactionId` field from the webhook
 payload (`data.transaction.transactionId`). See the open item in
-`docs/NOMBA_INTEGRATION.md` about confirming this is the same identifier
+`docs/MONNIFY_INTEGRATION.md` about confirming this is the same identifier
 space as the sweep endpoint's `id` field — verify in sandbox before
 finalising, since the dedup key must be the same across both sources for the
 idempotency table to work for both.
@@ -182,14 +182,14 @@ was first.
 
 ### 3. Webhook delayed or missing; sweep fires first
 
-**What happens:** Nomba's internal delivery fails silently (different from a
+**What happens:** Monnify's internal delivery fails silently (different from a
 Kobo non-2XX response, which would trigger retries). The sweep job runs after
 the configured window and finds the transfer in the Transactions API.
 
 **Kobo's behaviour:** Sweep processes normally — idempotency check misses
 (nothing there yet), account number resolves, ledger entry written,
 idempotency key inserted with `first_seen_via = sweep`. If a late webhook
-subsequently arrives (within Nomba's 5-retry window, before Nomba gives up),
+subsequently arrives (within Monnify's 5-retry window, before Monnify gives up),
 it hits the idempotency check and is deduplicated. `first_seen_via = sweep`
 remains on record.
 
@@ -199,7 +199,7 @@ remains on record.
 
 **What happens:** The sweep window is configured narrow, or the job runs
 while a webhook is mid-processing — two workers are racing to write the same
-`nomba_reference`.
+`monnify_reference`.
 
 **Kobo's behaviour:** Only one succeeds. Both workers try to INSERT INTO
 `idempotency_keys` within a DB transaction. One wins; the other gets a unique
@@ -222,7 +222,7 @@ is no guaranteed ordering between the two sources.
 
 **Kobo's behaviour:** Whichever source arrives first is processed. The second
 is deduplicated via idempotency. Out-of-order processing is safe because
-the idempotency check is on the stable `nomba_reference`, not on timestamps
+the idempotency check is on the stable `monnify_reference`, not on timestamps
 or sequence numbers.
 
 ---
@@ -301,10 +301,10 @@ trail can always answer "where did this money end up" for any transfer.
 
 ### 10. Payment to an unknown account number
 
-**What happens:** Nomba sends a webhook for a transfer to an account number
+**What happens:** Monnify sends a webhook for a transfer to an account number
 that does not exist in Kobo's `virtual_accounts` table. This should not
 happen under normal operation — Kobo provisions every virtual account through
-Nomba — but could occur if Nomba's sandbox sends test events with stale
+Monnify — but could occur if Monnify's sandbox sends test events with stale
 account numbers, or if an account number is somehow issued outside of Kobo's
 provisioning flow.
 
@@ -317,14 +317,14 @@ integrator can investigate and apply a `manual_override` resolution.
 
 ### 11. Amount unit conversion
 
-**What happens:** Nomba's webhook payload sends `transactionAmount` as a
+**What happens:** Monnify's webhook payload sends `transactionAmount` as a
 number in **Naira** (e.g. `120`). Kobo's internal model uses **kobo**
 (e.g. `12000`).
 
 **Kobo's behaviour:** The reconciliation engine multiplies by 100 and rounds
 before any ledger write. This conversion happens in one place only:
 `core/internal/reconciliation/engine.go`, not in the webhook handler or
-anywhere else that touches the raw Nomba payload. The raw Naira amount is
+anywhere else that touches the raw Monnify payload. The raw Naira amount is
 never stored anywhere in Kobo's schema.
 
 **Why this matters:** A conversion error here would cause every balance and
@@ -336,8 +336,8 @@ exactly one line to audit.
 
 ### 12. Webhook arrives after account is FAILED
 
-**What happens:** Nomba somehow delivers a credit event for an account number
-that was provisioned (and thus has a real account number in Nomba) but whose
+**What happens:** Monnify somehow delivers a credit event for an account number
+that was provisioned (and thus has a real account number in Monnify) but whose
 identity is in FAILED state on Kobo's side.
 
 **Kobo's behaviour:** The account number resolves in `virtual_accounts`
@@ -351,7 +351,7 @@ not occur in practice). Integrator notified.
 
 ## Naira-to-kobo conversion reference
 
-| Nomba field          | Type in Nomba payload | Kobo ledger field | Conversion            |
+| Monnify field          | Type in Monnify payload | Kobo ledger field | Conversion            |
 |----------------------|-----------------------|-------------------|-----------------------|
 | `transactionAmount`  | `number` (Naira)      | `amount_kobo`     | `int64(amount * 100)` |
 | amount in sweep API  | `string` (e.g. "100.0") | `amount_kobo`   | parse as float64, × 100, round to int64 |
@@ -369,7 +369,7 @@ via environment variables, not hardcoded:
 | Config key                  | Recommended default | Reason |
 |-----------------------------|---------------------|--------|
 | `SWEEP_INTERVAL`            | `15m`               | How often the sweep job runs. |
-| `SWEEP_LOOKBACK_WINDOW`     | `90m`               | How far back to poll per account. Wider than Nomba's 53-min retry ceiling. |
+| `SWEEP_LOOKBACK_WINDOW`     | `90m`               | How far back to poll per account. Wider than Monnify's 53-min retry ceiling. |
 | `SWEEP_BATCH_SIZE`          | `50`                | Max accounts to check per sweep run (see `ListVirtualAccountsNeedingSweepCheck` in `virtual_accounts.sql`). |
 | `WEBHOOK_REPLAY_REJECT_AGE` | `5m`                | Reject webhook events older than this to prevent replay attacks. Applied in signature verification. |
 
@@ -381,7 +381,7 @@ Explicitly out of scope, to prevent scope creep in agent-driven development:
 
 - **Outbound transfers:** Kobo v1 reconciles inbound attribution only. Refund
   or payout flows (e.g. returning an overpayment to a parent) are out of
-  scope and should be handled by the integrator directly via Nomba's payout
+  scope and should be handled by the integrator directly via Monnify's payout
   APIs.
 - **Amount-based matching:** Kobo does not know what a "correct" amount looks
   like for any given identity. The integrator defines fee structures.

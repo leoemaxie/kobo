@@ -61,7 +61,7 @@ The worker process (`cmd/worker/main.go`) executes the following tasks sequentia
 - **Description:** Placeholder for background KYC status verification for integrators.
 
 ### 4. Automated Billing & Invoicing
-- **Description:** Processes the automated billing cycle. Retrieves pending or failed invoices, queries the integrator's saved Nomba payment token, and triggers a background charge via the `ChargeToken` Nomba API. Handles max-retry logic and suspends delinquent accounts.
+- **Description:** Processes the automated billing cycle. Retrieves pending or failed invoices, queries the integrator's saved Monnify payment token, and triggers a background charge via the `ChargeToken` Monnify API. Handles max-retry logic and suspends delinquent accounts.
 - **Implementation:** `billing.InvoiceJob`
 
 ## Modifying Job Execution

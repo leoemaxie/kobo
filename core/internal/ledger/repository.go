@@ -43,7 +43,7 @@ func (r *repository) ListLedgerEntriesByAccount(ctx context.Context, accountID u
 			AmountKobo:       row.AmountKobo,
 			Direction:        row.Direction,
 			Status:           row.Status,
-			NombaReference:   row.NombaReference,
+			MonnifyReference:   row.MonnifyReference,
 			Source:           row.Source,
 			Narration:        row.Narration.String,
 			SenderName:       row.SenderName.String,

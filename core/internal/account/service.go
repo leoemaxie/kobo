@@ -9,12 +9,12 @@ import (
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
-type NombaClient interface {
-	CreateVirtualAccount(ctx context.Context, accountRef, accountName, bvn string) (NombaAccountResponse, error)
+type MonnifyClient interface {
+	CreateVirtualAccount(ctx context.Context, accountRef, accountName, bvn string) (MonnifyAccountResponse, error)
 	ExpireVirtualAccount(ctx context.Context, identifier string) (bool, error)
 }
 
-type NombaAccountResponse struct {
+type MonnifyAccountResponse struct {
 	AccountNumber   string
 	BankName        string
 	BankAccountName string
@@ -22,11 +22,11 @@ type NombaAccountResponse struct {
 
 type Service struct {
 	repo        Repository
-	nombaClient NombaClient
+	monnifyClient MonnifyClient
 }
 
-func NewService(repo Repository, nombaClient NombaClient) *Service {
-	return &Service{repo: repo, nombaClient: nombaClient}
+func NewService(repo Repository, monnifyClient MonnifyClient) *Service {
+	return &Service{repo: repo, monnifyClient: monnifyClient}
 }
 
 // Provision handles the PENDING -> ACTIVE transition
@@ -56,21 +56,21 @@ func (s *Service) Provision(ctx context.Context, identityID, integratorID uuid.U
 	va, err := s.repo.CreateVirtualAccount(ctx, sqlc.CreateVirtualAccountParams{
 		ID:              uuid.New(),
 		IdentityID:      identityID,
-		NombaAccountRef: accountRef,
+		MonnifyAccountRef: accountRef,
 		IsActive:        true,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create virtual account record: %w", err)
 	}
 
-	// 6. Call Nomba API
-	resp, nombaErr := s.nombaClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "")
+	// 6. Call Monnify API
+	resp, monnifyErr := s.monnifyClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "")
 
-	if nombaErr != nil {
-		return fmt.Errorf("nomba provisioning failed: %w", nombaErr)
+	if monnifyErr != nil {
+		return fmt.Errorf("monnify provisioning failed: %w", monnifyErr)
 	}
 
-	// 7. Update Virtual Account with Nomba details
+	// 7. Update Virtual Account with Monnify details
 	var acctNum pgtype.Text
 	acctNum.String = resp.AccountNumber
 	acctNum.Valid = true
@@ -141,16 +141,16 @@ func (s *Service) Reopen(ctx context.Context, identityID, integratorID uuid.UUID
 	va, err := s.repo.CreateVirtualAccount(ctx, sqlc.CreateVirtualAccountParams{
 		ID:              uuid.New(),
 		IdentityID:      identityID,
-		NombaAccountRef: accountRef,
+		MonnifyAccountRef: accountRef,
 		IsActive:        true,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create virtual account record: %w", err)
 	}
 
-	resp, nombaErr := s.nombaClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "")
-	if nombaErr != nil {
-		return fmt.Errorf("nomba provisioning failed on reopen: %w", nombaErr)
+	resp, monnifyErr := s.monnifyClient.CreateVirtualAccount(ctx, accountRef, ident.DisplayName, "")
+	if monnifyErr != nil {
+		return fmt.Errorf("monnify provisioning failed on reopen: %w", monnifyErr)
 	}
 
 	var acctNum pgtype.Text
@@ -224,8 +224,8 @@ func (s *Service) Close(ctx context.Context, identityID, integratorID uuid.UUID,
 
 	// Fetch active virtual account and expire it
 	va, vaErr := s.repo.GetActiveVirtualAccountByIdentityID(ctx, identityID)
-	if vaErr == nil && va.NombaAccountRef != "" {
-		_, _ = s.nombaClient.ExpireVirtualAccount(ctx, va.NombaAccountRef)
+	if vaErr == nil && va.MonnifyAccountRef != "" {
+		_, _ = s.monnifyClient.ExpireVirtualAccount(ctx, va.MonnifyAccountRef)
 	}
 
 	if len(sweepDestination) == 0 {

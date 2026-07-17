@@ -5,17 +5,17 @@ import (
 	"log"
 	"time"
 
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
 type InvoiceJob struct {
 	q           sqlc.Querier
-	nombaClient *nomba.Client
+	monnifyClient *monnify.Client
 }
 
-func NewInvoiceJob(q sqlc.Querier, nombaClient *nomba.Client) *InvoiceJob {
-	return &InvoiceJob{q: q, nombaClient: nombaClient}
+func NewInvoiceJob(q sqlc.Querier, monnifyClient *monnify.Client) *InvoiceJob {
+	return &InvoiceJob{q: q, monnifyClient: monnifyClient}
 }
 
 // Run should be called periodically (e.g. daily) by the worker
@@ -68,20 +68,20 @@ func (j *InvoiceJob) Run(ctx context.Context) error {
 		}
 
 		pm, err := j.q.GetDefaultPaymentMethod(ctx, inv.IntegratorID)
-		if err != nil || pm.NombaTokenKey == "" {
+		if err != nil || pm.MonnifyTokenKey == "" {
 			log.Printf("no default payment method for integrator %s", inv.IntegratorID)
 			j.failInvoice(ctx, inv)
 			continue
 		}
 
-		resp, err := j.nombaClient.ChargeToken(ctx, nomba.ChargeTokenRequest{
-			TokenKey: pm.NombaTokenKey,
-			Order: nomba.OrderInfo{
+		resp, err := j.monnifyClient.ChargeToken(ctx, monnify.ChargeTokenRequest{
+			TokenKey: pm.MonnifyTokenKey,
+			Order: monnify.OrderInfo{
 				Amount:         float64(inv.AmountKobo) / 100.0,
 				Currency:       "NGN",
 				OrderReference: "inv_" + inv.ID.String(),
-				CustomerEmail:  "billing@yourdomain.com",                    // Required by Nomba API
-				CallbackUrl:    "https://api.yourdomain.com/webhooks/nomba", // Required by Nomba API
+				CustomerEmail:  "billing@yourdomain.com",                    // Required by Monnify API
+				CallbackUrl:    "https://api.yourdomain.com/webhooks/monnify", // Required by Monnify API
 			},
 		})
 

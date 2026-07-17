@@ -20,7 +20,7 @@ INSERT INTO console.billing_records (
 
 -- name: InsertPaymentMethod :one
 INSERT INTO console.payment_methods (
-    integrator_id, nomba_token_key, card_last4, card_brand, is_default
+    integrator_id, monnify_token_key, card_last4, card_brand, is_default
 ) VALUES (
     $1, $2, $3, $4, $5
 ) RETURNING *;
@@ -44,7 +44,7 @@ INSERT INTO console.invoices (
 
 -- name: UpdateInvoiceStatus :exec
 UPDATE console.invoices
-SET status = $2, nomba_order_ref = $3, paid_at = $4, retry_count = $5, next_retry_at = $6
+SET status = $2, monnify_order_ref = $3, paid_at = $4, retry_count = $5, next_retry_at = $6
 WHERE id = $1;
 
 -- name: GetPendingInvoices :many

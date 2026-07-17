@@ -10,12 +10,12 @@ import (
 type Config struct {
 	Port               string
 	DatabaseURL        string
-	NombaBaseURL       string
-	NombaClientID      string
-	NombaClientSecret  string
-	NombaAccountID     string
-	NombaSubAccountID  string
-	NombaWebhookSecret string
+	MonnifyBaseURL       string
+	MonnifyClientID      string
+	MonnifyClientSecret  string
+	MonnifyAccountID     string
+	MonnifySubAccountID  string
+	MonnifyWebhookSecret string
 	KYCMaxCeiling      int64 // Stored in kobo
 }
 
@@ -26,19 +26,19 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	clientID, err := getEnvOrError("NOMBA_CLIENT_ID")
+	clientID, err := getEnvOrError("MONNIFY_CLIENT_ID")
 	if err != nil {
 		return nil, err
 	}
-	clientSecret, err := getEnvOrError("NOMBA_CLIENT_SECRET")
+	clientSecret, err := getEnvOrError("MONNIFY_CLIENT_SECRET")
 	if err != nil {
 		return nil, err
 	}
-	accountID, err := getEnvOrError("NOMBA_ACCOUNT_ID")
+	accountID, err := getEnvOrError("MONNIFY_ACCOUNT_ID")
 	if err != nil {
 		return nil, err
 	}
-	webhookSecret, err := getEnvOrError("NOMBA_WEBHOOK_SECRET")
+	webhookSecret, err := getEnvOrError("MONNIFY_WEBHOOK_SECRET")
 	if err != nil {
 		return nil, err
 	}
@@ -46,12 +46,12 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		Port:               getEnvOrDefault("PORT", "8080"),
 		DatabaseURL:        dbUrl,
-		NombaBaseURL:       getEnvOrDefault("NOMBA_BASE_URL", "https://sandbox.api.nomba.com/v1"),
-		NombaClientID:      clientID,
-		NombaClientSecret:  clientSecret,
-		NombaAccountID:     accountID,
-		NombaSubAccountID:  getEnvOrDefault("NOMBA_SUB_ACCOUNT_ID", accountID),
-		NombaWebhookSecret: webhookSecret,
+		MonnifyBaseURL:       getEnvOrDefault("MONNIFY_BASE_URL", "https://sandbox.api.monnify.com/v1"),
+		MonnifyClientID:      clientID,
+		MonnifyClientSecret:  clientSecret,
+		MonnifyAccountID:     accountID,
+		MonnifySubAccountID:  getEnvOrDefault("MONNIFY_SUB_ACCOUNT_ID", accountID),
+		MonnifyWebhookSecret: webhookSecret,
 		KYCMaxCeiling:      1000000 * 100, // 1 million Naira in kobo as default
 	}
 	return cfg, nil

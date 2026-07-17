@@ -54,7 +54,7 @@ type Querier interface {
 	GetDefaultPaymentMethod(ctx context.Context, integratorID uuid.UUID) (ConsolePaymentMethod, error)
 	GetErrorRate(ctx context.Context, integratorID uuid.UUID) (float64, error)
 	GetExceptionByID(ctx context.Context, arg GetExceptionByIDParams) (Exception, error)
-	GetIdempotencyKey(ctx context.Context, nombaReference string) (IdempotencyKey, error)
+	GetIdempotencyKey(ctx context.Context, monnifyReference string) (IdempotencyKey, error)
 	GetIdentityByExternalReference(ctx context.Context, arg GetIdentityByExternalReferenceParams) (Identity, error)
 	GetIdentityByID(ctx context.Context, arg GetIdentityByIDParams) (Identity, error)
 	GetIdentityByVirtualAccountID(ctx context.Context, id uuid.UUID) (GetIdentityByVirtualAccountIDRow, error)

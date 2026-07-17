@@ -2,12 +2,12 @@ openapi: 3.1.0
 info:
   title: Kobo API
   version: 0.1.0
-  summary: Identity-anchored virtual account infrastructure built on Nomba.
+  summary: Identity-anchored virtual account infrastructure built on Monnify.
   description: >
     Kobo provisions and manages persistent, identity-linked virtual accounts.
     Integrators register identities, receive a dedicated virtual account per
     identity, and consume reconciled transactions, statements, and lifecycle
-    events through this API. Integrators never call Nomba directly.
+    events through this API. Integrators never call Monnify directly.
 
     Conventions for implementers:
     - All monetary amounts are integers in kobo (the smallest Naira unit), never floats.
@@ -36,7 +36,7 @@ tags:
   - name: Exceptions
     description: Misdirected payments and unmatched transfers requiring resolution.
   - name: Webhooks
-    description: Inbound endpoint Nomba calls; documented for completeness, not called by integrators.
+    description: Inbound endpoint Monnify calls; documented for completeness, not called by integrators.
   - name: System
     description: Health and meta endpoints.
 
@@ -86,7 +86,7 @@ paths:
       operationId: createIdentity
       summary: Register a new identity and provision its virtual account.
       description: >
-        Creates an Identity record and synchronously provisions a Nomba virtual account
+        Creates an Identity record and synchronously provisions a Monnify virtual account
         against it. The response typically returns immediately with the identity in the ACTIVE
         state and the virtual account details populated. If the downstream provider is temporarily
         unavailable, the identity creation is rolled back and an error is returned.
@@ -159,7 +159,7 @@ paths:
       description: >
         Updates only the display profile layer. Never changes the identity ID
         and never triggers a new virtual account provisioning. If
-        display_name changes, Kobo re-submits the updated name to Nomba for
+        display_name changes, Kobo re-submits the updated name to Monnify for
         the linked virtual account and logs an identity event of type
         "renamed".
       requestBody:
@@ -369,32 +369,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /webhooks/nomba:
+  /webhooks/monnify:
     post:
       tags: [Webhooks]
-      operationId: receiveNombaWebhook
-      summary: Internal endpoint Nomba calls into. Not used by Kobo integrators.
+      operationId: receiveMonnifyWebhook
+      summary: Internal endpoint Monnify calls into. Not used by Kobo integrators.
       description: >
         Documented for completeness and for engineers implementing the
-        reconciliation engine. Verifies the Nomba signature header before
+        reconciliation engine. Verifies the Monnify signature header before
         processing. Every event includes a transaction reference used as the
         idempotency key; duplicate deliveries are accepted (200) but produce
         no additional ledger writes.
       security:
-        - NombaWebhookSignature: []
+        - MonnifyWebhookSignature: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NombaWebhookPayload'
+              $ref: '#/components/schemas/MonnifyWebhookPayload'
       responses:
         '200':
           description: Event accepted (processed or deduplicated).
         '400':
           description: Malformed payload.
         '401':
-          description: Invalid or missing Nomba signature.
+          description: Invalid or missing Monnify signature.
 
   /healthz:
     get:
@@ -431,11 +431,11 @@ components:
         HMAC-SHA256 signature of the request body plus the X-Kobo-Timestamp
         header value, signed with the integrator's API secret. Requests with
         a timestamp older than 5 minutes are rejected to prevent replay.
-    NombaWebhookSignature:
+    MonnifyWebhookSignature:
       type: apiKey
       in: header
-      name: nomba-signature
-      description: Signature provided by Nomba on outbound webhook calls, verified against the shared webhook secret.
+      name: monnify-signature
+      description: Signature provided by Monnify on outbound webhook calls, verified against the shared webhook secret.
 
   parameters:
     IdentityId:
@@ -539,7 +539,7 @@ components:
           example: "1234567890"
         bank_name:
           type: string
-          example: "Nomba MFB"
+          example: "Monnify MFB"
         account_name:
           type: string
           example: "John Ade"
@@ -609,7 +609,7 @@ components:
 
     Transaction:
       type: object
-      required: [id, account_id, amount_kobo, direction, status, nomba_reference, occurred_at]
+      required: [id, account_id, amount_kobo, direction, status, monnify_reference, occurred_at]
       properties:
         id:
           type: string
@@ -627,9 +627,9 @@ components:
         status:
           type: string
           enum: [matched, partial, overpayment]
-        nomba_reference:
+        monnify_reference:
           type: string
-          description: Nomba's transaction reference, used as the idempotency key.
+          description: Monnify's transaction reference, used as the idempotency key.
         occurred_at:
           type: string
           format: date-time
@@ -676,7 +676,7 @@ components:
 
     Exception:
       type: object
-      required: [id, type, amount_kobo, nomba_reference, status, detected_at]
+      required: [id, type, amount_kobo, monnify_reference, status, detected_at]
       properties:
         id:
           type: string
@@ -685,7 +685,7 @@ components:
           $ref: '#/components/schemas/ExceptionType'
         amount_kobo:
           type: integer
-        nomba_reference:
+        monnify_reference:
           type: string
         related_account_id:
           type: string
@@ -741,9 +741,9 @@ components:
           type: string
           nullable: true
 
-    NombaWebhookPayload:
+    MonnifyWebhookPayload:
       type: object
-      description: Shape as received from Nomba; field names follow Nomba's contract.
+      description: Shape as received from Monnify; field names follow Monnify's contract.
       required: [event_type, requestId, data]
       properties:
         event_type:
@@ -770,7 +770,7 @@ components:
                   type: string
                 transactionAmount:
                   type: number
-                  description: Amount in Naira as sent by Nomba.
+                  description: Amount in Naira as sent by Monnify.
                 time:
                   type: string
                   format: date-time

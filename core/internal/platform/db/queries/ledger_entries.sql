@@ -1,5 +1,5 @@
 -- name: InsertLedgerEntry :one
-INSERT INTO ledger_entries (id, virtual_account_id, identity_id, amount_kobo, direction, status, nomba_reference, source, narration, sender_name, occurred_at)
+INSERT INTO ledger_entries (id, virtual_account_id, identity_id, amount_kobo, direction, status, monnify_reference, source, narration, sender_name, occurred_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 RETURNING *;
 

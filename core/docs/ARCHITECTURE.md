@@ -37,7 +37,7 @@ core/
       model.go                 # VirtualAccount struct, AccountState enum
       lifecycle.go              # the state machine: ValidTransition(), Transition()
       lifecycle_test.go         # exhaustive table-driven tests of every transition
-      service.go                # provisioning orchestration, calls nomba client
+      service.go                # provisioning orchestration, calls monnify client
       repository.go
     ledger/
       model.go                  # LedgerEntry struct
@@ -45,18 +45,18 @@ core/
       repository.go
     reconciliation/
       engine.go                  # core matching logic: webhook event -> ledger entry
-      idempotency.go               # dedup by Nomba transaction reference
+      idempotency.go               # dedup by Monnify transaction reference
       sweep.go                     # fallback polling job against Transactions API
       engine_test.go
     exceptions/
       model.go                   # MisdirectedPayment / Exception struct
       service.go                  # flagging + resolution logic
       repository.go
-    nomba/
-      client.go                   # Nomba API client: provisioning, transactions, signature verify
+    monnify/
+      client.go                   # Monnify API client: provisioning, transactions, signature verify
       webhook.go                   # webhook payload parsing + signature verification
-      types.go                     # Nomba API request/response types (external contract, kept separate from internal models)
-      client_test.go               # uses a mock HTTP transport, never hits real Nomba in tests
+      types.go                     # Monnify API request/response types (external contract, kept separate from internal models)
+      client_test.go               # uses a mock HTTP transport, never hits real Monnify in tests
     api/
       router.go                   # chi router setup, mounts all route groups
       middleware/
@@ -67,7 +67,7 @@ core/
         identities.go               # POST /v1/identities, GET, PATCH, /close, /reopen
         accounts.go                  # GET /v1/accounts/{id}/transactions, /statement
         exceptions.go                 # GET /v1/exceptions, POST /v1/exceptions/{id}/resolve
-        webhooks.go                   # internal endpoint Nomba calls into
+        webhooks.go                   # internal endpoint Monnify calls into
         health.go                     # GET /healthz
       dto/
         identity_dto.go               # request/response JSON shapes, separate from internal models
@@ -99,7 +99,7 @@ core/
     RECONCILIATION.md                    # detailed write-up of edge cases from the concept note, kept in sync with reconciliation/engine.go
     LIFECYCLE.md                         # state machine diagram + transition table, kept in sync with account/lifecycle.go
     AUTHENTICATION.md                  # detailed write-up of authentication flows, kept in sync with api/middleware/auth.go
-    NOMBA_INTEGRATION.md               # detailed write-up of nomba integration flows, kept in sync with nomba/client.go
+    MONNIFY_INTEGRATION.md               # detailed write-up of monnify integration flows, kept in sync with monnify/client.go
   scripts/
     seed.go                              # seeds a sandbox integrator + test identities for local dev
   Makefile                               # make run, make test, make migrate-up, make sqlc-generate
@@ -114,7 +114,7 @@ core/
 These rules exist so an AI coding agent making incremental changes does not
 quietly violate the architecture:
 
-1. **`internal/nomba` is the only package allowed to import an HTTP client pointed at Nomba's API.** No other package talks to Nomba directly. This keeps Nomba's API shape from leaking into business logic, and means the rest of the system can be tested without a sandbox connection.
+1. **`internal/monnify` is the only package allowed to import an HTTP client pointed at Monnify's API.** No other package talks to Monnify directly. This keeps Monnify's API shape from leaking into business logic, and means the rest of the system can be tested without a sandbox connection.
 
 2. **`internal/api/handlers` contains no business logic.** Handlers parse the request, call exactly one service method, and serialize the response. If a handler has an `if` statement that isn't about HTTP concerns (auth, validation errors, status codes), that logic belongs in a `service.go` instead.
 
@@ -122,7 +122,7 @@ quietly violate the architecture:
 
 4. **State transitions only happen through `account/lifecycle.go`.** No package sets `account.State = "CLOSED"` directly anywhere else in the codebase. Every transition goes through `lifecycle.Transition(current, event)`, which returns an error for any invalid transition. This is what makes the lifecycle state machine actually enforced rather than just documented.
 
-5. **`reconciliation/idempotency.go` is consulted before any ledger write from a webhook or sweep.** No ledger entry is created without first checking the Nomba transaction reference against the idempotency table.
+5. **`reconciliation/idempotency.go` is consulted before any ledger write from a webhook or sweep.** No ledger entry is created without first checking the Monnify transaction reference against the idempotency table.
 
 6. **Every new package gets a `_test.go` file in the same PR/commit that creates it.** Particularly `lifecycle_test.go` and `engine_test.go`, since the state machine and reconciliation logic are the two pieces directly named in the judging criteria — these should have the most thorough table-driven tests in the codebase.
 
@@ -131,8 +131,8 @@ quietly violate the architecture:
 1. `platform/db` + migrations for `identities`, `virtual_accounts`, `ledger_entries`, `exceptions`, `idempotency_keys`, `api_integrators` tables.
 2. `internal/identity` (model, repository, service) with unit tests against a real local Postgres (use `testcontainers-go` or a docker-compose Postgres for integration tests).
 3. `internal/account/lifecycle.go` as a pure, dependency-free state machine — build and test this in isolation before wiring it to anything else.
-4. `internal/nomba` client against Nomba's sandbox, with the provisioning call only.
-5. `internal/account/service.go` wiring lifecycle + nomba client + repository together.
+4. `internal/monnify` client against Monnify's sandbox, with the provisioning call only.
+5. `internal/account/service.go` wiring lifecycle + monnify client + repository together.
 6. `internal/api` skeleton: router, middleware/auth.go, health.go — get a deployable, authenticated, empty API running early.
 7. `handlers/identities.go` wired to `internal/identity` and `internal/account` — this is the first end-to-end vertical slice (register identity -> provision account -> see it in DB).
 8. `internal/reconciliation` (engine, idempotency, sweep) + `handlers/webhooks.go`.

@@ -1,5 +1,5 @@
 -- name: InsertException :one
-INSERT INTO exceptions (id, integrator_id, type, amount_kobo, nomba_reference, related_account_id, status, detected_at)
+INSERT INTO exceptions (id, integrator_id, type, amount_kobo, monnify_reference, related_account_id, status, detected_at)
 VALUES ($1, $2, $3, $4, $5, $6, 'open', now())
 RETURNING *;
 

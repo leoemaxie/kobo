@@ -66,8 +66,8 @@ func (m *MockQuerier) SuspendIntegrator(ctx context.Context, integratorID uuid.U
 	return nil
 }
 
-// MockNombaClient wraps methods if necessary, though testing against actual HTTP client usually requires httptest.
-// We'll skip nomba client execution testing here and just test the DB logic.
+// MockMonnifyClient wraps methods if necessary, though testing against actual HTTP client usually requires httptest.
+// We'll skip monnify client execution testing here and just test the DB logic.
 
 func TestInvoiceJob_WalletDeduction_FullCoverage(t *testing.T) {
 	mockQ := &MockQuerier{
@@ -114,7 +114,7 @@ func TestInvoiceJob_WalletDeduction_PartialCoverage(t *testing.T) {
 			},
 		},
 		DefaultPayment: sqlc.PaymentMethod{
-			NombaTokenKey: "", // Simulating missing token to trigger failInvoice
+			MonnifyTokenKey: "", // Simulating missing token to trigger failInvoice
 		},
 	}
 
@@ -151,7 +151,7 @@ func TestInvoiceJob_RetrySuspension(t *testing.T) {
 			},
 		},
 		DefaultPayment: sqlc.PaymentMethod{
-			NombaTokenKey: "", // Force failure
+			MonnifyTokenKey: "", // Force failure
 		},
 	}
 

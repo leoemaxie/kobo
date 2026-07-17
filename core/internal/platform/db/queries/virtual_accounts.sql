@@ -1,5 +1,5 @@
 -- name: CreateVirtualAccount :one
-INSERT INTO virtual_accounts (id, identity_id, nomba_account_ref, account_number, bank_name, account_name, is_active)
+INSERT INTO virtual_accounts (id, identity_id, monnify_account_ref, account_number, bank_name, account_name, is_active)
 VALUES ($1, $2, $3, $4, $5, $6, $7)
 RETURNING *;
 

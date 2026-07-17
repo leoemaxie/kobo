@@ -33,7 +33,7 @@ func (r *sqlcIdempotencyRepository) CheckOrSetIdempotency(ctx context.Context, r
 	}
 
 	_, err = r.q.InsertIdempotencyKey(ctx, sqlc.InsertIdempotencyKeyParams{
-		NombaReference: reference,
+		MonnifyReference: reference,
 		LedgerEntryID:  ledgerEntryID,
 		FirstSeenVia:   source,
 	})

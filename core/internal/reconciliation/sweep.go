@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/leoemaxie/kobo/internal/nomba"
+	"github.com/leoemaxie/kobo/internal/monnify"
 	"github.com/leoemaxie/kobo/internal/platform/db/sqlc"
 )
 
@@ -20,10 +20,10 @@ type Sweeper interface {
 type sweeper struct {
 	q        sqlc.Querier
 	idemRepo IdempotencyRepository
-	client   *nomba.Client
+	client   *monnify.Client
 }
 
-func NewSweeper(q sqlc.Querier, idemRepo IdempotencyRepository, client *nomba.Client) Sweeper {
+func NewSweeper(q sqlc.Querier, idemRepo IdempotencyRepository, client *monnify.Client) Sweeper {
 	return &sweeper{q: q, idemRepo: idemRepo, client: client}
 }
 
@@ -36,7 +36,7 @@ func (s *sweeper) RunSweep(ctx context.Context) error {
 	}
 
 	dateTo := time.Now()
-	// Reconcile the last 2 hours (covers the max 53m retry delay of nomba + buffer)
+	// Reconcile the last 2 hours (covers the max 53m retry delay of monnify + buffer)
 	dateFrom := dateTo.Add(-2 * time.Hour)
 
 	for _, acc := range accounts {
@@ -87,7 +87,7 @@ func (s *sweeper) RunSweep(ctx context.Context) error {
 						AmountKobo:       amountKobo,
 						Direction:        "inbound",
 						Status:           "matched",
-						NombaReference:   txn.ID,
+						MonnifyReference:   txn.ID,
 						Source:           "sweep",
 						Narration:        pgNarration,
 						SenderName:       pgSenderName,
