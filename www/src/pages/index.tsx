@@ -16,7 +16,7 @@ function HomepageHeader() {
           Identity-anchored virtual account infrastructure
         </h1>
         <p className={styles.heroSubtitle}>
-          Nomba-backed, per-identity dedicated accounts, automatic reconciliation.
+          Alat-backed, per-identity dedicated accounts, automatic reconciliation.
         </p>
         <div className={styles.buttons}>
           <Link
@@ -69,7 +69,7 @@ function HowItWorks() {
           <div className={styles.stepItem}>
             <div className={styles.stepNumber}>1</div>
             <h4 className={styles.stepTitle}>Register an identity</h4>
-            <p className={styles.stepDesc}>Kobo provisions a dedicated Nomba virtual account.</p>
+            <p className={styles.stepDesc}>Kobo provisions a dedicated Alat virtual account.</p>
           </div>
           <div className={styles.stepConnector} />
           <div className={styles.stepItem}>

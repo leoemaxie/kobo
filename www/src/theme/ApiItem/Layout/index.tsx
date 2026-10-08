@@ -15,7 +15,7 @@ export default function LayoutWrapper(props: Props): ReactNode {
           serverUrl="https://kobo.triumphsystems.tech/mcp" 
           serverName="kobo-docs" 
           label="Open in Claude"
-          className="nomba-mcp-btn"
+          className="alat-mcp-btn"
         />
       </div>
       <Layout {...props} />
